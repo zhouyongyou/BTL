@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>BitLuck DApp</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>Welcome to BitLuck</h1>
+            <p>Your gateway to BNB & USD1 rewards</p>
+            <span id="networkInfo" style="color: white; font-size: 1rem; margin-top: 10px;">Connecting...</span>
+        </div>
+    </header>
+
+    <section id="info">
+        <div class="container">
+            <h2>Contract Information</h2>
+            <ul>
+                <li><strong>BTL Contract Address:</strong> <span id="btlAddress">0x... </span> <button onclick="copyToClipboard('btlAddress')">Copy</button></li>
+                <li><strong>USD1 Contract Address:</strong> <span id="usd1Address">0x... </span> <button onclick="copyToClipboard('usd1Address')">Copy</button></li>
+                <li><strong>Total BNB Deposited:</strong> <span id="totalBnbDeposited">0</span></li>
+                <li><strong>Holder Condition:</strong> <span id="holderThreshold">0</span></li>
+                <li><strong>USD1 Rewards Countdown:</strong> <span id="usd1RewardCountdown">0</span> seconds</li>
+                <li><strong>BNB Rewards Countdown:</strong> <span id="bnbRewardCountdown">0</span> seconds</li>
+            </ul>
+        </div>
+    </section>
+
+    <section id="deposit">
+        <div class="container">
+            <h2>Deposit BNB</h2>
+            <p>Minimum deposit: <span id="minDepositAmount">0.02</span> BNB</p>
+            <input type="number" id="depositAmount" placeholder="Enter amount in BNB">
+            <button onclick="depositBNB()">Deposit BNB</button>
+        </div>
+    </section>
+
+    <section id="referral">
+        <div class="container">
+            <h2>Referral Link</h2>
+            <input type="text" id="referralLink" readonly>
+            <button onclick="copyReferralLink()">Copy Link</button>
+        </div>
+    </section>
+
+    <section id="wallet">
+        <div class="container">
+            <h2>Your Wallet</h2>
+            <button onclick="connectWallet()">Connect Wallet</button>
+            <p>Your BTL balance: <span id="userBtlBalance">0</span></p>
+            <p>Your USD1 deposits: <span id="userUsd1Deposits">0</span></p>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 BitLuck | All rights reserved</p>
+            <p>本 DApp 仅支持 BSC 主网，請确保您的錢包已切換至 Binance Smart Chain 主网。</p>
+        </div>
+    </footer>
+
+    <script src="script.js"></script>
+</body>
+</html>
