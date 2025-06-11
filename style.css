@@ -123,6 +123,17 @@ footer {
   margin-top: 30px;
 }
 
+/* Footer Links */
+footer a {
+  color: #f0b90b;  /* 幣安金黃色 */
+  text-decoration: none;  /* 去除底線 */
+  transition: color 0.3s;
+}
+
+footer a:hover {
+  color: #c8a500;  /* 深一點的金黃色 */
+}
+
 /* Toast */
 .toast {
   position: fixed;
