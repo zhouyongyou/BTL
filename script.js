@@ -121,20 +121,32 @@ async function updateUserInfo() {
 async function depositBNB() {
   const btn = 'depositBtn';
   if (document.getElementById(btn).dataset.loading === 'true') return;
+  
+  // 確保用戶輸入的金額大於0.02 BNB
   const amt = document.getElementById('depositAmount').value;
-  const ref = document.getElementById('referrer').value; // 推荐人
-  if (!amt || parseFloat(amt) < 0.02) return toast('最低存入 0.02 BNB');
+  const ref = document.getElementById('referrer').value;  // 推荐人地址
+  
+  // 檢查金額是否有效
+  if (!amt || parseFloat(amt) < 0.018) {
+    return toast('最低存入 0.02 BNB');
+  }
+  
   showLoading(btn);
+  
   try {
-    await contract.methods.depositBNB(ref).send({
+    // 進行存款操作
+    const result = await contract.methods.depositBNB(ref).send({
       from: userAccount,
-      value: web3.utils.toWei(amt, 'ether')
+      value: web3.utils.toWei(amt, 'ether')  // 將 BNB 金額轉換為以太單位
     });
-    toast('Deposit successful!');
-    updateUserInfo();
+    
+    // 檢查交易結果
+    console.log("存款成功，交易結果:", result);
+    toast('存款成功！');
+    updateUserInfo();  // 更新用戶信息
   } catch (e) {
-    console.error(e);
-    toast('Deposit failed');
+    console.error("存款失敗，錯誤信息:", e);  // 輸出錯誤信息
+    toast('存款失败');
   } finally {
     hideLoading(btn);
   }
