@@ -6,7 +6,8 @@
   <title>BitLuck DApp</title>
   <link rel="stylesheet" href="style.css">
 </head>
-<body class="dark-mode"> <!-- 默认启用深色模式 -->
+<body class="dark-mode"> <!-- 默认深色模式 -->
+
   <!-- Header with Network Info & Language Switch -->
   <header>
     <div class="container">
@@ -27,9 +28,10 @@
   <!-- Main Info Display -->
   <section id="mainInfo">
     <div class="container">
+      <!-- Contract Information -->
       <h2 id="contractInfoTitle">BitLuck Contract</h2>
       <p><strong id="btlAddressLabel">Contract Address:</strong>
-        <span id="contractAddr">0x…</span>
+        <span id="contractAddr">0xFcAD17815627356EfE237D3bA2c863f63B78845D</span>
         <button onclick="copyToClipboard('contractAddr')">Copy Address</button>
       </p>
 
@@ -56,6 +58,7 @@
         <h3 id="depositLabel">Deposit BNB</h3>
         <p><strong id="minDepositAmount">0.02</strong> BNB minimum</p>
         <input type="number" id="depositAmount" placeholder="Enter BNB to deposit">
+        <input type="text" id="referrer" placeholder="Referral (optional)">
         <button id="depositBtn" onclick="depositBNB()">Deposit</button>
       </div>
     </div>
