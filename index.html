@@ -1,67 +1,87 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>BitLuck DApp</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>BitLuck DApp</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header>
-        <div class="container">
-            <h1>Welcome to BitLuck</h1>
-            <p>Your gateway to BNB & USD1 rewards</p>
-            <span id="networkInfo" style="color: white; font-size: 1rem; margin-top: 10px;">Connecting...</span>
-        </div>
-    </header>
+  <!-- Header with Network Info & Language Switch -->
+  <header>
+    <div class="container">
+      <span id="networkInfo">Connecting...</span>
+      <button onclick="switchLanguage()">Switch Language</button> <!-- TODO: style this button -->
+    </div>
+  </header>
 
-    <section id="info">
-        <div class="container">
-            <h2>Contract Information</h2>
-            <ul>
-                <li><strong>BTL Contract Address:</strong> <span id="btlAddress">0x... </span> <button onclick="copyToClipboard('btlAddress')">Copy</button></li>
-                <li><strong>USD1 Contract Address:</strong> <span id="usd1Address">0x... </span> <button onclick="copyToClipboard('usd1Address')">Copy</button></li>
-                <li><strong>Total BNB Deposited:</strong> <span id="totalBnbDeposited">0</span></li>
-                <li><strong>Holder Condition:</strong> <span id="holderThreshold">0</span></li>
-                <li><strong>USD1 Rewards Countdown:</strong> <span id="usd1RewardCountdown">0</span> seconds</li>
-                <li><strong>BNB Rewards Countdown:</strong> <span id="bnbRewardCountdown">0</span> seconds</li>
-            </ul>
-        </div>
-    </section>
+  <!-- Wallet Connection -->
+  <section id="walletConnection">
+    <div class="container">
+      <button id="connectWalletBtn" onclick="connectWallet()">Connect Wallet</button>
+      <!-- TODO: show wallet address after connection -->
+      <p id="userAccount"></p>
+    </div>
+  </section>
 
-    <section id="deposit">
-        <div class="container">
-            <h2>Deposit BNB</h2>
-            <p>Minimum deposit: <span id="minDepositAmount">0.02</span> BNB</p>
-            <input type="number" id="depositAmount" placeholder="Enter amount in BNB">
-            <button onclick="depositBNB()">Deposit BNB</button>
-        </div>
-    </section>
+  <!-- Main Info Display -->
+  <section id="mainInfo">
+    <div class="container">
+      <!-- Contract Information -->
+      <h2 id="contractInfoTitle">BitLuck Contract</h2>
+      <p><strong id="btlAddressLabel">Contract Address:</strong>
+        <span id="contractAddr">0x…</span>
+        <button onclick="copyToClipboard('contractAddr')">Copy Address</button>
+      </p>
+      <!-- TODO: add explorer link here -->
 
-    <section id="referral">
-        <div class="container">
-            <h2>Referral Link</h2>
-            <input type="text" id="referralLink" readonly>
-            <button onclick="copyReferralLink()">Copy Link</button>
-        </div>
-    </section>
+      <!-- Reward Countdowns -->
+      <div>
+        <h3 id="usd1CountdownLabel">Next USD1 Reward:</h3>
+        <p><span id="usd1Time">0</span> seconds</p>
+        <h3 id="bnbCountdownLabel">Next BNB Reward:</h3>
+        <p><span id="bnbTime">0</span> seconds</p>
+      </div>
 
-    <section id="wallet">
-        <div class="container">
-            <h2>Your Wallet</h2>
-            <button onclick="connectWallet()">Connect Wallet</button>
-            <p>Your BTL balance: <span id="userBtlBalance">0</span></p>
-            <p>Your USD1 deposits: <span id="userUsd1Deposits">0</span></p>
-        </div>
-    </section>
+      <!-- User Balances & Actions -->
+      <div>
+        <h3>Your BTL Balance</h3>
+        <p id="userBalance">0</p>
 
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 BitLuck | All rights reserved</p>
-            <p>本 DApp 仅支持 BSC 主网，請确保您的錢包已切換至 Binance Smart Chain 主网。</p>
-        </div>
-    </footer>
+        <h3>Your USD1 Earnings</h3>
+        <p id="usd1Earnings">0</p>
 
-    <script src="script.js"></script>
+        <h3>Your BNB Deposit</h3>
+        <p id="userBNBDeposit">0</p>
+
+        <!-- Deposit Form -->
+        <h3 id="depositLabel">Deposit BNB</h3>
+        <p><strong id="minDepositAmount">0.02</strong> BNB minimum</p>
+        <input type="number" id="depositAmount" placeholder="Enter BNB to deposit">
+        <button id="depositBtn" onclick="depositBNB()">Deposit</button>
+      </div>
+
+      <!-- TODO: Extension Point: add reward history table here -->
+    </div>
+  </section>
+
+  <!-- Referral Section -->
+  <section id="referral">
+    <div class="container">
+      <h4>Your Referral Link:</h4>
+      <p id="referralLink">Referral URL: <span id="referralUrl">https://…?ref=0x…</span></p>
+      <button onclick="copyToClipboard('referralUrl')">Copy Link</button>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer>
+    <div class="container">
+      <p id="footerText">© 2025 BitLuck | All rights reserved</p>
+      <p>本 DApp 仅支持 BSC 主网，請确保您的錢包已切換至 Binance Smart Chain 主网。</p>
+    </div>
+  </footer>
+
+  <script src="script.js"></script>
 </body>
 </html>
