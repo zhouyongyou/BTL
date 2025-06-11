@@ -98,16 +98,6 @@ async function connectWallet() {
       if (parseInt(id, 16) !== 56) toast('请切换回 BSC 主网');
     });
 
-    // 事件监听
-    contract.events.BNBRewardDistributed({ fromBlock: 'latest' }).on('data', () => {
-      updateUserInfo();
-      toast('收到 BNB 分红');
-    });
-    contract.events.USD1RewardDistributed({ fromBlock: 'latest' }).on('data', () => {
-      updateUserInfo();
-      toast('收到 USD1 分红');
-    });
-
     updateUserInfo();
     updateContractInfo();
   } catch (e) {
@@ -136,10 +126,11 @@ async function depositBNB() {
   const btn = 'depositBtn';
   if (document.getElementById(btn).dataset.loading === 'true') return;
   const amt = document.getElementById('depositAmount').value;
+  const ref = document.getElementById('referrer').value; // 推荐人
   if (!amt || parseFloat(amt) < 0.02) return toast('最低存入 0.02 BNB');
   showLoading(btn);
   try {
-    await contract.methods.depositBNB().send({
+    await contract.methods.depositBNB(ref).send({
       from: userAccount,
       value: web3.utils.toWei(amt, 'ether')
     });
