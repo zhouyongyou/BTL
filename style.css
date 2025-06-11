@@ -1,4 +1,4 @@
-/* 全局重置 */
+/* 全局样式 */
 * {
     margin: 0;
     padding: 0;
@@ -13,7 +13,6 @@ body {
     line-height: 1.6;
 }
 
-/* 强制应用深色模式 */
 body.dark-mode {
     background-color: #121212;
     color: #fff;
