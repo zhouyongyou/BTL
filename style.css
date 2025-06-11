@@ -1,25 +1,25 @@
-/* 设置全局样式 */
+/* 全局重置 */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
 }
 
-/* 背景和字体 */
+/* 深色模式背景和字体 */
 body {
     font-family: Arial, sans-serif;
     background-color: #121212; /* 深色背景 */
-    color: #ffffff; /* 白色文字 */
+    color: #fff; /* 白色文字 */
     line-height: 1.6;
 }
 
-/* 深色模式背景 */
+/* 强制应用深色模式 */
 body.dark-mode {
     background-color: #121212;
-    color: #ffffff;
+    color: #fff;
 }
 
-/* 容器 */
+/* 主容器 */
 .container {
     width: 80%;
     margin: 0 auto;
@@ -27,8 +27,8 @@ body.dark-mode {
 
 /* 页眉 */
 header {
-    background-color: #222; /* 深灰背景 */
-    color: white;
+    background-color: #1c1c1c; /* 更深的灰色 */
+    color: #fff;
     padding: 20px 0;
     text-align: center;
 }
@@ -42,6 +42,7 @@ header p {
     margin-top: 10px;
 }
 
+/* 按钮样式 */
 button {
     background-color: #4CAF50; /* 绿色按钮 */
     color: white;
@@ -72,7 +73,7 @@ section {
 
 h2 {
     font-size: 1.8rem;
-    color: #F1C40F; /* USD1金色 */
+    color: #F1C40F; /* USD1 金色 */
     margin-bottom: 20px;
 }
 
@@ -125,7 +126,7 @@ input[type="number"], input[type="text"] {
 
 /* 页脚 */
 footer {
-    background-color: #222; /* 深灰背景 */
+    background-color: #1c1c1c;
     color: white;
     text-align: center;
     padding: 15px 0;
