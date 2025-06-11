@@ -1,4 +1,3 @@
-
 /* ===== Web3Modal Multi-wallet setup ===== */
 const providerOptions = {
   walletconnect: {
@@ -62,7 +61,7 @@ function updateLanguage() {
 
 /* ===== Dark mode ===== */
 function toggleDarkMode() {
-  document.body.classList.add('dark-mode');  // Always apply dark mode
+  document.body.classList.toggle('dark-mode');
 }
 
 /* ===== Init ===== */
@@ -73,3 +72,38 @@ window.onload = async () => {
   if (web3Modal.cachedProvider) connectWallet();
   setInterval(updateCountdowns, 1000);
 };
+
+/* ===== Connect wallet ===== */
+async function connectWallet() {
+  if (document.getElementById('connectWalletBtn').dataset.loading === 'true') return;
+  showLoading('connectWalletBtn');
+  try {
+    provider = await web3Modal.connect();
+    web3 = new Web3(provider);
+    const netId = await web3.eth.net.getId();
+    if (netId !== 56) {
+      toast('Please switch to BSC mainnet');
+      return;
+    }
+    contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    userAccount = (await web3.eth.getAccounts())[0];
+    document.getElementById('userAccount').innerText = userAccount;
+    toast('Wallet connected successfully!');
+
+    provider.on('accountsChanged', acc => {
+      userAccount = acc[0];
+      updateUserInfo();
+    });
+    provider.on('chainChanged', id => {
+      if (parseInt(id, 16) !== 56) toast('Please switch back to BSC mainnet');
+    });
+
+    updateUserInfo();
+    updateContractInfo();
+  } catch (e) {
+    console.error(e);
+    toast('Connection failed');
+  } finally {
+    hideLoading('connectWalletBtn');
+  }
+}
