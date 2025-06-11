@@ -62,12 +62,15 @@ function updateLanguage() {
 /* ===== Dark mode ===== */
 function toggleDarkMode() {
   document.body.classList.toggle('dark-mode');
+  localStorage.setItem('dark-mode', document.body.classList.contains('dark-mode'));
 }
 
 /* ===== Init ===== */
 window.onload = async () => {
   updateLanguage();
-  // 动态加载 ABI
+  if (localStorage.getItem('dark-mode') === 'true') {
+    document.body.classList.add('dark-mode');
+  }
   ABI = (await fetch('contract.json').then(r => r.json())).abi;
   if (web3Modal.cachedProvider) connectWallet();
   setInterval(updateCountdowns, 1000);
