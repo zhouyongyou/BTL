@@ -1,142 +1,61 @@
-/* 全局样式 */
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-/* 深色模式背景和字体 */
+/* Body */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #121212; /* 深色背景 */
-    color: #fff; /* 白色文字 */
-    line-height: 1.6;
+  font-family: Arial, sans-serif;
+  background-color: #121212;  /* 深色背景 */
+  color: #fff;  /* 白色文字 */
+  transition: background 0.3s, color 0.3s;
 }
 
-body.dark-mode {
-    background-color: #121212;
-    color: #fff;
-}
-
-/* 主容器 */
-.container {
-    width: 80%;
-    margin: 0 auto;
-}
-
-/* 页眉 */
+/* Header */
 header {
-    background-color: #1c1c1c; /* 更深的灰色 */
-    color: #fff;
-    padding: 20px 0;
-    text-align: center;
+  background: #f0b90b;  /* 幣安黃 */
+  color: #fff;
+  text-align: center;
+  padding: 20px;
 }
 
-header h1 {
-    font-size: 2.5rem;
-}
-
-header p {
-    font-size: 1.2rem;
-    margin-top: 10px;
-}
-
-/* 按钮样式 */
+/* Buttons */
 button {
-    background-color: #F1C40F; /* USD1 金色 */
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
+  background: #f0b90b;  /* 幣安黃 */
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
 }
-
 button:hover {
-    background-color: #dba100;
+  background: #c8a500;  /* 幣安黃的深色 */
 }
 
-button:focus {
-    outline: none;
-}
-
-/* 卡片样式 */
+/* Section */
 section {
-    background-color: #333; /* 深灰背景 */
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
-    margin: 20px 0;
-    padding: 20px;
+  background: #1e1e1e;  /* 稍微淺一點的暗色背景 */
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  padding: 20px;
 }
 
-h2 {
-    font-size: 1.8rem;
-    color: #F1C40F; /* USD1 金色 */
-    margin-bottom: 20px;
-}
-
-ul {
-    list-style: none;
-    padding-left: 0;
-}
-
-li {
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-}
-
-/* 输入框样式 */
-input[type="number"], input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
-}
-
-/* 响应式设计 */
-@media only screen and (max-width: 768px) {
-    .container {
-        width: 90%;
-    }
-
-    header h1 {
-        font-size: 2rem;
-    }
-
-    section {
-        padding: 15px;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    button {
-        padding: 8px 16px;
-        font-size: 1rem;
-    }
-
-    input[type="number"], input[type="text"] {
-        font-size: 1rem;
-    }
-}
-
-/* 页脚 */
+/* Footer */
 footer {
-    background-color: #1c1c1c;
-    color: white;
-    text-align: center;
-    padding: 15px 0;
-    margin-top: 30px;
+  background: #222222;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
 }
 
-footer a {
-    color: #F1C40F;
-    text-decoration: none;
+/* 深色模式 - 應用深色模式樣式 */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
 }
-
-footer a:hover {
-    text-decoration: underline;
+body.dark-mode header {
+  background: #f0b90b;
+}
+body.dark-mode footer {
+  background: #111;
+}
+body.dark-mode button {
+  background: #f0b90b;
 }
