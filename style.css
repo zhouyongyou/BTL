@@ -1,4 +1,4 @@
-/* Reset */
+/* Reset and Basic Styles */
 * {
   margin: 0;
   padding: 0;
@@ -8,131 +8,138 @@
 /* Base Styles */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f9f9f9;
+  background-color: #f4f4f9;
   color: #333;
   line-height: 1.6;
   transition: background 0.3s, color 0.3s;
 }
 
-/* Dark Mode */
 body.dark-mode {
-  background-color: #121212;  /* Deep grey background */
-  color: #ffffff;  /* White text */
+  background-color: #121212;  /* Dark background for dark mode */
+  color: #ffffff;  /* White text for dark mode */
 }
 
-body.dark-mode header {
-  background-color: #333;  /* Dark header */
+/* Header */
+header {
+  background-color: #4CAF50;  /* Header background */
+  color: white;
+  padding: 20px;
+  text-align: center;
+  border-bottom: 2px solid #333;
 }
 
-body.dark-mode footer {
-  background-color: #222;  /* Dark footer */
+header button {
+  background-color: #555;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background 0.3s ease;
+}
+
+header button:hover {
+  background-color: #333;
+}
+
+/* Container */
+.container {
+  width: 80%;
+  margin: 0 auto;
+}
+
+/* Card Styling */
+section {
+  background-color: white;
+  border-radius: 8px;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  padding: 20px;
 }
 
 body.dark-mode section {
-  background-color: #1e1e1e;  /* Dark background for sections */
-  color: white;
+  background-color: #2c2c2c;  /* Dark background for sections */
 }
 
-body.dark-mode button {
-  background-color: #4CAF50;  /* Dark green button */
-  color: #fff;
+section h2 {
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+  color: #333;
 }
 
-body.dark-mode button:hover {
-  background-color: #45a049;  /* Lighter green on hover */
+section h3 {
+  color: #555;
 }
 
-body.dark-mode a {
-  color: #ffcc00;  /* Binance Yellow for links */
+section p {
+  color: #666;
 }
 
-body.dark-mode .container {
-  background-color: #333;  /* Dark background for containers */
-}
-
-body.dark-mode #mainInfo {
-  background-color: #222;  /* Dark background for the main info */
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-
-body.dark-mode header h1 {
-  color: #fff;  /* White header text */
-}
-
-/* Containers, Buttons, and Forms */
-button {
-  background: #4CAF50;  /* Default green */
-  color: white;
-  padding: 10px 20px;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-
-button:hover {
-  background: #45a049;  /* Darker green on hover */
-}
-
-button.loading {
-  pointer-events: none;
-  opacity: 0.6;
-}
-
-/* For inputs */
-input[type="number"],
-input[type="text"] {
+input[type="number"], input[type="text"] {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
   border-radius: 4px;
   border: 1px solid #ccc;
-  background-color: #333; /* Dark input background */
-  color: white; /* Light text color */
 }
 
-/* Toast Notification */
-.toast {
-  position: fixed;
-  bottom: 24px;
-  left: 50%;
-  transform: translateX(-50%);
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
-  padding: 12px 24px;
-  border-radius: 6px;
-  display: none;
-  z-index: 9999;
-  animation: fadein 0.3s;
-  font-size: 0.9rem;
+input[type="number"], input[type="text"]:focus {
+  outline: none;
+  border-color: #4CAF50;
 }
-@keyframes fadein {
-  from { opacity: 0; }
-  to { opacity: 1; }
+
+/* Buttons */
+button {
+  padding: 10px 20px;
+  background-color: #4CAF50;  /* Main button color */
+  color: white;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+}
+
+button:hover {
+  background-color: #45a049;  /* Lighter green on hover */
+}
+
+/* Dark Mode Button */
+button.dark-mode-btn {
+  background-color: #333;
+  color: white;
 }
 
 /* Footer */
 footer {
-  background: #222;
-  color: #fff;
+  background-color: #222;
+  color: white;
+  padding: 15px 0;
   text-align: center;
-  padding: 10px 0;
   margin-top: 30px;
 }
 
-/* Responsive styles */
-@media (max-width: 768px) {
+/* Language Switch */
+.language-switch {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 20px;
+}
+
+/* Responsive Design */
+@media only screen and (max-width: 768px) {
   .container {
     width: 90%;
   }
-  header h1 {
-    font-size: 2rem;
-  }
+
   section {
     padding: 15px;
   }
+
   button {
     padding: 8px 16px;
+  }
+
+  input[type="number"], input[type="text"] {
     font-size: 1rem;
   }
 }
