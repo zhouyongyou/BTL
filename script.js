@@ -1,3 +1,4 @@
+
 /* ===== Web3Modal Multi-wallet setup ===== */
 const providerOptions = {
   walletconnect: {
@@ -72,19 +73,3 @@ window.onload = async () => {
   if (web3Modal.cachedProvider) connectWallet();
   setInterval(updateCountdowns, 1000);
 };
-
-/* ===== Update user info ===== */
-async function updateUserInfo() {
-  if (!userAccount) return;
-  const bal = await contract.methods.balanceOf(userAccount).call();
-  document.getElementById('userBalance').innerText = bal;
-
-  const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
-  document.getElementById('userBNBDeposit').innerText = web3.utils.fromWei(dep, 'ether');
-
-  const ref = await contract.methods.getReferralLink(userAccount).call();
-  document.getElementById('referralUrl').innerText = ref;
-
-  const accumulatedUsd1 = await contract.methods.getAccumulatedUsd1(userAccount).call();
-  document.getElementById('userAccumulatedUsd1').innerText = web3.utils.fromWei(accumulatedUsd1, 'ether');  // 顯示累計 USD1
-}
