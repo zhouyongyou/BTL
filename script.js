@@ -16,8 +16,8 @@ const web3Modal = new window.Web3Modal.default({
 /* ===== State ===== */
 let provider, web3, contract;
 let userAccount = '';
-const CONTRACT_ADDRESS = '0xFcAD17815627356EfE237D3bA2c863f63B78845D'; // Updated contract address
-let ABI = []; // From contract.json dynamically load
+const CONTRACT_ADDRESS = '0x633413269fe349413c1B1c1a34A5AdcC1BDd8f88';
+let ABI = []; // 从 contract.json 动态加载
 
 /* ===== Toast ===== */
 function toast(msg) {
@@ -67,7 +67,7 @@ function toggleDarkMode() {
 /* ===== Init ===== */
 window.onload = async () => {
   updateLanguage();
-  // Dynamically load ABI
+  // 动态加载 ABI
   ABI = (await fetch('contract.json').then(r => r.json())).abi;
   if (web3Modal.cachedProvider) connectWallet();
   setInterval(updateCountdowns, 1000);
@@ -82,28 +82,91 @@ async function connectWallet() {
     web3 = new Web3(provider);
     const netId = await web3.eth.net.getId();
     if (netId !== 56) {
-      toast('Please switch to BSC mainnet');
+      toast('请切换 BSC 主网');
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById('userAccount').innerText = userAccount;
-    toast('Wallet connected successfully!');
+    toast('钱包已连接');
 
     provider.on('accountsChanged', acc => {
       userAccount = acc[0];
       updateUserInfo();
     });
     provider.on('chainChanged', id => {
-      if (parseInt(id, 16) !== 56) toast('Please switch back to BSC mainnet');
+      if (parseInt(id, 16) !== 56) toast('请切换回 BSC 主网');
     });
 
     updateUserInfo();
     updateContractInfo();
   } catch (e) {
     console.error(e);
-    toast('Connection failed');
+    toast('连接失败');
   } finally {
     hideLoading('connectWalletBtn');
   }
+}
+
+/* ===== Update user info ===== */
+async function updateUserInfo() {
+  if (!userAccount) return;
+  const bal = await contract.methods.balanceOf(userAccount).call();
+  document.getElementById('userBalance').innerText = bal;
+
+  const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
+  document.getElementById('userBNBDeposit').innerText = web3.utils.fromWei(dep, 'ether');
+
+  const ref = await contract.methods.getReferralLink(userAccount).call();
+  document.getElementById('referralUrl').innerText = ref;
+}
+
+/* ===== Deposit BNB ===== */
+async function depositBNB() {
+  const btn = 'depositBtn';
+  if (document.getElementById(btn).dataset.loading === 'true') return;
+  const amt = document.getElementById('depositAmount').value;
+  const ref = document.getElementById('referrer').value; // 推荐人
+  if (!amt || parseFloat(amt) < 0.02) return toast('最低存入 0.02 BNB');
+  showLoading(btn);
+  try {
+    await contract.methods.depositBNB(ref).send({
+      from: userAccount,
+      value: web3.utils.toWei(amt, 'ether')
+    });
+    toast('存款成功！');
+    updateUserInfo();
+  } catch (e) {
+    console.error(e);
+    toast('存款失败');
+  } finally {
+    hideLoading(btn);
+  }
+}
+
+/* ===== Countdown ===== */
+async function updateCountdowns() {
+  if (!contract) return;
+  const u = await contract.methods.getUSD1RewardCountdown().call();
+  const b = await contract.methods.getBNBRewardCountdown().call();
+  document.getElementById('usd1Time').innerText = u;
+  document.getElementById('bnbTime').innerText = b;
+}
+
+/* ===== Contract overview ===== */
+async function updateContractInfo() {
+  if (!contract) return;
+  const total = await contract.methods.totalBnbDeposited().call();
+  document.getElementById('totalBnbDeposited').innerText = web3.utils.fromWei(total, 'ether');
+
+  const th = await contract.methods.getHolderThreshold().call();
+  document.getElementById('holderThreshold').innerText = web3.utils.fromWei(th, 'ether');
+
+  const min = await contract.methods.minDeposit().call();
+  document.getElementById('minDepositAmount').innerText = web3.utils.fromWei(min, 'ether');
+}
+
+/* ===== Copy helper ===== */
+function copyToClipboard(id) {
+  navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => toast('Copied!'));
 }
