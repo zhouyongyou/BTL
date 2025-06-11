@@ -1,175 +1,155 @@
-/* ===== Web3Modal Multi-wallet setup ===== */
-const providerOptions = {
-  walletconnect: {
-    package: window.WalletConnectProvider.default,
-    options: {
-      rpc: { 56: 'https://bsc-dataseed1.binance.org:443' }
-    }
-  }
-};
-const web3Modal = new window.Web3Modal.default({
-  network: 'bsc',
-  cacheProvider: true,
-  providerOptions
-});
+// 语言切换功能
+let currentLanguage = localStorage.getItem("language") || "en";
 
-/* ===== State ===== */
-let provider, web3, contract;
-let userAccount = '';
-const CONTRACT_ADDRESS = '0xFcAD17815627356EfE237D3bA2c863f63B78845D';
-let ABI = []; // 从 contract.json 动态加载
-
-/* ===== Toast ===== */
-function toast(msg) {
-  const t = document.getElementById('toast');
-  t.innerText = msg;
-  t.style.display = 'block';
-  clearTimeout(t.timer);
-  t.timer = setTimeout(() => (t.style.display = 'none'), 3000);
-}
-
-/* ===== Loading helpers ===== */
-function showLoading(btnId) {
-  const b = document.getElementById(btnId);
-  b.classList.add('loading');
-  b.dataset.loading = 'true';
-}
-function hideLoading(btnId) {
-  const b = document.getElementById(btnId);
-  b.classList.remove('loading');
-  b.dataset.loading = 'false';
-}
-
-/* ===== Language ===== */
-let currentLanguage = localStorage.getItem('language') || 'en';
 function switchLanguage() {
-  currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
-  localStorage.setItem('language', currentLanguage);
+  currentLanguage = currentLanguage === "en" ? "zh" : "en";
+  localStorage.setItem("language", currentLanguage);
   updateLanguage();
 }
+
 function updateLanguage() {
-  const lang = currentLanguage === 'en';
-  document.getElementById('networkInfo').innerText = lang ? 'Connecting...' : '連接中...';
-  document.getElementById('connectWalletBtn').innerText = lang ? 'Connect Wallet' : '連接錢包';
-  document.getElementById('contractInfoTitle').innerText = lang ? 'Contract Information' : '合約信息';
-  document.getElementById('btlAddressLabel').innerText = lang ? 'BTL Contract Address:' : 'BTL 合約地址：';
-  document.getElementById('usd1CountdownLabel').innerText = lang ? 'Next USD1 Reward:' : '下次 USD1 分紅：';
-  document.getElementById('bnbCountdownLabel').innerText = lang ? 'Next BNB Reward:' : '下次 BNB 分紅：';
-  document.getElementById('depositLabel').innerText = lang ? 'Deposit BNB' : '存入 BNB';
-  document.getElementById('footerText').innerText = lang ? '© 2025 BitLuck | All rights reserved' : '© 2025 BitLuck | 版權所有';
+  // 更新页面中所有需要翻译的内容
+  document.getElementById("networkInfo").innerText =
+    currentLanguage === "en" ? "Connecting..." : "連接中...";
+
+  document.getElementById("connectWalletBtn").innerText =
+    currentLanguage === "en" ? "Connect Wallet" : "連接錢包";
+  document.getElementById("contractInfoTitle").innerText =
+    currentLanguage === "en" ? "Contract Information" : "合約信息";
+  document.getElementById("depositLabel").innerText =
+    currentLanguage === "en" ? "Deposit BNB" : "存入 BNB";
+  document.getElementById("depositBtn").innerText =
+    currentLanguage === "en" ? "Deposit" : "存入";
+  document.getElementById("footerText").innerText =
+    currentLanguage === "en" ? "© 2025 BitLuck | All rights reserved" : "© 2025 BitLuck | 版權所有";
+  // 可以继续添加更多需要翻译的内容
 }
 
-/* ===== Dark mode ===== */
+// 切换深色模式
 function toggleDarkMode() {
-  document.body.classList.toggle('dark-mode');
-  localStorage.setItem('dark-mode', document.body.classList.contains('dark-mode'));
+  document.body.classList.toggle("dark-mode");
+  localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
 }
 
-/* ===== Init ===== */
-window.onload = async () => {
-  updateLanguage();
-  if (localStorage.getItem('dark-mode') === 'true') {
-    document.body.classList.add('dark-mode');
-  }
-  ABI = (await fetch('contract.json').then(r => r.json())).abi;
-  if (web3Modal.cachedProvider) connectWallet();
-  setInterval(updateCountdowns, 1000);
-};
+// 初始加载时判断是否开启深色模式
+if (localStorage.getItem("darkMode") === "true") {
+  document.body.classList.add("dark-mode");
+}
 
-/* ===== Connect wallet ===== */
+// 通过 URL 参数自动填充推荐链接
+const urlParams = new URLSearchParams(window.location.search);
+const referrer = urlParams.get("ref");
+if (referrer) {
+  document.getElementById("referrer").value = referrer;
+}
+
+// 复制文本到剪贴板
+function copyToClipboard(id) {
+  const textToCopy = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    alert(currentLanguage === "en" ? "Copied to clipboard!" : "已複製到剪貼板！");
+  });
+}
+
+// 连接钱包并验证网络
 async function connectWallet() {
-  if (document.getElementById('connectWalletBtn').dataset.loading === 'true') return;
-  showLoading('connectWalletBtn');
-  try {
-    provider = await web3Modal.connect();
-    web3 = new Web3(provider);
-    const netId = await web3.eth.net.getId();
-    if (netId !== 56) {
-      toast('请切换 BSC 主网');
+  if (window.ethereum) {
+    provider = new Web3(window.ethereum);
+    await window.ethereum.enable();
+    contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    const accounts = await web3.eth.getAccounts();
+    userAccount = accounts[0];
+    document.getElementById("userAccount").innerText = userAccount;
+
+    const networkId = await web3.eth.net.getId();
+    if (networkId !== 56) {
+      alert(currentLanguage === "en" ? "Please switch to BSC Mainnet" : "請切換到 BSC 主網");
       return;
     }
-    contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-    userAccount = (await web3.eth.getAccounts())[0];
-    document.getElementById('userAccount').innerText = userAccount;
-    toast('钱包已连接');
 
-    provider.on('accountsChanged', acc => {
-      userAccount = acc[0];
+    // Listen for account changes
+    provider.on("accountsChanged", (accounts) => {
+      userAccount = accounts[0];
       updateUserInfo();
     });
-    provider.on('chainChanged', id => {
-      if (parseInt(id, 16) !== 56) toast('请切换回 BSC 主网');
+
+    // Listen for network changes
+    provider.on("chainChanged", (chainIdHex) => {
+      const chainId = parseInt(chainIdHex, 16);
+      if (chainId !== 56) {
+        alert(currentLanguage === "en" ? "Please switch back to BSC Mainnet" : "請切回 BSC 主網");
+      }
     });
 
     updateUserInfo();
     updateContractInfo();
-  } catch (e) {
-    console.error(e);
-    toast('连接失败');
-  } finally {
-    hideLoading('connectWalletBtn');
+  } else {
+    alert("Please install MetaMask or another Web3 wallet.");
   }
 }
 
-/* ===== Update user info ===== */
+// 更新用户信息
 async function updateUserInfo() {
-  if (!userAccount) return;
   const bal = await contract.methods.balanceOf(userAccount).call();
-  document.getElementById('userBalance').innerText = bal;
+  document.getElementById("userBalance").innerText = bal;
 
   const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
-  document.getElementById('userBNBDeposit').innerText = web3.utils.fromWei(dep, 'ether');
+  document.getElementById("userBNBDeposit").innerText = web3.utils.fromWei(dep, "ether");
 
   const ref = await contract.methods.getReferralLink(userAccount).call();
-  document.getElementById('referralUrl').innerText = ref;
+  document.getElementById("referralUrl").innerText = ref;
 }
 
-/* ===== Deposit BNB ===== */
+// 存入 BNB
 async function depositBNB() {
-  const btn = 'depositBtn';
-  if (document.getElementById(btn).dataset.loading === 'true') return;
-  const amt = document.getElementById('depositAmount').value;
-  const ref = document.getElementById('referrer').value; // 推荐人
-  if (!amt || parseFloat(amt) < 0.02) return toast('最低存入 0.02 BNB');
-  showLoading(btn);
+  const amt = document.getElementById("depositAmount").value;
+  const referrer = document.getElementById("referrer").value;  // 获取推荐人地址
+  if (!amt || parseFloat(amt) < 0.02) {
+    alert(currentLanguage === "en" ? "Minimum deposit is 0.02 BNB." : "最低存入 0.02 BNB。");
+    return;
+  }
   try {
-    await contract.methods.depositBNB(ref).send({
+    await contract.methods.depositBNB(referrer).send({
       from: userAccount,
-      value: web3.utils.toWei(amt, 'ether')
+      value: web3.utils.toWei(amt, "ether")
     });
-    toast('存款成功！');
+    alert(currentLanguage === "en" ? "Deposit successful!" : "存款成功！");
     updateUserInfo();
   } catch (e) {
-    console.error(e);
-    toast('存款失败');
-  } finally {
-    hideLoading(btn);
+    console.error("depositBNB error:", e);
+    alert(currentLanguage === "en" ? "Deposit failed." : "存款失敗。");
   }
 }
 
-/* ===== Countdown ===== */
+// 获取用户累计的 USD1 奖励
+async function getAccumulatedUsd1(user) {
+  const accumulated = await contract.methods.getAccumulatedUsd1(user).call();
+  document.getElementById("usd1Earnings").innerText = accumulated;
+}
+
+// 获取用户每日可获得的 BNB 奖励
+async function getDailyBnbReward(user) {
+  const dailyReward = await contract.methods.dailyBnbReward(user).call();
+  document.getElementById("dailyBnbReward").innerText = web3.utils.fromWei(dailyReward, "ether");
+}
+
+// 更新倒计时
 async function updateCountdowns() {
-  if (!contract) return;
   const u = await contract.methods.getUSD1RewardCountdown().call();
   const b = await contract.methods.getBNBRewardCountdown().call();
-  document.getElementById('usd1Time').innerText = u;
-  document.getElementById('bnbTime').innerText = b;
+  document.getElementById("usd1Time").innerText = u;
+  document.getElementById("bnbTime").innerText = b;
 }
+setInterval(updateCountdowns, 1000);
 
-/* ===== Contract overview ===== */
+// 更新合约信息
 async function updateContractInfo() {
-  if (!contract) return;
   const total = await contract.methods.totalBnbDeposited().call();
-  document.getElementById('totalBnbDeposited').innerText = web3.utils.fromWei(total, 'ether');
+  document.getElementById("totalBnbDeposited").innerText = web3.utils.fromWei(total, "ether");
 
   const th = await contract.methods.getHolderThreshold().call();
-  document.getElementById('holderThreshold').innerText = web3.utils.fromWei(th, 'ether');
+  document.getElementById("holderThreshold").innerText = web3.utils.fromWei(th, "ether");
 
   const min = await contract.methods.minDeposit().call();
-  document.getElementById('minDepositAmount').innerText = web3.utils.fromWei(min, 'ether');
-}
-
-/* ===== Copy helper ===== */
-function copyToClipboard(id) {
-  navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => toast('Copied!'));
+  document.getElementById("minDepositAmount").innerText = web3.utils.fromWei(min, "ether");
 }
