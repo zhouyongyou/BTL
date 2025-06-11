@@ -17,23 +17,30 @@ const web3Modal = new Web3Modal({
   providerOptions,           // 必需的
 });
 
-// 设置当前语言，默认为英文
+// 默认语言为英文
 let currentLanguage = "en"; // 默认英文
 
-// 更新页面中的语言
+// 更新语言
 function updateLanguage() {
-  document.getElementById("networkInfo").innerText = currentLanguage === "en" ? "Connecting..." : "連接中...";
-  document.getElementById("connectWalletBtn").innerText = currentLanguage === "en" ? "Connect Wallet" : "連接錢包";
-  document.getElementById("contractInfoTitle").innerText = currentLanguage === "en" ? "Contract Information" : "合約信息";
-  document.getElementById("btlAddressLabel").innerText = currentLanguage === "en" ? "BTL Contract Address:" : "BTL 合約地址：";
-  document.getElementById("usd1CountdownLabel").innerText = currentLanguage === "en" ? "Next USD1 Reward:" : "下次 USD1 分紅：";
-  document.getElementById("bnbCountdownLabel").innerText = currentLanguage === "en" ? "Next BNB Reward:" : "下次 BNB 分紅：";
-  document.getElementById("depositLabel").innerText = currentLanguage === "en" ? "Deposit BNB" : "存入 BNB";
-  document.getElementById("depositBtn").innerText = currentLanguage === "en" ? "Deposit" : "存入";
-  document.getElementById("footerText").innerText = currentLanguage === "en" ? "© 2025 BitLuck | All rights reserved" : "© 2025 BitLuck | 版權所有";
-  document.getElementById("referrerLabel").innerText = currentLanguage === "en" ? "Referral (optional)" : "推薦人（可選）";
-  document.getElementById("copyContractBtn").innerText = currentLanguage === "en" ? "Copy Address" : "複製地址";
-  document.getElementById("copyReferralBtn").innerText = currentLanguage === "en" ? "Copy Link" : "複製鏈接";
+  const elements = {
+    "networkInfo": currentLanguage === "en" ? "Connecting..." : "連接中...",
+    "connectWalletBtn": currentLanguage === "en" ? "Connect Wallet" : "連接錢包",
+    "contractInfoTitle": currentLanguage === "en" ? "Contract Information" : "合約信息",
+    "btlAddressLabel": currentLanguage === "en" ? "BTL Contract Address:" : "BTL 合約地址：",
+    "usd1CountdownLabel": currentLanguage === "en" ? "Next USD1 Reward:" : "下次 USD1 分紅：",
+    "bnbCountdownLabel": currentLanguage === "en" ? "Next BNB Reward:" : "下次 BNB 分紅：",
+    "depositLabel": currentLanguage === "en" ? "Deposit BNB" : "存入 BNB",
+    "depositBtn": currentLanguage === "en" ? "Deposit" : "存入",
+    "footerText": currentLanguage === "en" ? "© 2025 BitLuck | All rights reserved" : "© 2025 BitLuck | 版權所有",
+    "referrerLabel": currentLanguage === "en" ? "Referral (optional)" : "推薦人（可選）",
+    "copyContractBtn": currentLanguage === "en" ? "Copy Address" : "複製地址",
+    "copyReferralBtn": currentLanguage === "en" ? "Copy Link" : "複製鏈接"
+  };
+  
+  // 更新页面上的元素
+  for (const [key, value] of Object.entries(elements)) {
+    document.getElementById(key).innerText = value;
+  }
 }
 
 // 强制应用深色模式
