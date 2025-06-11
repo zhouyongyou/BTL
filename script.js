@@ -16,8 +16,8 @@ const web3Modal = new window.Web3Modal.default({
 /* ===== State ===== */
 let provider, web3, contract;
 let userAccount = '';
-const CONTRACT_ADDRESS = '0x633413269fe349413c1B1c1a34A5AdcC1BDd8f88';
-let ABI = []; // 从 contract.json 动态加载
+const CONTRACT_ADDRESS = '0xFcAD17815627356EfE237D3bA2c863f63B78845D'; // Updated contract address
+let ABI = []; // From contract.json dynamically load
 
 /* ===== Toast ===== */
 function toast(msg) {
@@ -67,7 +67,7 @@ function toggleDarkMode() {
 /* ===== Init ===== */
 window.onload = async () => {
   updateLanguage();
-  // 动态加载 ABI
+  // Dynamically load ABI
   ABI = (await fetch('contract.json').then(r => r.json())).abi;
   if (web3Modal.cachedProvider) connectWallet();
   setInterval(updateCountdowns, 1000);
