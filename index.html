@@ -7,10 +7,10 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="dark-mode"> <!-- 默认深色模式 -->
-
-  <!-- Header with Network Info & Language Switch -->
+  <!-- Header with Language Switch -->
   <header>
     <div class="container">
+      <h1>Welcome to BitLuck</h1>
       <span id="networkInfo">Connecting...</span>
       <button onclick="switchLanguage()">Switch Language</button> <!-- Language switch button -->
       <button onclick="toggleDarkMode()">Dark Mode</button> <!-- Dark Mode toggle -->
@@ -28,8 +28,7 @@
   <!-- Main Info Display -->
   <section id="mainInfo">
     <div class="container">
-      <!-- Contract Information -->
-      <h2 id="contractInfoTitle">BitLuck Contract</h2>
+      <h2>Contract Information</h2>
       <p><strong id="btlAddressLabel">Contract Address:</strong>
         <span id="contractAddr">0xFcAD17815627356EfE237D3bA2c863f63B78845D</span>
         <button onclick="copyToClipboard('contractAddr')">Copy Address</button>
@@ -37,9 +36,9 @@
 
       <!-- Reward Countdowns -->
       <div>
-        <h3 id="usd1CountdownLabel">Next USD1 Reward:</h3>
+        <h3>Next USD1 Reward:</h3>
         <p><span id="usd1Time">0</span> seconds</p>
-        <h3 id="bnbCountdownLabel">Next BNB Reward:</h3>
+        <h3>Next BNB Reward:</h3>
         <p><span id="bnbTime">0</span> seconds</p>
       </div>
 
@@ -55,11 +54,11 @@
         <p id="userBNBDeposit">0</p>
 
         <!-- Deposit Form -->
-        <h3 id="depositLabel">Deposit BNB</h3>
+        <h3>Deposit BNB</h3>
         <p><strong id="minDepositAmount">0.02</strong> BNB minimum</p>
         <input type="number" id="depositAmount" placeholder="Enter BNB to deposit">
         <input type="text" id="referrer" placeholder="Referral (optional)">
-        <button id="depositBtn" onclick="depositBNB()">Deposit</button>
+        <button onclick="depositBNB()">Deposit</button>
       </div>
     </div>
   </section>
@@ -76,7 +75,7 @@
   <!-- Footer -->
   <footer>
     <div class="container">
-      <p id="footerText">© 2025 BitLuck | All rights reserved</p>
+      <p>© 2025 BitLuck | All rights reserved</p>
       <p>本 DApp 仅支持 BSC 主网，請确保您的錢包已切換至 Binance Smart Chain 主网。</p>
       <a href="https://bitluck.notion.site/" target="_blank">Whitepaper</a>
       <a href="https://twitter.com/BitLuck" target="_blank">Twitter</a>
