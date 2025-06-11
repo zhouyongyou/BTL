@@ -1,143 +1,133 @@
-/* 默认样式设置 */
+/* 设置全局样式 */
 * {
-  margin: 0;
-  padding: 0;
-  box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
 }
 
-/* 基本字体 */
+/* 背景和字体 */
 body {
-  font-family: Arial, sans-serif;
-  background-color: #1e1e1e; /* 深色背景 */
-  color: #fff; /* 默认白色文字 */
-  line-height: 1.6;
+    font-family: Arial, sans-serif;
+    background-color: #121212; /* 深色背景 */
+    color: #ffffff; /* 白色文字 */
+    line-height: 1.6;
 }
 
-/* 深色模式样式 */
+/* 深色模式背景 */
 body.dark-mode {
-  background-color: #181818; /* 深灰背景 */
-  color: #ffd700; /* 金黄色文字 */
+    background-color: #121212;
+    color: #ffffff;
 }
 
 /* 容器 */
 .container {
-  width: 80%;
-  margin: 0 auto;
+    width: 80%;
+    margin: 0 auto;
 }
 
-/* 头部样式 */
+/* 页眉 */
 header {
-  background-color: #333; /* 深色背景 */
-  color: #ffd700; /* 金色文字 */
-  padding: 20px 0;
-  text-align: center;
+    background-color: #222; /* 深灰背景 */
+    color: white;
+    padding: 20px 0;
+    text-align: center;
 }
 
 header h1 {
-  font-size: 2.5rem;
+    font-size: 2.5rem;
 }
 
 header p {
-  font-size: 1.2rem;
-  margin-top: 10px;
+    font-size: 1.2rem;
+    margin-top: 10px;
 }
 
-/* 卡片式内容 */
-section {
-  background-color: #2a2a2a; /* 深灰背景 */
-  border-radius: 8px;
-  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
-  margin: 20px 0;
-  padding: 20px;
-}
-
-h2 {
-  font-size: 1.8rem;
-  color: #ffd700; /* 金色标题 */
-  margin-bottom: 20px;
-}
-
-ul {
-  list-style: none;
-  padding-left: 0;
-}
-
-li {
-  margin-bottom: 15px;
-  font-size: 1.1rem;
-  color: #fff; /* 白色文字 */
-}
-
-/* 按钮样式 */
 button {
-  background-color: #4CAF50; /* 绿色按钮 */
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  font-size: 1.1rem;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background-color 0.3s ease;
+    background-color: #4CAF50; /* 绿色按钮 */
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    border-radius: 5px;
+    transition: background-color 0.3s ease;
 }
 
 button:hover {
-  background-color: #45a049;
+    background-color: #45a049;
 }
 
 button:focus {
-  outline: none;
+    outline: none;
+}
+
+/* 卡片样式 */
+section {
+    background-color: #333; /* 深灰背景 */
+    border-radius: 8px;
+    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.3);
+    margin: 20px 0;
+    padding: 20px;
+}
+
+h2 {
+    font-size: 1.8rem;
+    color: #F1C40F; /* USD1金色 */
+    margin-bottom: 20px;
+}
+
+ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+li {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
 }
 
 /* 输入框样式 */
 input[type="number"], input[type="text"] {
-  width: 100%;
-  padding: 12px;
-  margin-top: 10px;
-  border-radius: 4px;
-  border: 1px solid #ccc;
+    width: 100%;
+    padding: 12px;
+    margin-top: 10px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
 }
 
 /* 响应式设计 */
 @media only screen and (max-width: 768px) {
-  .container {
-    width: 90%;
-  }
+    .container {
+        width: 90%;
+    }
 
-  header h1 {
-    font-size: 2rem;
-  }
+    header h1 {
+        font-size: 2rem;
+    }
 
-  section {
-    padding: 15px;
-  }
+    section {
+        padding: 15px;
+    }
 
-  h2 {
-    font-size: 1.5rem;
-  }
+    h2 {
+        font-size: 1.5rem;
+    }
 
-  button {
-    padding: 8px 16px;
-    font-size: 1rem;
-  }
+    button {
+        padding: 8px 16px;
+        font-size: 1rem;
+    }
 
-  input[type="number"], input[type="text"] {
-    font-size: 1rem;
-  }
+    input[type="number"], input[type="text"] {
+        font-size: 1rem;
+    }
 }
 
-/* 底部样式 */
+/* 页脚 */
 footer {
-  background-color: #333;
-  color: #ffd700; /* 金色文字 */
-  text-align: center;
-  padding: 15px 0;
-  margin-top: 30px;
-}
-
-footer a {
-  color: #ffd700; /* 金色链接 */
-  text-decoration: none;
-}
-footer a:hover {
-  text-decoration: underline;
+    background-color: #222; /* 深灰背景 */
+    color: white;
+    text-align: center;
+    padding: 15px 0;
+    margin-top: 30px;
 }
