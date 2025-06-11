@@ -27,6 +27,10 @@ body.dark-mode footer {
 }
 body.dark-mode button {
   background: #555;
+  color: #fff;
+}
+body.dark-mode a {
+  color: #ffcc00; /* Binance Yellow */
 }
 
 /* Container */
