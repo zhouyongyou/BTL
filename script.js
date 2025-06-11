@@ -18,11 +18,10 @@ const web3Modal = new Web3Modal({
 });
 
 // 设置当前语言，默认为英文
-let currentLanguage = "en"; // 默认英文，语言选择切换功能已去除
+let currentLanguage = "en"; // 默认英文
 
 // 更新页面中的语言
 function updateLanguage() {
-  // 只支持英文和中文，默认为英文
   document.getElementById("networkInfo").innerText = currentLanguage === "en" ? "Connecting..." : "連接中...";
   document.getElementById("connectWalletBtn").innerText = currentLanguage === "en" ? "Connect Wallet" : "連接錢包";
   document.getElementById("contractInfoTitle").innerText = currentLanguage === "en" ? "Contract Information" : "合約信息";
