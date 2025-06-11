@@ -8,37 +8,70 @@ const providerOptions = {
       },
     },
   },
-  // 可以添加更多钱包提供商
+  // 更多钱包提供商
 };
 
-// 创建 Web3Modal 实例
 const web3Modal = new Web3Modal({
   network: "bsc",            // 可选: "mainnet", "ropsten" 等
   cacheProvider: true,       // 保持用户钱包缓存
   providerOptions,           // 必需的
 });
 
-// 连接钱包并初始化 Web3
-async function connectWallet() {
-  try {
-    // 获取钱包提供商
-    provider = await web3Modal.connect(); 
-    web3 = new Web3(provider); // 初始化 Web3
+// 设置当前语言，默认为英文
+let currentLanguage = "en"; // 默认英文，语言选择切换功能已去除
 
-    // 获取当前网络 ID
+// 更新页面中的语言
+function updateLanguage() {
+  // 只支持英文和中文，默认为英文
+  document.getElementById("networkInfo").innerText = currentLanguage === "en" ? "Connecting..." : "連接中...";
+  document.getElementById("connectWalletBtn").innerText = currentLanguage === "en" ? "Connect Wallet" : "連接錢包";
+  document.getElementById("contractInfoTitle").innerText = currentLanguage === "en" ? "Contract Information" : "合約信息";
+  document.getElementById("btlAddressLabel").innerText = currentLanguage === "en" ? "BTL Contract Address:" : "BTL 合約地址：";
+  document.getElementById("usd1CountdownLabel").innerText = currentLanguage === "en" ? "Next USD1 Reward:" : "下次 USD1 分紅：";
+  document.getElementById("bnbCountdownLabel").innerText = currentLanguage === "en" ? "Next BNB Reward:" : "下次 BNB 分紅：";
+  document.getElementById("depositLabel").innerText = currentLanguage === "en" ? "Deposit BNB" : "存入 BNB";
+  document.getElementById("depositBtn").innerText = currentLanguage === "en" ? "Deposit" : "存入";
+  document.getElementById("footerText").innerText = currentLanguage === "en" ? "© 2025 BitLuck | All rights reserved" : "© 2025 BitLuck | 版權所有";
+  document.getElementById("referrerLabel").innerText = currentLanguage === "en" ? "Referral (optional)" : "推薦人（可選）";
+  document.getElementById("copyContractBtn").innerText = currentLanguage === "en" ? "Copy Address" : "複製地址";
+  document.getElementById("copyReferralBtn").innerText = currentLanguage === "en" ? "Copy Link" : "複製鏈接";
+}
+
+// 强制应用深色模式
+function applyDarkMode() {
+  document.body.classList.add("dark-mode"); // 强制应用深色模式
+}
+
+// 获取 URL 中的 ref 参数并填充推荐地址
+const urlParams = new URLSearchParams(window.location.search);
+const referrer = urlParams.get("ref");
+if (referrer) {
+  document.getElementById("referrer").value = referrer;
+}
+
+// 复制文本到剪贴板
+function copyToClipboard(id) {
+  const textToCopy = document.getElementById(id).innerText;
+  navigator.clipboard.writeText(textToCopy).then(() => {
+    alert("Copied to clipboard!");
+  });
+}
+
+// 连接钱包并验证网络
+async function connectWallet() {
+  if (window.ethereum) {
+    provider = new Web3(window.ethereum);
+    await window.ethereum.enable();
+    contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    const accounts = await web3.eth.getAccounts();
+    userAccount = accounts[0];
+    document.getElementById("userAccount").innerText = userAccount;
+
     const networkId = await web3.eth.net.getId();
     if (networkId !== 56) {  // 56 是 BSC 主网的链 ID
       alert("Please switch to BSC Mainnet");
       return;
     }
-
-    // 获取当前账户
-    const accounts = await web3.eth.getAccounts();
-    userAccount = accounts[0];
-    document.getElementById("userAccount").innerText = userAccount;
-
-    // 获取合约实例
-    contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
 
     // 监听账户变化
     provider.on("accountsChanged", (accounts) => {
@@ -54,10 +87,9 @@ async function connectWallet() {
       }
     });
 
-    updateUserInfo(); // 更新用户信息
-    updateContractInfo(); // 更新合约信息
-  } catch (error) {
-    console.error("Error connecting wallet:", error);
+    updateUserInfo();
+    updateContractInfo();
+  } else {
     alert("Please install MetaMask or another Web3 wallet.");
   }
 }
@@ -95,30 +127,16 @@ async function depositBNB() {
   }
 }
 
-// 切换深色模式
-function toggleDarkMode() {
-  document.body.classList.toggle("dark-mode");
-  localStorage.setItem("darkMode", document.body.classList.contains("dark-mode"));
+// 获取用户累计的 USD1 奖励
+async function getAccumulatedUsd1(user) {
+  const accumulated = await contract.methods.getAccumulatedUsd1(user).call();
+  document.getElementById("usd1Earnings").innerText = accumulated;
 }
 
-// 初始加载时判断是否开启深色模式
-if (localStorage.getItem("darkMode") === "true") {
-  document.body.classList.add("dark-mode");
-}
-
-// 获取 URL 中的 ref 参数并填充推荐地址
-const urlParams = new URLSearchParams(window.location.search);
-const referrer = urlParams.get("ref");
-if (referrer) {
-  document.getElementById("referrer").value = referrer;
-}
-
-// 复制文本到剪贴板
-function copyToClipboard(id) {
-  const textToCopy = document.getElementById(id).innerText;
-  navigator.clipboard.writeText(textToCopy).then(() => {
-    alert("Copied to clipboard!");
-  });
+// 获取用户每日可获得的 BNB 奖励
+async function getDailyBnbReward(user) {
+  const dailyReward = await contract.methods.dailyBnbReward(user).call();
+  document.getElementById("dailyBnbReward").innerText = web3.utils.fromWei(dailyReward, "ether");
 }
 
 // 更新倒计时
@@ -141,3 +159,8 @@ async function updateContractInfo() {
   const min = await contract.methods.minDeposit().call();
   document.getElementById("minDepositAmount").innerText = web3.utils.fromWei(min, "ether");
 }
+
+window.onload = () => {
+  applyDarkMode();  // 强制应用深色模式
+  updateLanguage();  // 更新语言
+};
