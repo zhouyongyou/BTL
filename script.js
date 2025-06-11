@@ -16,7 +16,7 @@ const web3Modal = new window.Web3Modal.default({
 /* ===== State ===== */
 let provider, web3, contract;
 let userAccount = '';
-const CONTRACT_ADDRESS = '0x633413269fe349413c1B1c1a34A5AdcC1BDd8f88';
+const CONTRACT_ADDRESS = '0xFcAD17815627356EfE237D3bA2c863f63B78845D';
 let ABI = []; // 从 contract.json 动态加载
 
 /* ===== Toast ===== */
@@ -60,12 +60,8 @@ function updateLanguage() {
 }
 
 /* ===== Dark mode ===== */
-function toggleDarkMode() {
-  document.body.classList.toggle('dark-mode');
-}
-
-/* ===== Init ===== */
 window.onload = async () => {
+  document.body.classList.add('dark-mode');
   updateLanguage();
   // 动态加载 ABI
   ABI = (await fetch('contract.json').then(r => r.json())).abi;
@@ -82,27 +78,27 @@ async function connectWallet() {
     web3 = new Web3(provider);
     const netId = await web3.eth.net.getId();
     if (netId !== 56) {
-      toast('请切换 BSC 主网');
+      toast('Please switch to BSC mainnet');
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById('userAccount').innerText = userAccount;
-    toast('钱包已连接');
+    toast('Wallet connected successfully!');
 
     provider.on('accountsChanged', acc => {
       userAccount = acc[0];
       updateUserInfo();
     });
     provider.on('chainChanged', id => {
-      if (parseInt(id, 16) !== 56) toast('请切换回 BSC 主网');
+      if (parseInt(id, 16) !== 56) toast('Please switch back to BSC mainnet');
     });
 
     updateUserInfo();
     updateContractInfo();
   } catch (e) {
     console.error(e);
-    toast('连接失败');
+    toast('Connection failed');
   } finally {
     hideLoading('connectWalletBtn');
   }
@@ -134,11 +130,11 @@ async function depositBNB() {
       from: userAccount,
       value: web3.utils.toWei(amt, 'ether')
     });
-    toast('存款成功！');
+    toast('Deposit successful!');
     updateUserInfo();
   } catch (e) {
     console.error(e);
-    toast('存款失败');
+    toast('Deposit failed');
   } finally {
     hideLoading(btn);
   }
@@ -170,3 +166,13 @@ async function updateContractInfo() {
 function copyToClipboard(id) {
   navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => toast('Copied!'));
 }
+
+/* ===== Dark mode ===== */
+window.onload = async () => {
+  document.body.classList.add('dark-mode');  // 預設啟用深色模式
+  updateLanguage();
+  // 動態加載 ABI
+  ABI = (await fetch('contract.json').then(r => r.json())).abi;
+  if (web3Modal.cachedProvider) connectWallet();
+  setInterval(updateCountdowns, 1000);
+};
