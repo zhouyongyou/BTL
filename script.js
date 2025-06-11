@@ -114,7 +114,8 @@ async function updateUserInfo() {
   document.getElementById('userBNBDeposit').innerText = web3.utils.fromWei(dep, 'ether');
 
   const ref = await contract.methods.getReferralLink(userAccount).call();
-  document.getElementById('referralUrl').innerText = ref;
+  console.log("Referral link:", ref);
+  document.getElementById('referralUrl').innerText = ref || 'No referral link';
 }
 
 /* ===== Deposit BNB ===== */
