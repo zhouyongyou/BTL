@@ -97,7 +97,6 @@ button {
 button:hover {
   background: #45a049;
 }
-/* Loading state */
 button.loading {
   pointer-events: none;
   opacity: 0.6;
