@@ -1,158 +1,155 @@
-/* Reset all margins and paddings */
+/* Reset */
 * {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Body and main layout */
+/* Base */
 body {
-    font-family: Arial, sans-serif;
-    background-color: #f9f9f9; /* Light gray background */
-    color: #333;
-    line-height: 1.6;
+  font-family: Arial, sans-serif;
+  background-color: #f9f9f9;
+  color: #333;
+  line-height: 1.6;
+  transition: background 0.3s, color 0.3s;
 }
 
-/* Container to center the content */
+/* Dark Mode */
+body.dark-mode {
+  background-color: #121212;
+  color: #ffffff;
+}
+body.dark-mode header {
+  background: #333;
+}
+body.dark-mode footer {
+  background: #111;
+}
+body.dark-mode button {
+  background: #555;
+}
+
+/* Container */
 .container {
-    width: 80%;
-    margin: 0 auto;
-    padding: 20px;
+  width: 80%;
+  margin: 0 auto;
+  padding: 20px;
 }
 
-/* Header styling */
+/* Header */
 header {
-    background-color: #4CAF50; /* Brand green */
-    color: white;
-    padding: 20px;
-    text-align: center;
-}
-header h1 {
-    font-size: 2.5rem;
-}
-header p {
-    font-size: 1.2rem;
-    margin-top: 10px;
+  background: #4caf50;
+  color: #fff;
+  text-align: center;
+  padding: 20px;
 }
 header button {
-    background-color: #555;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    margin-left: 10px;
+  background: #555;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  margin-left: 10px;
+  cursor: pointer;
 }
 header button:hover {
-    background-color: #333;
+  background: #333;
 }
 
-/* Section general styles */
+/* Sections */
 section {
-    background-color: white;
-    border-radius: 8px;
-    box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
-    margin: 20px 0;
-    padding: 20px;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  margin: 20px 0;
+  padding: 20px;
 }
-
-/* Specific main info block */
 #mainInfo {
-    padding: 20px;
-    background-color: #fff;
-    margin: 20px auto;
-    border-radius: 8px;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-}
-#mainInfo div {
-    margin-bottom: 20px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
 /* Typography */
 h2 {
-    font-size: 1.8rem;
-    color: #333;
-    margin-bottom: 20px;
+  font-size: 1.8rem;
+  margin-bottom: 20px;
+}
+h3 {
+  margin-top: 20px;
 }
 
-ul {
-    list-style: none;
-    padding-left: 0;
-}
-li {
-    margin-bottom: 15px;
-    font-size: 1.1rem;
-}
-
-/* Button styling */
-button {
-    background-color: #4CAF50;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    font-size: 1.1rem;
-    cursor: pointer;
-    border-radius: 5px;
-    transition: background-color 0.3s ease;
-}
-button:hover {
-    background-color: #45a049;
-}
-button:focus {
-    outline: none;
-}
-
-/* Copy button specific (if different from general) */
-/* .copy-btn { ... } */
-
-/* Input field styling */
+/* Inputs & Buttons */
 input[type="number"],
 input[type="text"] {
-    width: 100%;
-    padding: 12px;
-    margin-top: 10px;
-    border-radius: 4px;
-    border: 1px solid #ccc;
+  width: 100%;
+  padding: 12px;
+  margin-top: 10px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+button {
+  background: #4caf50;
+  color: #fff;
+  border: none;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+button:hover {
+  background: #45a049;
+}
+/* Loading state */
+button.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+button.loading::after {
+  content: "...";
+  margin-left: 6px;
+  animation: blink 1s infinite steps(2);
+}
+@keyframes blink {
+  0% { opacity: 0; }
+  100% { opacity: 1; }
 }
 
-/* Footer styling */
+/* Footer */
 footer {
-    background-color: #222;
-    color: white;
-    padding: 10px 0;
-    text-align: center;
-    margin-top: 30px;
+  background: #222;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  margin-top: 30px;
 }
 
-/* Responsive design for smaller devices */
-@media only screen and (max-width: 768px) {
-    .container {
-        width: 90%;
-    }
-
-    header h1 {
-        font-size: 2rem;
-    }
-
-    section, #mainInfo {
-        padding: 15px;
-    }
-
-    h2 {
-        font-size: 1.5rem;
-    }
-
-    button {
-        padding: 8px 16px;
-        font-size: 1rem;
-    }
-
-    input[type="number"], input[type="text"] {
-        font-size: 1rem;
-    }
+/* Toast */
+.toast {
+  position: fixed;
+  bottom: 24px;
+  left: 50%;
+  transform: translateX(-50%);
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  padding: 12px 24px;
+  border-radius: 6px;
+  display: none;
+  z-index: 9999;
+  animation: fadein 0.3s;
+  font-size: 0.9rem;
+}
+@keyframes fadein {
+  from { opacity: 0; }
+  to { opacity: 1; }
 }
 
-/* ===== Extension Points =====
-   1. Add custom themes (e.g., dark mode) by toggling a `.dark-mode` class on <body>.
-   2. Introduce additional section-specific styles (e.g., #deposit, #referral).
-   3. Enhance accessibility: focus states, ARIA attributes, larger tap targets on mobile.
-*/
+/* Responsive */
+@media (max-width: 768px) {
+  .container {
+    width: 90%;
+  }
+  header h1 {
+    font-size: 2rem;
+  }
+  h2 {
+    font-size: 1.5rem;
+  }
+}
