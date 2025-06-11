@@ -1,80 +1,94 @@
-/* Reset and Basic Styles */
+/* 默认样式设置 */
 * {
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-/* Base Styles */
+/* 基本字体 */
 body {
   font-family: Arial, sans-serif;
-  background-color: #f4f4f9;
-  color: #333;
+  background-color: #1e1e1e; /* 深色背景 */
+  color: #fff; /* 默认白色文字 */
   line-height: 1.6;
-  transition: background 0.3s, color 0.3s;
 }
 
+/* 深色模式样式 */
 body.dark-mode {
-  background-color: #121212;  /* Dark background for dark mode */
-  color: #ffffff;  /* White text for dark mode */
+  background-color: #181818; /* 深灰背景 */
+  color: #ffd700; /* 金黄色文字 */
 }
 
-/* Header */
-header {
-  background-color: #4CAF50;  /* Header background */
-  color: white;
-  padding: 20px;
-  text-align: center;
-  border-bottom: 2px solid #333;
-}
-
-header button {
-  background-color: #555;
-  color: white;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-  border-radius: 5px;
-  transition: background 0.3s ease;
-}
-
-header button:hover {
-  background-color: #333;
-}
-
-/* Container */
+/* 容器 */
 .container {
   width: 80%;
   margin: 0 auto;
 }
 
-/* Card Styling */
+/* 头部样式 */
+header {
+  background-color: #333; /* 深色背景 */
+  color: #ffd700; /* 金色文字 */
+  padding: 20px 0;
+  text-align: center;
+}
+
+header h1 {
+  font-size: 2.5rem;
+}
+
+header p {
+  font-size: 1.2rem;
+  margin-top: 10px;
+}
+
+/* 卡片式内容 */
 section {
-  background-color: white;
+  background-color: #2a2a2a; /* 深灰背景 */
   border-radius: 8px;
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2);
   margin: 20px 0;
   padding: 20px;
 }
 
-body.dark-mode section {
-  background-color: #2c2c2c;  /* Dark background for sections */
-}
-
-section h2 {
+h2 {
   font-size: 1.8rem;
+  color: #ffd700; /* 金色标题 */
   margin-bottom: 20px;
-  color: #333;
 }
 
-section h3 {
-  color: #555;
+ul {
+  list-style: none;
+  padding-left: 0;
 }
 
-section p {
-  color: #666;
+li {
+  margin-bottom: 15px;
+  font-size: 1.1rem;
+  color: #fff; /* 白色文字 */
 }
 
+/* 按钮样式 */
+button {
+  background-color: #4CAF50; /* 绿色按钮 */
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  font-size: 1.1rem;
+  cursor: pointer;
+  border-radius: 5px;
+  transition: background-color 0.3s ease;
+}
+
+button:hover {
+  background-color: #45a049;
+}
+
+button:focus {
+  outline: none;
+}
+
+/* 输入框样式 */
 input[type="number"], input[type="text"] {
   width: 100%;
   padding: 12px;
@@ -83,63 +97,47 @@ input[type="number"], input[type="text"] {
   border: 1px solid #ccc;
 }
 
-input[type="number"], input[type="text"]:focus {
-  outline: none;
-  border-color: #4CAF50;
-}
-
-/* Buttons */
-button {
-  padding: 10px 20px;
-  background-color: #4CAF50;  /* Main button color */
-  color: white;
-  border: none;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background-color 0.3s;
-}
-
-button:hover {
-  background-color: #45a049;  /* Lighter green on hover */
-}
-
-/* Dark Mode Button */
-button.dark-mode-btn {
-  background-color: #333;
-  color: white;
-}
-
-/* Footer */
-footer {
-  background-color: #222;
-  color: white;
-  padding: 15px 0;
-  text-align: center;
-  margin-top: 30px;
-}
-
-/* Language Switch */
-.language-switch {
-  display: flex;
-  justify-content: space-between;
-  margin-bottom: 20px;
-}
-
-/* Responsive Design */
+/* 响应式设计 */
 @media only screen and (max-width: 768px) {
   .container {
     width: 90%;
+  }
+
+  header h1 {
+    font-size: 2rem;
   }
 
   section {
     padding: 15px;
   }
 
+  h2 {
+    font-size: 1.5rem;
+  }
+
   button {
     padding: 8px 16px;
+    font-size: 1rem;
   }
 
   input[type="number"], input[type="text"] {
     font-size: 1rem;
   }
+}
+
+/* 底部样式 */
+footer {
+  background-color: #333;
+  color: #ffd700; /* 金色文字 */
+  text-align: center;
+  padding: 15px 0;
+  margin-top: 30px;
+}
+
+footer a {
+  color: #ffd700; /* 金色链接 */
+  text-decoration: none;
+}
+footer a:hover {
+  text-decoration: underline;
 }
