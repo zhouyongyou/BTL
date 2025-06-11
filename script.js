@@ -1,113 +1,181 @@
-// ===== Web3 / Ethers Setup =====
-let provider, web3, signer, contract;
-let userAccount;
-const CONTRACT_ADDRESS = "0xf852944F411632E799cDFBb2d1545c8909406271"; // BTL 合约地址
-let ABI = [];
-
-// 页面加载时，加载 ABI 并初始化 Web3
-window.onload = async () => {
-  // 加载 ABI
-  try {
-    const res = await fetch('contract.json');  // 从 contract.json 获取 ABI
-    const json = await res.json();
-    ABI = json.abi;  // 获取 ABI
-
-    // 初始化 Web3 和合约
-    if (window.ethereum) {
-      web3 = new Web3(window.ethereum);
-      await window.ethereum.enable();
-      contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-      updateContractInfo(); // 更新合约信息
-    } else {
-      alert("请安装 MetaMask 或其他 Web3 钱包");
+/* ===== Web3Modal Multi-wallet setup ===== */
+const providerOptions = {
+  walletconnect: {
+    package: window.WalletConnectProvider.default,
+    options: {
+      rpc: { 56: 'https://bsc-dataseed1.binance.org:443' }
     }
-  } catch (err) {
-    console.error("加载 ABI 失败：", err);
   }
+};
+const web3Modal = new window.Web3Modal.default({
+  network: 'bsc',
+  cacheProvider: true,
+  providerOptions
+});
 
-  // 更新 UI（语言、连接按钮等）
+/* ===== State ===== */
+let provider, web3, contract;
+let userAccount = '';
+const CONTRACT_ADDRESS = '0xf852944F411632E799cDFBb2d1545c8909406271';
+let ABI = []; // 从 contract.json 动态加载
+
+/* ===== Toast ===== */
+function toast(msg) {
+  const t = document.getElementById('toast');
+  t.innerText = msg;
+  t.style.display = 'block';
+  clearTimeout(t.timer);
+  t.timer = setTimeout(() => (t.style.display = 'none'), 3000);
+}
+
+/* ===== Loading helpers ===== */
+function showLoading(btnId) {
+  const b = document.getElementById(btnId);
+  b.classList.add('loading');
+  b.dataset.loading = 'true';
+}
+function hideLoading(btnId) {
+  const b = document.getElementById(btnId);
+  b.classList.remove('loading');
+  b.dataset.loading = 'false';
+}
+
+/* ===== Language ===== */
+let currentLanguage = localStorage.getItem('language') || 'en';
+function switchLanguage() {
+  currentLanguage = currentLanguage === 'en' ? 'zh' : 'en';
+  localStorage.setItem('language', currentLanguage);
   updateLanguage();
-  setInterval(updateCountdowns, 1000);  // 每秒更新倒计时
+}
+function updateLanguage() {
+  const lang = currentLanguage === 'en';
+  document.getElementById('networkInfo').innerText = lang ? 'Connecting...' : '連接中...';
+  document.getElementById('connectWalletBtn').innerText = lang ? 'Connect Wallet' : '連接錢包';
+  document.getElementById('contractInfoTitle').innerText = lang ? 'Contract Information' : '合約信息';
+  document.getElementById('btlAddressLabel').innerText = lang ? 'BTL Contract Address:' : 'BTL 合約地址：';
+  document.getElementById('usd1CountdownLabel').innerText = lang ? 'Next USD1 Reward:' : '下次 USD1 分紅：';
+  document.getElementById('bnbCountdownLabel').innerText = lang ? 'Next BNB Reward:' : '下次 BNB 分紅：';
+  document.getElementById('depositLabel').innerText = lang ? 'Deposit BNB' : '存入 BNB';
+  document.getElementById('footerText').innerText = lang ? '© 2025 BitLuck | All rights reserved' : '© 2025 BitLuck | 版權所有';
+}
+
+/* ===== Dark mode ===== */
+function toggleDarkMode() {
+  document.body.classList.toggle('dark-mode');
+}
+
+/* ===== Init ===== */
+window.onload = async () => {
+  updateLanguage();
+  // 动态加载 ABI
+  ABI = (await fetch('contract.json').then(r => r.json())).abi;
+  if (web3Modal.cachedProvider) connectWallet();
+  setInterval(updateCountdowns, 1000);
 };
 
-// ===== Connect Wallet & Network Check =====
+/* ===== Connect wallet ===== */
 async function connectWallet() {
+  if (document.getElementById('connectWalletBtn').dataset.loading === 'true') return;
+  showLoading('connectWalletBtn');
   try {
-    provider = await web3Modal.connect();   // 打开钱包选择框
-    web3 = new Web3(provider);  // 初始化 Web3
-
-    const networkId = await web3.eth.net.getId();  // 获取网络 ID
-    if (networkId !== 56) {  // 56 是 BSC 主网的 ID
-      alert("请切换到 BSC 主网");
+    provider = await web3Modal.connect();
+    web3 = new Web3(provider);
+    const netId = await web3.eth.net.getId();
+    if (netId !== 56) {
+      toast('请切换 BSC 主网');
       return;
     }
-    signer = provider;  // 用于监听事件
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    userAccount = (await web3.eth.getAccounts())[0];
+    document.getElementById('userAccount').innerText = userAccount;
+    toast('钱包已连接');
 
-    const accounts = await web3.eth.getAccounts();
-    userAccount = accounts[0];
-    document.getElementById("userAccount").innerText = userAccount;  // 显示用户地址
-
-    // 监听账户变化
-    provider.on("accountsChanged", (accounts) => {
-      userAccount = accounts[0];
-      updateUserInfo();  // 更新用户信息
+    provider.on('accountsChanged', acc => {
+      userAccount = acc[0];
+      updateUserInfo();
+    });
+    provider.on('chainChanged', id => {
+      if (parseInt(id, 16) !== 56) toast('请切换回 BSC 主网');
     });
 
-    // 监听网络变化
-    provider.on("chainChanged", (chainIdHex) => {
-      const chainId = parseInt(chainIdHex, 16);
-      if (chainId !== 56) {
-        alert("请切换到 BSC 主网");
-      }
+    // 事件监听
+    contract.events.BNBRewardDistributed({ fromBlock: 'latest' }).on('data', () => {
+      updateUserInfo();
+      toast('收到 BNB 分红');
+    });
+    contract.events.USD1RewardDistributed({ fromBlock: 'latest' }).on('data', () => {
+      updateUserInfo();
+      toast('收到 USD1 分红');
     });
 
-    updateUserInfo();  // 更新用户信息
-    updateContractInfo();  // 更新合约信息
+    updateUserInfo();
+    updateContractInfo();
   } catch (e) {
-    console.error("connectWallet 错误:", e);
+    console.error(e);
+    toast('连接失败');
+  } finally {
+    hideLoading('connectWalletBtn');
   }
 }
 
-// ===== 更新用户信息 =====
+/* ===== Update user info ===== */
 async function updateUserInfo() {
-  // 获取用户的 BTL 余额
+  if (!userAccount) return;
   const bal = await contract.methods.balanceOf(userAccount).call();
-  document.getElementById("userBalance").innerText = bal;
+  document.getElementById('userBalance').innerText = bal;
 
-  // 获取用户的 USD1 存款
   const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
-  document.getElementById("userBNBDeposit").innerText = web3.utils.fromWei(dep, "ether");
+  document.getElementById('userBNBDeposit').innerText = web3.utils.fromWei(dep, 'ether');
 
-  // 获取用户的推荐链接
   const ref = await contract.methods.getReferralLink(userAccount).call();
-  document.getElementById("referralUrl").innerText = ref;
+  document.getElementById('referralUrl').innerText = ref;
 }
 
-// ===== 存款 BNB =====
+/* ===== Deposit BNB ===== */
 async function depositBNB() {
-  const amt = document.getElementById("depositAmount").value;
-  if (!amt || parseFloat(amt) < 0.02) {
-    alert("最低存入 0.02 BNB。");
-    return;
-  }
+  const btn = 'depositBtn';
+  if (document.getElementById(btn).dataset.loading === 'true') return;
+  const amt = document.getElementById('depositAmount').value;
+  if (!amt || parseFloat(amt) < 0.02) return toast('最低存入 0.02 BNB');
+  showLoading(btn);
   try {
     await contract.methods.depositBNB().send({
       from: userAccount,
-      value: web3.utils.toWei(amt, "ether")
+      value: web3.utils.toWei(amt, 'ether')
     });
-    alert("存款成功！");
-    updateUserInfo();  // 更新用户信息
+    toast('存款成功！');
+    updateUserInfo();
   } catch (e) {
-    console.error("depositBNB 错误:", e);
-    alert("存款失败。");
+    console.error(e);
+    toast('存款失败');
+  } finally {
+    hideLoading(btn);
   }
 }
 
-// ===== 倒计时更新 =====
+/* ===== Countdown ===== */
 async function updateCountdowns() {
-  const usd1Countdown = await contract.methods.getUSD1RewardCountdown().call();
-  const bnbCountdown = await contract.methods.getBNBRewardCountdown().call();
-  document.getElementById("usd1Time").innerText = usd1Countdown;
-  document.getElementById("bnbTime").innerText = bnbCountdown;
+  if (!contract) return;
+  const u = await contract.methods.getUSD1RewardCountdown().call();
+  const b = await contract.methods.getBNBRewardCountdown().call();
+  document.getElementById('usd1Time').innerText = u;
+  document.getElementById('bnbTime').innerText = b;
+}
+
+/* ===== Contract overview ===== */
+async function updateContractInfo() {
+  if (!contract) return;
+  const total = await contract.methods.totalBnbDeposited().call();
+  document.getElementById('totalBnbDeposited').innerText = web3.utils.fromWei(total, 'ether');
+
+  const th = await contract.methods.getHolderThreshold().call();
+  document.getElementById('holderThreshold').innerText = web3.utils.fromWei(th, 'ether');
+
+  const min = await contract.methods.minDeposit().call();
+  document.getElementById('minDepositAmount').innerText = web3.utils.fromWei(min, 'ether');
+}
+
+/* ===== Copy helper ===== */
+function copyToClipboard(id) {
+  navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => toast('Copied!'));
 }
