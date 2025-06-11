@@ -8,7 +8,6 @@ const providerOptions = {
       },
     },
   },
-  // 更多钱包提供商
 };
 
 const web3Modal = new Web3Modal({
