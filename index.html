@@ -1,25 +1,22 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>BitLuck DApp</title>
-  <link rel="stylesheet" href="style.css" />
-  <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
-  <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
-  <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+  <link rel="stylesheet" href="style.css">
 </head>
-<body>
-  <!-- ===== Header ===== -->
+<body class="dark-mode"> <!-- 默认启用深色模式 -->
+  <!-- Header with Network Info & Language Switch -->
   <header>
     <div class="container">
       <span id="networkInfo">Connecting...</span>
-      <button onclick="switchLanguage()">Switch Language</button>
-      <button onclick="toggleDarkMode()">Dark Mode</button>
+      <button onclick="switchLanguage()">Switch Language</button> <!-- Language switch button -->
+      <button onclick="toggleDarkMode()">Dark Mode</button> <!-- Dark Mode toggle -->
     </div>
   </header>
 
-  <!-- ===== Wallet Connection ===== -->
+  <!-- Wallet Connection -->
   <section id="walletConnection">
     <div class="container">
       <button id="connectWalletBtn" onclick="connectWallet()">Connect Wallet</button>
@@ -27,75 +24,63 @@
     </div>
   </section>
 
-  <!-- ===== Main Info ===== -->
+  <!-- Main Info Display -->
   <section id="mainInfo">
     <div class="container">
-      <h2 id="contractInfoTitle">Contract Information</h2>
+      <h2 id="contractInfoTitle">BitLuck Contract</h2>
       <p><strong id="btlAddressLabel">Contract Address:</strong>
-        <span id="contractAddr">0xf852944F411632E799cDFBb2d1545c8909406271</span>
+        <span id="contractAddr">0x…</span>
         <button onclick="copyToClipboard('contractAddr')">Copy Address</button>
       </p>
 
       <!-- Reward Countdowns -->
       <div>
         <h3 id="usd1CountdownLabel">Next USD1 Reward:</h3>
-        <p><span id="usd1Time">-</span> seconds</p>
+        <p><span id="usd1Time">0</span> seconds</p>
         <h3 id="bnbCountdownLabel">Next BNB Reward:</h3>
-        <p><span id="bnbTime">-</span> seconds</p>
+        <p><span id="bnbTime">0</span> seconds</p>
       </div>
 
-      <!-- User balances -->
+      <!-- User Balances & Actions -->
       <div>
         <h3>Your BTL Balance</h3>
-        <p id="userBalance">-</p>
+        <p id="userBalance">0</p>
 
         <h3>Your USD1 Earnings</h3>
-        <p id="usd1Earnings">-</p>
+        <p id="usd1Earnings">0</p>
 
         <h3>Your BNB Deposit</h3>
-        <p id="userBNBDeposit">-</p>
+        <p id="userBNBDeposit">0</p>
 
         <!-- Deposit Form -->
         <h3 id="depositLabel">Deposit BNB</h3>
         <p><strong id="minDepositAmount">0.02</strong> BNB minimum</p>
-        <input type="number" id="depositAmount" placeholder="Enter BNB to deposit" />
-        <input type="text" id="referrer" placeholder="Enter referrer address (optional)" />
+        <input type="number" id="depositAmount" placeholder="Enter BNB to deposit">
         <button id="depositBtn" onclick="depositBNB()">Deposit</button>
-      </div>
-
-      <!-- Information Links -->
-      <div>
-        <h3>Learn More</h3>
-        <p>
-          <a href="https://bitluck.notion.site/" target="_blank">Whitepaper</a> |
-          <a href="https://t.me/bitluck" target="_blank">Telegram</a> |
-          <a href="https://twitter.com/bitluck" target="_blank">Twitter</a>
-        </p>
       </div>
     </div>
   </section>
 
-  <!-- ===== Referral ===== -->
+  <!-- Referral Section -->
   <section id="referral">
     <div class="container">
       <h4>Your Referral Link:</h4>
-      <p id="referralLink">Referral URL: <span id="referralUrl">-</span></p>
+      <p id="referralLink">Referral URL: <span id="referralUrl">https://... ?ref=0x...</span></p>
       <button onclick="copyToClipboard('referralUrl')">Copy Link</button>
     </div>
   </section>
 
-  <!-- ===== Footer ===== -->
+  <!-- Footer -->
   <footer>
     <div class="container">
       <p id="footerText">© 2025 BitLuck | All rights reserved</p>
-      <p>
-        本 DApp 仅支持 BSC 主网，請确保您的錢包已切換至 Binance Smart
-        Chain 主网。
-      </p>
+      <p>本 DApp 仅支持 BSC 主网，請确保您的錢包已切換至 Binance Smart Chain 主网。</p>
+      <a href="https://bitluck.notion.site/" target="_blank">Whitepaper</a>
+      <a href="https://twitter.com/BitLuck" target="_blank">Twitter</a>
+      <a href="https://t.me/BitLuck" target="_blank">Telegram Channel</a>
+      <a href="https://t.me/BitLuckGroup" target="_blank">Telegram Group</a>
     </div>
   </footer>
-
-  <div id="toast" class="toast"></div>
 
   <script src="script.js"></script>
 </body>
