@@ -5,7 +5,7 @@
   box-sizing: border-box;
 }
 
-/* Base */
+/* Base Styles */
 body {
   font-family: Arial, sans-serif;
   background-color: #f9f9f9;
@@ -16,115 +16,82 @@ body {
 
 /* Dark Mode */
 body.dark-mode {
-  background-color: #121212;
-  color: #ffffff;
+  background-color: #121212;  /* Dark grey background */
+  color: #ffffff;  /* White text */
 }
+
 body.dark-mode header {
-  background: #333;
+  background-color: #333;  /* Dark header */
 }
+
 body.dark-mode footer {
-  background: #111;
+  background-color: #222;  /* Dark footer */
 }
+
+body.dark-mode section {
+  background-color: #1e1e1e;  /* Dark background for sections */
+  color: white;
+}
+
 body.dark-mode button {
-  background: #555;
+  background-color: #4CAF50;  /* Dark green button */
   color: #fff;
 }
+
+body.dark-mode button:hover {
+  background-color: #45a049;  /* Lighter green on hover */
+}
+
 body.dark-mode a {
-  color: #ffcc00; /* Binance Yellow */
+  color: #ffcc00;  /* Binance Yellow for links */
 }
 
-/* Container */
-.container {
-  width: 80%;
-  margin: 0 auto;
-  padding: 20px;
+body.dark-mode .container {
+  background-color: #333;  /* Dark background for containers */
 }
 
-/* Header */
-header {
-  background: #4caf50;
-  color: #fff;
-  text-align: center;
-  padding: 20px;
-}
-header button {
-  background: #555;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  margin-left: 10px;
-  cursor: pointer;
-}
-header button:hover {
-  background: #333;
-}
-
-/* Sections */
-section {
-  background: #fff;
-  border-radius: 8px;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin: 20px 0;
-  padding: 20px;
-}
-#mainInfo {
+body.dark-mode #mainInfo {
+  background-color: #222;  /* Dark background for the main info */
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
 
-/* Typography */
-h2 {
-  font-size: 1.8rem;
-  margin-bottom: 20px;
-}
-h3 {
-  margin-top: 20px;
+body.dark-mode header h1 {
+  color: #fff;  /* White header text */
 }
 
-/* Inputs & Buttons */
+/* Containers, Buttons, and Forms */
+button {
+  background: #4CAF50;  /* Default green */
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  transition: background 0.3s;
+}
+
+button:hover {
+  background: #45a049;  /* Darker green on hover */
+}
+
+button.loading {
+  pointer-events: none;
+  opacity: 0.6;
+}
+
+/* For inputs */
 input[type="number"],
 input[type="text"] {
   width: 100%;
   padding: 12px;
   margin-top: 10px;
-  border: 1px solid #ccc;
   border-radius: 4px;
-}
-button {
-  background: #4caf50;
-  color: #fff;
-  border: none;
-  padding: 10px 20px;
-  border-radius: 5px;
-  cursor: pointer;
-  transition: background 0.3s;
-}
-button:hover {
-  background: #45a049;
-}
-button.loading {
-  pointer-events: none;
-  opacity: 0.6;
-}
-button.loading::after {
-  content: "...";
-  margin-left: 6px;
-  animation: blink 1s infinite steps(2);
-}
-@keyframes blink {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  border: 1px solid #ccc;
+  background-color: #333; /* Dark input background */
+  color: white; /* Light text color */
 }
 
-/* Footer */
-footer {
-  background: #222;
-  color: #fff;
-  text-align: center;
-  padding: 10px 0;
-  margin-top: 30px;
-}
-
-/* Toast */
+/* Toast Notification */
 .toast {
   position: fixed;
   bottom: 24px;
@@ -144,7 +111,16 @@ footer {
   to { opacity: 1; }
 }
 
-/* Responsive */
+/* Footer */
+footer {
+  background: #222;
+  color: #fff;
+  text-align: center;
+  padding: 10px 0;
+  margin-top: 30px;
+}
+
+/* Responsive styles */
 @media (max-width: 768px) {
   .container {
     width: 90%;
@@ -152,7 +128,11 @@ footer {
   header h1 {
     font-size: 2rem;
   }
-  h2 {
-    font-size: 1.5rem;
+  section {
+    padding: 15px;
+  }
+  button {
+    padding: 8px 16px;
+    font-size: 1rem;
   }
 }
