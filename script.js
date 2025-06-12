@@ -54,6 +54,10 @@ function updateLanguage() {
 
   const connectWalletBtn = document.getElementById('connectWalletBtn');
   if (connectWalletBtn) connectWalletBtn.innerText = lang ? 'Connect Wallet' : '連接錢包';
+
+  // 按鈕的切換文字
+  const button = document.querySelector('button');
+  if (button) button.innerText = lang ? '🌐 中文' : '🌐 EN';
   
   // Main Info
   const contractInfoTitle = document.getElementById('contractInfoTitle');
