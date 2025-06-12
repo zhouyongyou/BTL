@@ -195,5 +195,13 @@ window.onload = async () => {
 
 // 放在 script.js 的結尾
 window.addEventListener('DOMContentLoaded', (event) => {
+  // 自動填充推薦人地址
+  const urlParams = new URLSearchParams(window.location.search);
+  const referrer = urlParams.get('ref');
+  if (referrer) {
+    document.getElementById('referrer').value = referrer; // 將 ref 參數填充到推薦人輸入框
+  }
+
+  // 更新其他信息
   updateContractInfo();
 });
