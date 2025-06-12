@@ -3,6 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>BitLuck DApp</title>
   <!-- Open Graph -->
   <meta property="og:title" content="BitLuck DApp - Participate and Earn Rewards">
   <meta property="og:description" content="Join BitLuck today and earn rewards through holding, depositing, and referring others. A unique dual bonus system awaits you.">
@@ -11,12 +12,13 @@
   <meta property="og:image:height" content="630">
   <meta property="og:url" content="https://www.btluck.fun">
   <meta property="og:type" content="website">
+  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
   <!-- Twitter Card -->
-  <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="BitLuck DApp - Participate and Earn Rewards">
-  <meta name="twitter:description" content="Join BitLuck today and earn rewards through holding, depositing, and referring others. A unique dual bonus system awaits you.">
-  <meta name="twitter:image" content="og-1200x630.png">
-  <meta name="twitter:url" content="https://www.btluck.fun">
+  <meta property="twitter:card" content="summary_large_image">
+  <meta property="twitter:title" content="BitLuck DApp - Participate and Earn Rewards">
+  <meta property="twitter:description" content="Join BitLuck today and earn rewards through holding, depositing, and referring others. A unique dual bonus system awaits you.">
+  <meta property="twitter:image" content="og-1200x630.png">
+  <meta property="twitter:url" content="https://www.btluck.fun">
   <title>BitLuck DApp</title>
   <!-- 多尺寸網頁圖標 -->
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
@@ -24,7 +26,6 @@
   <link rel="icon" href="favicon-48x48.png" type="image/png" sizes="48x48">
   <link rel="icon" href="favicon-64x64.png" type="image/png" sizes="64x64">
   <link rel="stylesheet" href="style.css" />
-  <link href="https://fonts.googleapis.com/css2?family=Lato&display=swap" rel="stylesheet">
   <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
   <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
   <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
@@ -39,7 +40,39 @@
       <img src="logo-200x200.png" alt="BitLuck Logo" id="logo" />
     </div>
   </header>
-
+  <!-- ===== Home Story Section ===== -->
+  <section id="story">
+    <h2 data-en="Our Story" data-zh="我們的故事">Our Story</h2>
+    <p data-en="BitLuck team has been working since early 2025 to create a system where participation leads to rewards." data-zh="BitLuck 團隊自 2025 年初便立志打造一個「參與即獲回饋」的生態系統，讓每一次持有、存款與推薦都能創造實際價值。">
+      BitLuck team has been working since early 2025 to create a system where participation leads to rewards.
+    </p>
+    <ul>
+      <li data-en="Long-term holders crave stable dividends." data-zh="長期持有者渴望穩定分紅；">Long-term holders crave stable dividends.</li>
+      <li data-en="Liquidity providers demand a transparent, smooth mining experience." data-zh="流動性提供者追求透明流暢的挖礦體驗；">Liquidity providers demand a transparent, smooth mining experience.</li>
+      <li data-en="Community engagement drives fast project growth." data-zh="社群互動能驅動項目快速成長。">Community engagement drives fast project growth.</li>
+    </ul>
+    <p data-en="We built a Dual Bonus System to distribute $USD1 token rewards and BNB rewards while incorporating random lucky draws and referral incentives." data-zh="為了滿足這些需求，我們構建了「雙重獎金系統」(Dual Bonus System)。系統同步分發 $USD1 代幣分紅、BNB 獎勳，並結合隨機抽獎、推薦激勵，實現「互動＋增值」的良性循環。">
+      We built a Dual Bonus System to distribute $USD1 token rewards and BNB rewards while incorporating random lucky draws and referral incentives.
+    </p>
+  </section>
+  <!-- ===== Mechanism Overview Section ===== -->
+  <section id="mechanism">
+    <h2 data-en="🔧 Mechanism Overview" data-zh="🔧 機制概覽">🔧 Mechanism Overview</h2>
+    <ol>
+      <li data-en="A 4% fee applies to every $BTL trade: 3% converted to $USD1 and transferred to the reward pool; 1% used for marketing and liquidity." data-zh="每筆 $BTL 交易將收取 4% 手續費：其中 3% 轉換為 $USD1 並匯入分紅池；1% 用於營銷與流動性。">
+        A 4% fee applies to every $BTL trade: 3% converted to $USD1 and transferred to the reward pool; 1% used for marketing and liquidity.
+      </li>
+      <li data-en="$USD1 reward pool: Automatically distributed every 60 minutes; BNB reward pool: Automatically distributed every 90 minutes." data-zh="$USD1 分紅池：每 60 分鐘自動分發；BNB 獎勳池：每 90 分鐘自動分配。">
+        $USD1 reward pool: Automatically distributed every 60 minutes; BNB reward pool: Automatically distributed every 90 minutes.
+      </li>
+      <li data-en="Random lucky draw for the $USD1 reward pool, awarding additional prizes to winners." data-zh="$USD1 獎池抽選幸運者，額外頒發獎金，提升趣味性。">
+        Random lucky draw for the $USD1 reward pool, awarding additional prizes to winners.
+      </li>
+      <li data-en="New users' first deposit allocates 10% as a referral bonus, paid out to the referrer." data-zh="新用戶首次存款將提撥 10% 作為推薦獎金，發放給推薦者。">
+        New users' first deposit allocates 10% as a referral bonus, paid out to the referrer.
+      </li>
+    </ol>
+  </section>
   <!-- ===== Wallet Connection ===== -->
   <section id="walletConnection">
     <div class="container">
