@@ -32,6 +32,7 @@ body.dark-mode button {
   max-width: 1200px;
   margin: 0 auto;
   padding: 20px;
+  line-height: 1.6;
 }
 @media (max-width: 1200px) {
   .container {
@@ -103,6 +104,7 @@ section {
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin: 20px 0;
   padding: 20px;
+  line-height: 1.6;
 }
 #mainInfo {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
@@ -113,10 +115,12 @@ h2 {
   font-size: 1.8rem;
   margin-bottom: 20px;
   color: #f0b90b;  /* 幣安金黃色 */
+  line-height: 1.6;
 }
 h3 {
   margin-top: 20px;
   color: #f0b90b;  /* 幣安金黃色 */
+  line-height: 1.6;
 }
 
 /* Inputs & Buttons */
