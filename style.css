@@ -66,6 +66,13 @@ header {
   padding: 20px;
 }
 
+/* 語言切換和連接錢包按鈕容器 */
+.header-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;  /* 調整按鈕間距 */
+}
+
 /* 語言切換按鈕 */
 header button:first-child {
   background: #f0b90b;
