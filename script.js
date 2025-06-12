@@ -76,6 +76,10 @@ function updateLanguage() {
   const footerText = document.getElementById('footerText');
   if (footerText) footerText.innerText = lang ? '© 2025 BitLuck | All rights reserved' : '© 2025 BitLuck | 版權所有';
 
+  // Update "seconds" to "秒"
+  const seconds = document.getElementById('seconds');
+  if (seconds) seconds.innerText = lang ? 'seconds' : '秒';
+  
   // Form placeholders and buttons
   const depositAmount = document.getElementById('depositAmount');
   if (depositAmount) depositAmount.setAttribute('placeholder', lang ? 'Enter BNB to deposit' : '輸入要存入的 BNB 金額');
@@ -108,12 +112,7 @@ function updateLanguage() {
 
 //  const networkInfoFooter = document.getElementById('networkInfoFooter');
 //  if (networkInfoFooter) networkInfoFooter.innerText = lang ? 'This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.' : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
-
-  // Update "seconds" to "秒"
-  const seconds = document.getElementById('seconds');
-  if (seconds) {
-    seconds.innerText = lang ? 'seconds' : '秒';
-  }
+}
 
 /* ===== Dark mode ===== */
 window.onload = async () => {
