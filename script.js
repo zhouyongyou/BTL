@@ -157,13 +157,22 @@ async function updateCountdowns() {
 async function updateContractInfo() {
   if (!contract) return;
   const total = await contract.methods.totalBnbDeposited().call();
-  document.getElementById('totalBnbDeposited').innerText = web3.utils.fromWei(total, 'ether');
+  const totalBnbElement = document.getElementById('totalBnbDeposited');
+  if (totalBnbElement) {
+    totalBnbElement.innerText = web3.utils.fromWei(total, 'ether');
+  }
 
   const th = await contract.methods.getHolderThreshold().call();
-  document.getElementById('holderThreshold').innerText = web3.utils.fromWei(th, 'ether');
+  const thresholdElement = document.getElementById('holderThreshold');
+  if (thresholdElement) {
+    thresholdElement.innerText = web3.utils.fromWei(th, 'ether');
+  }
 
   const min = await contract.methods.minDeposit().call();
-  document.getElementById('minDepositAmount').innerText = web3.utils.fromWei(min, 'ether');
+  const minDepositElement = document.getElementById('minDepositAmount');
+  if (minDepositElement) {
+    minDepositElement.innerText = web3.utils.fromWei(min, 'ether');
+  }
 }
 
 /* ===== Copy helper ===== */
@@ -180,3 +189,8 @@ window.onload = async () => {
   if (web3Modal.cachedProvider) connectWallet();
   setInterval(updateCountdowns, 1000);
 };
+
+// 放在 script.js 的結尾
+window.addEventListener('DOMContentLoaded', (event) => {
+  updateContractInfo();
+});
