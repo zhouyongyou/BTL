@@ -61,17 +61,6 @@ header {
   color: #f0b90b;  /* 幣安金黃色文字 */
   text-align: center;
   padding: 20px;
-  display: flex;  /* 使用 Flexbox */
-  justify-content: center;  /* 使元素水平居中 */
-  align-items: center;  /* 使元素垂直居中 */
-}
-/* 語言切換按鈕 */
-header button:first-child {
-  margin-right: 20px;  /* 語言切換按鈕和其他按鈕之間的間距 */
-}
-/* 連接錢包按鈕 */
-header button:nth-child(2) {
-  margin-right: 20px;  /* 按鈕之間的間距 */
 }
 header #logo {
   width: 150px;  /* 調整 Logo 寬度 */
@@ -211,4 +200,21 @@ footer p {
   h2 {
     font-size: 1.5rem;
   }
+}
+
+/* 讓長地址和文字自動換行 */
+#contractAddr,
+#referralUrl,
+#userAccount,  /* 用戶地址 */
+#referralLink  /* 用戶推薦鏈接 */
+{
+  word-wrap: break-word;  /* 讓超長文字換行 */
+  overflow-wrap: break-word;  /* 兼容舊版本的瀏覽器 */
+}
+
+#contractAddr,
+#referralUrl,
+#userAccount,
+#referralLink {
+  word-break: break-all; /* 在需要的地方強制換行 */
 }
