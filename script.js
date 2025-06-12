@@ -47,7 +47,21 @@ function switchLanguage() {
 }
 function updateLanguage() {
   const lang = currentLanguage === 'en';
-
+  const allElements = document.querySelectorAll('[data-en], [data-zh]');  // 查找所有包含語言內容的元素
+  allElements.forEach((element) => {
+    if (currentLanguage === 'en') {
+      element.innerText = element.getAttribute('data-en');  // 顯示英文內容
+    } else {
+      element.innerText = element.getAttribute('data-zh');  // 顯示中文內容
+    }
+  });
+  updateButton();
+}
+function updateButton() {
+  const button = document.querySelector('button');
+  if (button) {
+    button.innerText = currentLanguage === 'en' ? '🌐 中文' : '🌐 EN';
+  }
   // Header
   const networkInfo = document.getElementById('networkInfo');
   if (networkInfo) networkInfo.innerText = lang ? 'Connecting...' : '連接中...';
