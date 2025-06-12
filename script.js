@@ -49,11 +49,9 @@ function updateLanguage() {
   const lang = currentLanguage === 'en';
   const allElements = document.querySelectorAll('[data-en], [data-zh]');  // 查找所有包含語言內容的元素
   allElements.forEach((element) => {
-    if (currentLanguage === 'en') {
-      element.innerText = element.getAttribute('data-en');  // 顯示英文內容
-    } else {
-      element.innerText = element.getAttribute('data-zh');  // 顯示中文內容
-    }
+    const enText = element.getAttribute('data-en');
+    const zhText = element.getAttribute('data-zh');
+    element.innerText = lang ? enText : zhText;
   });
 // Header
   const networkInfo = document.getElementById('networkInfo');
@@ -79,6 +77,15 @@ function updateLanguage() {
   const bnbCountdownLabel = document.getElementById('bnbCountdownLabel');
   if (bnbCountdownLabel) bnbCountdownLabel.innerText = lang ? 'Next BNB Reward:' : '下一個 BNB 分紅：';
 
+<h3 data-en="Your BTL Balance" data-zh="你的 BTL 餘額">Your BTL Balance</h3>
+<p id="userBalance">-</p>
+
+<h3 data-en="Your USD1 Earnings" data-zh="你的 USD1 收益">Your USD1 Earnings</h3>
+<p id="usd1Earnings">-</p>
+
+<h3 data-en="Your BNB Deposit" data-zh="你的 BNB 存款">Your BNB Deposit</h3>
+<p id="userBNBDeposit">-</p>
+  
   const depositLabel = document.getElementById('depositLabel');
   if (depositLabel) depositLabel.innerText = lang ? 'Deposit BNB' : '存入 BNB';
 
