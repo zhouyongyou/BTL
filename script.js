@@ -55,14 +55,7 @@ function updateLanguage() {
       element.innerText = element.getAttribute('data-zh');  // 顯示中文內容
     }
   });
-  updateButton();
-}
-function updateButton() {
-  const button = document.querySelector('button');
-  if (button) {
-    button.innerText = currentLanguage === 'en' ? '🌐 中文' : '🌐 EN';
-  }
-  // Header
+// Header
   const networkInfo = document.getElementById('networkInfo');
   if (networkInfo) networkInfo.innerText = lang ? 'Connecting...' : '連接中...';
 
