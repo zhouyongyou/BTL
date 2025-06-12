@@ -4,7 +4,6 @@
   padding: 0;
   box-sizing: border-box;
 }
-
 /* Base */
 body {
   font-family: 'Press Start 2P', sans-serif;  /* 使用遊戲像素字體 */
@@ -12,12 +11,10 @@ body {
   color: #f0b90b;  /* 幣安金黃色文字 */
   transition: background 0.3s, color 0.3s;
 }
-
 /* 等寬字體，用於顯示代碼 */
 code, pre {
   font-family: 'Courier New', monospace;  /* 等寬字體 */
 }
-
 /* Dark Mode */
 body.dark-mode {
   background-color: #121212;  /* 深色背景 */
