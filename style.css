@@ -65,25 +65,22 @@ header {
   align-items: center;  /* 垂直居中 */
   padding: 20px;
 }
-
 /* 語言切換和連接錢包按鈕容器 */
 .header-buttons {
   display: flex;
   justify-content: space-between;
   gap: 15px;  /* 調整按鈕間距 */
 }
-
-/* 語言切換按鈕 */
 header button:first-child {
+  margin-left: 0;
   background: #f0b90b;
   color: #121212;
   border: none;
   padding: 10px 20px;
   cursor: pointer;
 }
-
-/* 連接錢包按鈕 */
 header button:nth-child(2) {
+  margin-right: 0;
   background: #f0b90b;
   color: #121212;
   border: none;
