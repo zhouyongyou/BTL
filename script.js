@@ -88,33 +88,33 @@ function updateLanguage() {
 
   // Referral section
   const referralLink = document.getElementById('referralLink');
-  if (referralLink) referralLink.innerText = lang ? 'Your Referral Link:' : '你的推薦鏈接：';
+  if (referralLink) referralLink.innerText = lang ? 'Your Referral Link:' : '推薦網址：';
 
   const referralUrl = document.getElementById('referralUrl');
-  if (referralUrl) referralUrl.innerText = lang ? 'Referral URL:' : '推薦網址：';
+  if (referralUrl) referralUrl.innerText = lang ? 'Referral URL:' : '你的推薦鏈接：';
 
   const copyLinkBtn = document.getElementById('copyLinkBtn');
   if (copyLinkBtn) copyLinkBtn.innerText = lang ? 'Copy Link' : '複製鏈接';
 
   // Footer
-  const whitepaperLink = document.getElementById('whitepaperLink');
-  if (whitepaperLink) whitepaperLink.innerText = lang ? 'Whitepaper' : '白皮書';
+//  const whitepaperLink = document.getElementById('whitepaperLink');
+//  if (whitepaperLink) whitepaperLink.innerText = lang ? 'Whitepaper' : '白皮書';
 
-  const telegramLink = document.getElementById('telegramLink');
-  if (telegramLink) telegramLink.innerText = lang ? 'Telegram' : '電報';
+//  const telegramLink = document.getElementById('telegramLink');
+//  if (telegramLink) telegramLink.innerText = lang ? 'Telegram' : '電報';
 
-  const twitterLink = document.getElementById('twitterLink');
-  if (twitterLink) twitterLink.innerText = lang ? 'Twitter' : '推特';
+//  const twitterLink = document.getElementById('twitterLink');
+//  if (twitterLink) twitterLink.innerText = lang ? 'Twitter' : '推特';
 
-  const networkInfoFooter = document.getElementById('networkInfoFooter');
-  if (networkInfoFooter) networkInfoFooter.innerText = lang ? 'This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.' : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
+//  const networkInfoFooter = document.getElementById('networkInfoFooter');
+//  if (networkInfoFooter) networkInfoFooter.innerText = lang ? 'This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.' : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
 
   // Update countdowns (秒)
-  const usd1Time = document.getElementById('usd1Time');
-  if (usd1Time) usd1Time.innerText = lang ? `${usd1Time.innerText} seconds` : `${usd1Time.innerText} 秒`;
+//  const usd1Time = document.getElementById('usd1Time');
+//  if (usd1Time) usd1Time.innerText = lang ? `${usd1Time.innerText} seconds` : `${usd1Time.innerText} 秒`;
 
-  const bnbTime = document.getElementById('bnbTime');
-  if (bnbTime) bnbTime.innerText = lang ? `${bnbTime.innerText} seconds` : `${bnbTime.innerText} 秒`;
+//  const bnbTime = document.getElementById('bnbTime');
+//  if (bnbTime) bnbTime.innerText = lang ? `${bnbTime.innerText} seconds` : `${bnbTime.innerText} 秒`;
 }
 
 /* ===== Dark mode ===== */
