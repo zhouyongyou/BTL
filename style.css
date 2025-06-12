@@ -60,10 +60,14 @@ header {
   align-items: center;  /* 垂直居中 */
   padding: 20px;
 }
+
+/* Logo */
 header #logo {
   width: 150px;  /* 調整 Logo 寬度 */
   height: auto;  /* 高度自動調整，保持比例 */
 }
+
+/* Header 按鈕樣式 */
 header button {
   background: #f0b90b;  /* 幣安金黃色 */
   color: #121212;  /* 黑色文字 */
@@ -71,14 +75,21 @@ header button {
   padding: 10px 20px;
   cursor: pointer;
   margin: 0;
+  transition: background 0.3s;
 }
-.header-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;
-}
+
+/* Hover 效果 */
 header button:hover {
   background: #c8a500;  /* 深黃色懸停 */
+}
+
+/* 語言切換和連接錢包按鈕容器 */
+.header-buttons {
+  display: flex;
+  justify-content: space-between;  /* 按鈕在左右兩邊 */
+  width: 100%;  /* 確保容器寬度為100% */
+  gap: 15px;  /* 增加按鈕間距 */
+  margin-top: 10px; /* 調整上邊距 */
 }
 /* Sections */
 section {
