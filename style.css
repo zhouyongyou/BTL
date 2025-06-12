@@ -65,28 +65,6 @@ header {
   align-items: center;  /* 垂直居中 */
   padding: 20px;
 }
-/* 語言切換和連接錢包按鈕容器 */
-.header-buttons {
-  display: flex;
-  justify-content: space-between;
-  gap: 15px;  /* 調整按鈕間距 */
-}
-header button:first-child {
-  margin-left: 0;
-  background: #f0b90b;
-  color: #121212;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-header button:nth-child(2) {
-  margin-right: 0;
-  background: #f0b90b;
-  color: #121212;
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-}
 header #logo {
   width: 150px;  /* 調整 Logo 寬度 */
   height: auto;  /* 高度自動調整，保持比例 */
@@ -96,13 +74,17 @@ header button {
   color: #121212;  /* 黑色文字 */
   border: none;
   padding: 10px 20px;
-  margin-left: 10px;
   cursor: pointer;
+  margin: 0;
+}
+.header-buttons {
+  display: flex;
+  justify-content: space-between;
+  gap: 15px;
 }
 header button:hover {
   background: #c8a500;  /* 深黃色懸停 */
 }
-
 /* Sections */
 section {
   background: #1e1e1e;  /* 稍微淺一點的暗色背景 */
