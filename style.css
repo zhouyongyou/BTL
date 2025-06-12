@@ -61,6 +61,17 @@ header {
   color: #f0b90b;  /* 幣安金黃色文字 */
   text-align: center;
   padding: 20px;
+  display: flex;  /* 使用 Flexbox */
+  justify-content: center;  /* 使元素水平居中 */
+  align-items: center;  /* 使元素垂直居中 */
+}
+/* 語言切換按鈕 */
+header button:first-child {
+  margin-right: 20px;  /* 語言切換按鈕和其他按鈕之間的間距 */
+}
+/* 連接錢包按鈕 */
+header button:nth-child(2) {
+  margin-right: 20px;  /* 按鈕之間的間距 */
 }
 header #logo {
   width: 150px;  /* 調整 Logo 寬度 */
