@@ -109,13 +109,11 @@ function updateLanguage() {
 //  const networkInfoFooter = document.getElementById('networkInfoFooter');
 //  if (networkInfoFooter) networkInfoFooter.innerText = lang ? 'This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.' : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
 
-  // Update countdowns (秒)
-//  const usd1Time = document.getElementById('usd1Time');
-//  if (usd1Time) usd1Time.innerText = lang ? `${usd1Time.innerText} seconds` : `${usd1Time.innerText} 秒`;
-
-//  const bnbTime = document.getElementById('bnbTime');
-//  if (bnbTime) bnbTime.innerText = lang ? `${bnbTime.innerText} seconds` : `${bnbTime.innerText} 秒`;
-}
+  // Update "seconds" to "秒"
+  const seconds = document.getElementById('seconds');
+  if (seconds) {
+    seconds.innerText = lang ? 'seconds' : '秒';
+  }
 
 /* ===== Dark mode ===== */
 window.onload = async () => {
