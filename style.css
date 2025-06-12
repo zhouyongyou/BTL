@@ -62,6 +62,10 @@ header {
   text-align: center;
   padding: 20px;
 }
+header #logo {
+  width: 150px;  /* 調整 Logo 寬度 */
+  height: auto;  /* 高度自動調整，保持比例 */
+}
 header button {
   background: #f0b90b;  /* 幣安金黃色 */
   color: #121212;  /* 黑色文字 */
