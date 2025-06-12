@@ -19,14 +19,16 @@
   <header>
     <div class="container">
       <img src="logo-200x200.png" alt="BitLuck Logo" id="logo" />
+      <div class="header-buttons">
+        <button onclick="switchLanguage()">🌐 EN / 中文</button>
+        <button id="connectWalletBtn" onclick="connectWallet()">Connect Wallet</button>
+      </div>
     </div>
   </header>
 
   <!-- ===== Wallet Connection ===== -->
   <section id="walletConnection">
     <div class="container">
-      <button onclick="switchLanguage()">🌐 EN / 中文</button>
-      <button id="connectWalletBtn" onclick="connectWallet()">Connect Wallet</button>
       <span id="networkInfo">Connecting...</span>
       <p id="userAccount"></p>
     </div>
