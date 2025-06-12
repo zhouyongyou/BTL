@@ -49,35 +49,72 @@ function switchLanguage() {
 }
 function updateLanguage() {
   const lang = currentLanguage === 'en';
-  
+
   // Header
-  document.getElementById('networkInfo').innerText = lang ? 'Connecting...' : '連接中...';
-  document.getElementById('connectWalletBtn').innerText = lang ? 'Connect Wallet' : '連接錢包';
+  const networkInfo = document.getElementById('networkInfo');
+  if (networkInfo) networkInfo.innerText = lang ? 'Connecting...' : '連接中...';
+
+  const connectWalletBtn = document.getElementById('connectWalletBtn');
+  if (connectWalletBtn) connectWalletBtn.innerText = lang ? 'Connect Wallet' : '連接錢包';
   
   // Main Info
-  document.getElementById('contractInfoTitle').innerText = lang ? 'Contract Information' : '合約信息';
-  document.getElementById('btlAddressLabel').innerText = lang ? 'BTL Contract Address:' : 'BTL 合約地址：';
-  document.getElementById('usd1CountdownLabel').innerText = lang ? 'Next USD1 Reward:' : '下一個 USD1 分紅：';
-  document.getElementById('bnbCountdownLabel').innerText = lang ? 'Next BNB Reward:' : '下一個 BNB 分紅：';
-  document.getElementById('depositLabel').innerText = lang ? 'Deposit BNB' : '存入 BNB';
-  document.getElementById('footerText').innerText = lang ? '© 2025 BitLuck | All rights reserved' : '© 2025 BitLuck | 版權所有';
+  const contractInfoTitle = document.getElementById('contractInfoTitle');
+  if (contractInfoTitle) contractInfoTitle.innerText = lang ? 'Contract Information' : '合約信息';
+  
+  const btlAddressLabel = document.getElementById('btlAddressLabel');
+  if (btlAddressLabel) btlAddressLabel.innerText = lang ? 'BTL Contract Address:' : 'BTL 合約地址：';
+
+  const usd1CountdownLabel = document.getElementById('usd1CountdownLabel');
+  if (usd1CountdownLabel) usd1CountdownLabel.innerText = lang ? 'Next USD1 Reward:' : '下一個 USD1 分紅：';
+
+  const bnbCountdownLabel = document.getElementById('bnbCountdownLabel');
+  if (bnbCountdownLabel) bnbCountdownLabel.innerText = lang ? 'Next BNB Reward:' : '下一個 BNB 分紅：';
+
+  const depositLabel = document.getElementById('depositLabel');
+  if (depositLabel) depositLabel.innerText = lang ? 'Deposit BNB' : '存入 BNB';
+
+  const footerText = document.getElementById('footerText');
+  if (footerText) footerText.innerText = lang ? '© 2025 BitLuck | All rights reserved' : '© 2025 BitLuck | 版權所有';
 
   // Form placeholders and buttons
-  document.getElementById('depositAmount').setAttribute('placeholder', lang ? 'Enter BNB to deposit' : '輸入要存入的 BNB 金額');
-  document.getElementById('referrer').setAttribute('placeholder', lang ? 'Enter referrer address (optional)' : '輸入推薦人地址（可選）');
-  document.getElementById('depositBtn').innerText = lang ? 'Deposit' : '存款';
+  const depositAmount = document.getElementById('depositAmount');
+  if (depositAmount) depositAmount.setAttribute('placeholder', lang ? 'Enter BNB to deposit' : '輸入要存入的 BNB 金額');
+
+  const referrer = document.getElementById('referrer');
+  if (referrer) referrer.setAttribute('placeholder', lang ? 'Enter referrer address (optional)' : '輸入推薦人地址（可選）');
+
+  const depositBtn = document.getElementById('depositBtn');
+  if (depositBtn) depositBtn.innerText = lang ? 'Deposit' : '存款';
 
   // Referral section
-  document.getElementById('referralLink').innerText = lang ? 'Your Referral Link:' : '你的推薦鏈接：';
-  document.getElementById('referralUrl').innerText = lang ? 'Referral URL:' : '推薦網址：';
-  document.getElementById('copyLinkBtn').innerText = lang ? 'Copy Link' : '複製鏈接';
-  
+  const referralLink = document.getElementById('referralLink');
+  if (referralLink) referralLink.innerText = lang ? 'Your Referral Link:' : '你的推薦鏈接：';
+
+  const referralUrl = document.getElementById('referralUrl');
+  if (referralUrl) referralUrl.innerText = lang ? 'Referral URL:' : '推薦網址：';
+
+  const copyLinkBtn = document.getElementById('copyLinkBtn');
+  if (copyLinkBtn) copyLinkBtn.innerText = lang ? 'Copy Link' : '複製鏈接';
+
   // Footer
-  document.getElementById('footerText').innerText = lang ? '© 2025 BitLuck | All rights reserved' : '© 2025 BitLuck | 版權所有';
-  document.getElementById('networkInfo').innerText = lang ? 'This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.' : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
-  document.getElementById('whitepaperLink').innerText = lang ? 'Whitepaper' : '白皮書';
-  document.getElementById('telegramLink').innerText = lang ? 'Telegram' : '電報';
-  document.getElementById('twitterLink').innerText = lang ? 'Twitter' : '推特';
+  const whitepaperLink = document.getElementById('whitepaperLink');
+  if (whitepaperLink) whitepaperLink.innerText = lang ? 'Whitepaper' : '白皮書';
+
+  const telegramLink = document.getElementById('telegramLink');
+  if (telegramLink) telegramLink.innerText = lang ? 'Telegram' : '電報';
+
+  const twitterLink = document.getElementById('twitterLink');
+  if (twitterLink) twitterLink.innerText = lang ? 'Twitter' : '推特';
+
+  const networkInfoFooter = document.getElementById('networkInfoFooter');
+  if (networkInfoFooter) networkInfoFooter.innerText = lang ? 'This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.' : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
+
+  // Update countdowns (秒)
+  const usd1Time = document.getElementById('usd1Time');
+  if (usd1Time) usd1Time.innerText = lang ? `${usd1Time.innerText} seconds` : `${usd1Time.innerText} 秒`;
+
+  const bnbTime = document.getElementById('bnbTime');
+  if (bnbTime) bnbTime.innerText = lang ? `${bnbTime.innerText} seconds` : `${bnbTime.innerText} 秒`;
 }
 
 /* ===== Dark mode ===== */
