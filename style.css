@@ -60,7 +60,28 @@ header {
   background: #121212;  /* 深色背景 */
   color: #f0b90b;  /* 幣安金黃色文字 */
   text-align: center;
+  display: flex;
+  justify-content: space-between;  /* 左右兩邊 */
+  align-items: center;  /* 垂直居中 */
   padding: 20px;
+}
+
+/* 語言切換按鈕 */
+header button:first-child {
+  background: #f0b90b;
+  color: #121212;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
+}
+
+/* 連接錢包按鈕 */
+header button:nth-child(2) {
+  background: #f0b90b;
+  color: #121212;
+  border: none;
+  padding: 10px 20px;
+  cursor: pointer;
 }
 header #logo {
   width: 150px;  /* 調整 Logo 寬度 */
