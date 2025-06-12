@@ -113,6 +113,9 @@ async function updateUserInfo() {
   const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
   document.getElementById('userBNBDeposit').innerText = web3.utils.fromWei(dep, 'ether');
 
+  const usd1Earnings = await contract.methods.getAccumulatedUsd1(userAccount).call();
+  document.getElementById('usd1Earnings').innerText = usd1Earnings ? web3.utils.fromWei(usd1Earnings, 'ether') : '0';
+  
   const ref = await contract.methods.getReferralLink(userAccount).call();
   console.log("Referral link:", ref);
   document.getElementById('referralUrl').innerText = ref || 'No referral link';
