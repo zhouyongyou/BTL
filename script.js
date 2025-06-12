@@ -77,8 +77,11 @@ function updateLanguage() {
   if (footerText) footerText.innerText = lang ? '© 2025 BitLuck | All rights reserved' : '© 2025 BitLuck | 版權所有';
 
   // Update "seconds" to "秒"
-  const seconds = document.getElementById('seconds');
-  if (seconds) seconds.innerText = lang ? 'seconds' : '秒';
+  const secondsUsd1 = document.getElementById('secondsUsd1');
+  if (secondsUsd1) secondsUsd1.innerText = lang ? 'seconds' : '秒';
+
+  const secondsBnb = document.getElementById('secondsBnb');
+  if (secondsBnb) secondsBnb.innerText = lang ? 'seconds' : '秒';
   
   // Form placeholders and buttons
   const depositAmount = document.getElementById('depositAmount');
