@@ -16,7 +16,7 @@ const web3Modal = new window.Web3Modal.default({
 /* ===== State ===== */
 let provider, web3, contract;
 let userAccount = '';
-const CONTRACT_ADDRESS = '0x86F113e3569f42F25B3949D8FBbE73Ba181dFDa6';
+const CONTRACT_ADDRESS = '0xbF3fAD4C7353240F563a13A14959E68098d992E6';
 let ABI = []; // 从 contract.json 动态加载
 
 /* ===== Toast ===== */
