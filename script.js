@@ -49,9 +49,11 @@ function updateLanguage() {
   const lang = currentLanguage === 'en';
   const allElements = document.querySelectorAll('[data-en], [data-zh]');  // 查找所有包含語言內容的元素
   allElements.forEach((element) => {
-    const enText = element.getAttribute('data-en');
-    const zhText = element.getAttribute('data-zh');
-    element.innerText = lang ? enText : zhText;
+    if (currentLanguage === 'en') {
+      element.innerText = element.getAttribute('data-en');  // 顯示英文內容
+    } else {
+      element.innerText = element.getAttribute('data-zh');  // 顯示中文內容
+    }
   });
 // Header
   const networkInfo = document.getElementById('networkInfo');
@@ -72,19 +74,19 @@ function updateLanguage() {
   if (btlAddressLabel) btlAddressLabel.innerText = lang ? 'BTL Contract Address:' : 'BTL 合約地址：';
 
   const usd1CountdownLabel = document.getElementById('usd1CountdownLabel');
-  if (usd1CountdownLabel) usd1CountdownLabel.innerText = lang ? 'Next USD1 Reward:' : '下一個 USD1 分紅：';
+  if (usd1CountdownLabel) usd1CountdownLabel.innerText = lang ? 'Next USD1 Reward:' : '下次 USD1 分紅：';
 
   const bnbCountdownLabel = document.getElementById('bnbCountdownLabel');
-  if (bnbCountdownLabel) bnbCountdownLabel.innerText = lang ? 'Next BNB Reward:' : '下一個 BNB 分紅：';
+  if (bnbCountdownLabel) bnbCountdownLabel.innerText = lang ? 'Next BNB Reward:' : '下次 BNB 分紅：';
 
-<h3 data-en="Your BTL Balance" data-zh="你的 BTL 餘額">Your BTL Balance</h3>
-<p id="userBalance">-</p>
+  const userBalance = document.getElementById('userBalance');
+  if (userBalance) userBalance.innerText = lang ? 'Your BTL Balance' : '你的 BTL 餘額';
 
-<h3 data-en="Your USD1 Earnings" data-zh="你的 USD1 收益">Your USD1 Earnings</h3>
-<p id="usd1Earnings">-</p>
+  const usd1Earnings = document.getElementById('usd1Earnings');
+  if (usd1Earnings) usd1Earnings.innerText = lang ? 'Your USD1 Earnings' : '你的 USD1 收益';
 
-<h3 data-en="Your BNB Deposit" data-zh="你的 BNB 存款">Your BNB Deposit</h3>
-<p id="userBNBDeposit">-</p>
+  const userBNBDeposit = document.getElementById('userBNBDeposit');
+  if (userBNBDeposit) userBNBDeposit.innerText = lang ? 'Your BNB Deposit' : '你的 BNB 存款';
   
   const depositLabel = document.getElementById('depositLabel');
   if (depositLabel) depositLabel.innerText = lang ? 'Deposit BNB' : '存入 BNB';
