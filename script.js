@@ -90,8 +90,8 @@ function updateLanguage() {
   const referralLink = document.getElementById('referralLink');
   if (referralLink) referralLink.innerText = lang ? 'Your Referral Link:' : '推薦網址：';
 
-  const referralUrl = document.getElementById('referralUrl');
-  if (referralUrl) referralUrl.innerText = lang ? 'Referral URL:' : '你的推薦鏈接：';
+  const referral_Url = document.getElementById('referral_Url');
+  if (referral_Url) referral_Url.innerText = lang ? 'Referral URL:' : '你的推薦鏈接：';
 
   const copyLinkBtn = document.getElementById('copyLinkBtn');
   if (copyLinkBtn) copyLinkBtn.innerText = lang ? 'Copy Link' : '複製鏈接';
