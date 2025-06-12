@@ -104,17 +104,19 @@ function updateLanguage() {
   if (copyLinkBtn) copyLinkBtn.innerText = lang ? 'Copy Link' : '複製鏈接';
   
   // Footer
-//  const whitepaperLink = document.getElementById('whitepaperLink');
-//  if (whitepaperLink) whitepaperLink.innerText = lang ? 'Whitepaper' : '白皮書';
+  const networkInfoFooter = document.getElementById('networkInfoFooter');
+  if (networkInfoFooter) networkInfoFooter.innerText = lang 
+    ? 'This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.'
+    : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
 
-//  const telegramLink = document.getElementById('telegramLink');
-//  if (telegramLink) telegramLink.innerText = lang ? 'Telegram' : '電報';
+  const whitepaperLink = document.getElementById('whitepaperLink');
+  if (whitepaperLink) whitepaperLink.innerText = lang ? 'Whitepaper' : '白皮書';
 
-//  const twitterLink = document.getElementById('twitterLink');
-//  if (twitterLink) twitterLink.innerText = lang ? 'Twitter' : '推特';
+  const telegramLink = document.getElementById('telegramLink');
+  if (telegramLink) telegramLink.innerText = lang ? 'Telegram' : '電報';
 
-//  const networkInfoFooter = document.getElementById('networkInfoFooter');
-//  if (networkInfoFooter) networkInfoFooter.innerText = lang ? 'This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.' : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
+  const twitterLink = document.getElementById('twitterLink');
+  if (twitterLink) twitterLink.innerText = lang ? 'Twitter' : '推特';
 }
 
 /* ===== Dark mode ===== */
