@@ -55,7 +55,15 @@ function updateLanguage() {
       element.innerText = element.getAttribute('data-zh');  // 顯示中文內容
     }
   });
-// Header
+
+    // 根據語言設置時間單位
+  if (currentLanguage === 'en') {
+    timeUnits = ['h', 'm', 's'];
+  } else {
+    timeUnits = ['小時', '分鐘', '秒'];
+  }
+  
+  // Header
   const networkInfo = document.getElementById('networkInfo');
   if (networkInfo) networkInfo.innerText = lang ? 'Connecting...' : '連接中...';
 
@@ -93,13 +101,6 @@ function updateLanguage() {
 
   const footerText = document.getElementById('footerText');
   if (footerText) footerText.innerText = lang ? '© 2025 BitLuck | All rights reserved' : '© 2025 BitLuck | 版權所有';
-
-  // Update "seconds" to "秒"
-  const secondsUsd1 = document.getElementById('secondsUsd1');
-  if (secondsUsd1) secondsUsd1.innerText = lang ? 'seconds' : '秒';
-
-  const secondsBnb = document.getElementById('secondsBnb');
-  if (secondsBnb) secondsBnb.innerText = lang ? 'seconds' : '秒';
   
   // Form placeholders and buttons
   const depositAmount = document.getElementById('depositAmount');
@@ -230,8 +231,25 @@ async function updateCountdowns() {
   if (!contract) return;
   const u = await contract.methods.getUSD1RewardCountdown().call();
   const b = await contract.methods.getBNBRewardCountdown().call();
-  document.getElementById('usd1Time').innerText = u;
-  document.getElementById('bnbTime').innerText = b;
+
+  // 假設每個區塊大約 1.5 秒
+  const blockTime = 1.5;
+  
+  // 轉換倒數區塊數為秒數
+  const usd1Countdown = u * blockTime;  // USD1獎金倒數時間（秒）
+  const bnbCountdown = b * blockTime;  // BNB獎金倒數時間（秒）
+
+  // 將秒數轉換為 時：分：秒 格式
+  function formatTime(seconds) {
+    const hours = Math.floor(seconds / 3600);  // 計算小時
+    const minutes = Math.floor((seconds % 3600) / 60);  // 計算分鐘
+    const remainingSeconds = Math.floor(seconds % 60);  // 計算秒數
+    return `${hours}${timeUnits[0]} ${minutes}${timeUnits[1]} ${remainingSeconds}${timeUnits[2]}`;
+  }
+  
+  // 更新顯示的時間（倒數時間格式：時：分：秒）
+  document.getElementById('usd1Time').innerText = formatTime(usd1Countdown);
+  document.getElementById('bnbTime').innerText = formatTime(bnbCountdown);
 }
 
 /* ===== Contract overview ===== */
