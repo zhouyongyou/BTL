@@ -9,7 +9,8 @@ global.localStorage = {
 };
 global.window.localStorage = global.localStorage;
 
-const { depositBNB } = require('../script');
+const script = require('../script');
+const { depositBNB, __setContract, __setWeb3, __setUpdateUserInfo } = script;
 
 describe('depositBNB', () => {
   beforeEach(() => {
@@ -23,14 +24,17 @@ describe('depositBNB', () => {
     global.showLoading = jest.fn();
     global.hideLoading = jest.fn();
     global.updateUserInfo = jest.fn();
+    __setUpdateUserInfo(global.updateUserInfo);
     global.contract = {
       methods: {
         depositBNB: jest.fn(() => ({
-          send: jest.fn()
+          send: jest.fn().mockResolvedValue()
         }))
       }
     };
     global.web3 = { utils: { toWei: jest.fn() } };
+    __setContract(global.contract);
+    __setWeb3(global.web3);
     global.userAccount = '0xabc';
   });
 
@@ -40,5 +44,13 @@ describe('depositBNB', () => {
     await depositBNB();
     expect(document.getElementById('toast').innerText).toBe('最低存入 0.02 BNB');
     expect(global.contract.methods.depositBNB).not.toHaveBeenCalled();
+  });
+
+    test('allows valid deposits and updates user info', async () => {
+    document.getElementById('depositAmount').value = '0.05';
+    document.getElementById('referrer').value = '';
+    await depositBNB();
+    expect(global.contract.methods.depositBNB).toHaveBeenCalled();
+    expect(global.updateUserInfo).toHaveBeenCalled();
   });
 });
