@@ -30,6 +30,17 @@ python3 -m http.server
 
 Visit [http://localhost:8000/index.html](http://localhost:8000/index.html) in your browser.
 
+## Building Assets
+After installing dependencies run:
+
+```bash
+npm run build
+```
+
+This copies the Web3, Web3Modal and WalletConnect provider scripts from
+`node_modules` into a local `libs` folder so the page can load them without
+external CDNs.
+
 ## Wallet Setup
 - Click **Connect Wallet** in the DApp and select MetaMask or Rabby.
 - Deposit at least **0.02 BNB** to start earning rewards.
