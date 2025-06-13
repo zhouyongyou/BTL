@@ -40,13 +40,10 @@
   </header>
     <nav id="sideMenu" class="side-menu">
     <ul>
-      <li><a id="menuMainInfo" href="#mainInfo">Main Info</a></li>
-      <li><a id="menuReferral" href="#referral">Referral</a></li>
-      <li><a id="menuWallet" href="#walletConnection">Wallet</a></li>
-      <li><a id="menuConnect" href="javascript:connectWallet()">Connect Wallet</a></li>
-      <li><a id="menuBuy" href="https://pancakeswap.finance/swap?outputCurrency=0xbF3fAD4C7353240F563a13A14959E68098d992E6" target="_blank">BUY $BTL</a></li>
+      <li><button id="menuConnectBtn" onclick="connectWallet()">Connect Wallet</button></li>
+      <li><a id="menuBuy" href="https://pancakeswap.finance/swap?outputCurrency=0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d" target="_blank">BUY $BTL</a></li>
       <li><a id="menuInvite" href="#referral">Invite</a></li>
-      <li><a id="menuWhitepaper" href="https://bitluck.notion.site/" target="_blank">Whitepaper</a></li>
+      <li><a id="menuWhitepaper" href="https://bitluck.notion.site/whitepaper-en" target="_blank">Whitepaper</a></li>
       <li><a id="menuDocs" href="https://bitluck.notion.site/" target="_blank">Docs</a></li>
     </ul>
   </nav>
@@ -67,26 +64,23 @@
         <span id="contractAddr" onclick="copyToClipboard('contractAddr')">0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316</span>
         <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
       </p>
-
-      <!-- Reward Countdowns -->
-      <div>
-        <h3 id="usd1CountdownLabel">Next USD1 Reward:</h3>
-        <p><span id="usd1Time">-</span></p>
-        
-        <h3 id="bnbCountdownLabel">Next BNB Reward:</h3>
-        <p><span id="bnbTime">-</span></p>
-      </div>
-
-      <!-- User balances -->
-      <div>
-        <h3 id="userBalanceLabel">Your BTL Balance</h3>
-        <p id="userBalance">-</p>
-
-        <h3 id="usd1EarningsLabel">Your USD1 Earnings</h3>
-        <p id="usd1Earnings">-</p>
-
-        <h3 id="userBNBDepositLabel">Your BNB Deposit</h3>
-        <p id="userBNBDeposit">-</p>
+  
+        <!-- Reward Countdowns -->
+        <h3 id="countdownTitle">Reward Countdowns</h3>
+        <p>
+          <span id="usd1CountdownLabel">Next USD1 Reward:</span>
+          <span id="usd1Time">-</span>
+          &nbsp;&nbsp;
+          <span id="bnbCountdownLabel">Next BNB Reward:</span>
+          <span id="bnbTime">-</span>
+        </p>
+  
+        <!-- User balances -->
+        <h3 id="userInfoTitle">Your Asset Status</h3>
+        <p><span id="userBalanceLabel">Your BTL Balance</span> <span id="userBalance">-</span></p>
+        <p><span id="usd1EarningsLabel">Your USD1 Earnings</span> <span id="usd1Earnings">-</span></p>
+        <p><span id="userBNBDepositLabel">Your BNB Deposit</span> <span id="userBNBDeposit">-</span></p>
+        <p><span id="bnbEarningsLabel">Your BNB Earnings</span> <span id="bnbEarnings">-</span></p>
 
         <!-- Deposit Form -->
         <h3 id="depositLabel">Deposit BNB</h3>
@@ -117,7 +111,8 @@
   <section id="poolStats">
     <div class="container">
       <h3 id="poolStatsTitle">Pool Statistics</h3>
-      <p><span id="currentPoolLabel">Current Pool:</span> <span id="poolAmount">-</span> BNB</p>
+      <p><span id="currentPoolLabel">Current BNB Pool:</span> <span id="poolAmount">-</span> BNB</p>
+      <p><span id="usd1PoolLabel">Current USD1 Pool:</span> <span id="usd1PoolAmount">-</span> USD1</p>
       <p><a id="fullHistory" href="https://bscscan.com/address/0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316#events" target="_blank">Full History</a></p>
     </div>
   </section>
@@ -130,7 +125,7 @@
         This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet.
       </p>
       <p>
-        <a id="whitepaperLink" href="https://bitluck.notion.site/" target="_blank">Whitepaper</a> |
+        <a id="whitepaperLink" href="https://bitluck.notion.site/whitepaper-en" target="_blank">Whitepaper</a> |
         <a id="telegramLink" href="https://t.me/BitLuckBSC" target="_blank">Telegram</a> |
         <a id="twitterLink" href="https://twitter.com/BitLuckBSC" target="_blank">Twitter</a>
       </p>
