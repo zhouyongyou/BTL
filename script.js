@@ -360,19 +360,6 @@ async function updatePoolInfo() {
   if (amountEl) amountEl.innerText = web3.utils.fromWei(bal, 'ether');
 
   try {
-    const latestBlock = await web3.eth.getBlockNumber();
-    const fromBlock = latestBlock - 3600;
-    const toBlock = latestBlock;
-    const events = await contract.getPastEvents('BNBRewardDistributed', {
-      fromBlock,
-      toBlock
-    });
-    if (events && events.length > 0) {
-      const last = events[events.length - 1];
-      const winner = last.returnValues.sender || last.returnValues.user;
-      const winEl = document.getElementById('lastWinner');
-      if (winEl) winEl.innerText = winner;
-    }
   } catch (e) {
     console.error(e);
   }
