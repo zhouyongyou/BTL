@@ -35,11 +35,8 @@ Visit [http://localhost:8000/index.html](http://localhost:8000/index.html) in yo
 - Deposit at least **0.02 BNB** to start earning rewards.
 
 ## Development
-Install project dependencies and run tests with npm:
+Install project dependencies with npm:
 
 ```bash
 npm install
-npm test
 ```
-
-The test command uses Jest, which runs in a **jsdom** environment.
