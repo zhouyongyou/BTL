@@ -153,7 +153,7 @@ section {
   background: #1e1e1e;  /* 稍微淺一點的暗色背景 */
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin: 20px 0;
+  margin: 10px 0;
   padding: 20px;
   line-height: 1.6;
 }
