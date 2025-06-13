@@ -1,16 +1,16 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
 const providerOptions = typeof window !== 'undefined' ? {
-  // OKX Wallet
-  okexchain: {
-    package: window.okex, // 支持 OKX Wallet
-  },
-  // TokenPocket Wallet
-  tokenpocket: {
-    package: window.tokenPocket, // TokenPocket錢包
-    options: {
-      // 可以根據需求進一步設置
-    }
-  },
+  // // OKX Wallet
+  // okexchain: {
+  //   package: window.okex, // 支持 OKX Wallet
+  // },
+  // // TokenPocket Wallet
+  // tokenpocket: {
+  //   package: window.tokenPocket, // TokenPocket錢包
+  //   options: {
+  //     // 可以根據需求進一步設置
+  //   }
+  // },
   // WalletConnect (已經有)
   walletconnect: {
     package: window.WalletConnectProvider?.default,
