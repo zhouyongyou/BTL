@@ -63,7 +63,7 @@ header {
 header .lang-btn {
   position: absolute;
   top: 10px;
-  left: 10px;
+  right: 10px;
   background: #f0b90b;  /* 幣安金黃色 */
   color: #121212;  /* 黑色文字 */
   border: none;
@@ -73,7 +73,7 @@ header .lang-btn {
 header .menu-btn {
   position: absolute;
   top: 10px;
-  right: 10px;
+  left: 10px;
   background: none;
   border: none;
   color: #f0b90b;
