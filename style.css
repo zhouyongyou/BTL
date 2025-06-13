@@ -293,3 +293,8 @@ footer p {
 #referralLink {
   word-break: break-all; /* 在需要的地方強制換行 */
 }
+
+#contractAddr,
+#referralUrl {
+  cursor: pointer;
+}
