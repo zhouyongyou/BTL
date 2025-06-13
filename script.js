@@ -15,7 +15,7 @@ const web3Modal = typeof window !== 'undefined' ? new window.Web3Modal.default({
 /* ===== State ===== */
 let provider, web3, contract;
 let userAccount = '';
-const CONTRACT_ADDRESS = '0xbF3fAD4C7353240F563a13A14959E68098d992E6';
+const CONTRACT_ADDRESS = '0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316';
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
 /* ===== Toast ===== */
