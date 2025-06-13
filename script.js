@@ -1,9 +1,5 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
 const providerOptions = typeof window !== 'undefined' ? {
-  // MetaMask
-  metamask: {
-    package: window.ethereum, // 支持 MetaMask
-  },
   // OKX Wallet
   okexchain: {
     package: window.okex, // 支持 OKX Wallet
