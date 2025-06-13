@@ -86,7 +86,7 @@ header button:hover {
 }
 /* Logo */
 header #logo {
-  width: 150px;  /* 調整 Logo 寬度 */
+  width: 100px;  /* 調整 Logo 寬度 */
   height: auto;  /* 高度自動調整，保持比例 */
 }
 
