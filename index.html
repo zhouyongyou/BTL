@@ -61,7 +61,7 @@
     <div class="container">
       <h2 id="contractInfoTitle">Contract Information</h2>
       <p><strong id="btlAddressLabel">Contract Address:</strong>
-        <span id="contractAddr">0xbF3fAD4C7353240F563a13A14959E68098d992E6</span>
+        <span id="contractAddr" onclick="copyToClipboard('contractAddr')">0xbF3fAD4C7353240F563a13A14959E68098d992E6</span>
         <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
       </p>
 
@@ -101,7 +101,8 @@
   <section id="referral">
     <div class="container">
       <h4 id="referralLink">Your Referral Link:</h4>
-      <p><span id="referralUrlLabel">Referral URL:</span> <span id="referralUrl">-</span></p>
+      <p><span id="referralUrlLabel">Referral URL:</span>
+        <span id="referralUrl" onclick="copyToClipboard('referralUrl')">https://btluck.fun/?ref=...</span>
       <button id="copyLinkBtn" onclick="copyToClipboard('referralUrl')">Copy Link</button>
     </div>
   </section>
