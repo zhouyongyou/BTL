@@ -41,7 +41,7 @@
     <nav id="sideMenu" class="side-menu">
     <ul>
       <li><button id="menuConnectBtn" onclick="connectWallet()">Connect Wallet</button></li>
-      <li><button id="menuBuy" onclick="openPancakeSwap()">BUY $BTL</button></li>
+      <li><button id="menuBuy" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button></li>
       <li><a id="menuInvite" href="#referral">Invite</a></li>
       <li><a id="menuWhitepaper" href="https://bitluck.notion.site/whitepaper-en" target="_blank">Whitepaper</a></li>
       <li><a id="menuDocs" href="https://bitluck.notion.site/" target="_blank">Docs</a></li>
@@ -63,7 +63,7 @@
       <p><strong id="btlAddressLabel">Contract Address:</strong>
         <span id="contractAddr" onclick="copyToClipboard('contractAddr')"></span>
         <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
-        <a id="buyBtlLink" href="https://pancakeswap.finance/swap?outputCurrency=0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316&chain=bsc&inputCurrency=BNB" target="_blank">BUY $BTL</a>
+        <button id="buyBtlLink" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button>
       </p>
   
         <!-- Reward Countdowns -->
@@ -71,7 +71,6 @@
         <p>
           <span id="usd1CountdownLabel">Next USD1 Reward:</span>
           <span id="usd1Time">-</span>
-          <p>&nbsp;&nbsp;</p>
           <span id="bnbCountdownLabel">Next BNB Reward:</span>
           <span id="bnbTime">-</span>
         </p>
