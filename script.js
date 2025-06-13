@@ -244,7 +244,13 @@ function updateLanguage() {
   if (lastWinnerLabel) lastWinnerLabel.innerText = lang ? 'Last Winner:' : '上一位贏家：';
 
   const fullHistory = document.getElementById('fullHistory');
-  if (fullHistory) fullHistory.innerText = lang ? 'Full History' : '完整記錄';
+  if (fullHistory) {
+    fullHistory.innerText = lang ? 'Full History' : '完整記錄';
+    fullHistory.href = `https://bscscan.com/address/${CONTRACT_ADDRESS}#events`;
+  }
+
+  const contractAddrEl = document.getElementById('contractAddr');
+  if (contractAddrEl) contractAddrEl.innerText = CONTRACT_ADDRESS;
   
   // Footer
   const networkInfoFooter = document.getElementById('networkInfoFooter');
@@ -388,6 +394,13 @@ async function depositBNB() {
   }
 }
 
+/* ===== PancakeSwap Link ===== */
+function openPancakeSwap() {
+  const url =
+    `https://pancakeswap.finance/swap?outputCurrency=${CONTRACT_ADDRESS}&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d`;
+  window.open(url, '_blank');
+}
+
 /* ===== Countdown ===== */
 async function updateCountdowns() {
   if (!contract) return;
@@ -501,7 +514,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     };
     menuToggle.addEventListener('click', openMenu);
     menuOverlay.addEventListener('click', closeMenu);
-    sideMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
+    sideMenu.querySelectorAll('a, button').forEach(a => a.addEventListener('click', closeMenu));
   }
   
   // 更新其他信息
