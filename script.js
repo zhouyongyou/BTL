@@ -116,7 +116,7 @@ function updateLanguage() {
   if (referrer) referrer.setAttribute('placeholder', lang ? 'Enter referrer address (optional)' : '輸入推薦人地址（可選）');
 
   const depositBtn = document.getElementById('depositBtn');
-  if (depositBtn) depositBtn.innerText = lang ? 'Deposit' : '存款';
+  if (depositBtn) depositBtn.innerText = lang ? 'Deposit' : '存入';
 
   // Referral section
   const referralLink = document.getElementById('referralLink');
@@ -344,5 +344,10 @@ window.addEventListener('DOMContentLoaded', (event) => {
 
 // Export for testing in Node environment
 if (typeof module !== 'undefined') {
-  module.exports = { depositBNB };
+  module.exports = {
+    depositBNB,
+    __setContract: c => { contract = c; },
+    __setWeb3: w => { web3 = w; },
+    __setUpdateUserInfo: fn => { updateUserInfo = fn; }
+  };
 }
