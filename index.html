@@ -41,7 +41,7 @@
     <nav id="sideMenu" class="side-menu">
     <ul>
       <li><button id="menuConnectBtn" onclick="connectWallet()">Connect Wallet</button></li>
-      <li><a id="menuBuy" href="https://pancakeswap.finance/swap?outputCurrency=0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d" target="_blank">BUY $BTL</a></li>
+      <li><a id="menuBuy" target="_blank">BUY $BTL</a></li>
       <li><a id="menuInvite" href="#referral">Invite</a></li>
       <li><a id="menuWhitepaper" href="https://bitluck.notion.site/whitepaper-en" target="_blank">Whitepaper</a></li>
       <li><a id="menuDocs" href="https://bitluck.notion.site/" target="_blank">Docs</a></li>
@@ -61,8 +61,9 @@
     <div class="container">
       <h2 id="contractInfoTitle">Contract Information</h2>
       <p><strong id="btlAddressLabel">Contract Address:</strong>
-        <span id="contractAddr" onclick="copyToClipboard('contractAddr')">0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316</span>
+        <span id="contractAddr" onclick="copyToClipboard('contractAddr')"></span>
         <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
+        <a id="buyBtlLink" href="https://pancakeswap.finance/swap?outputCurrency=0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316&chain=bsc&inputCurrency=BNB" target="_blank">BUY $BTL</a>
       </p>
   
         <!-- Reward Countdowns -->
@@ -77,14 +78,14 @@
   
         <!-- User balances -->
         <h3 id="userInfoTitle">Your Asset Status</h3>
-        <p><span id="userBalanceLabel">Your BTL Balance</span> <span id="userBalance">-</span></p>
-        <p><span id="usd1EarningsLabel">Your USD1 Earnings</span> <span id="usd1Earnings">-</span></p>
-        <p><span id="userBNBDepositLabel">Your BNB Deposit</span> <span id="userBNBDeposit">-</span></p>
-        <p><span id="bnbEarningsLabel">Your BNB Earnings</span> <span id="bnbEarnings">-</span></p>
+        <p><span id="userBalanceLabel">Your BTL Balance:</span> <span id="userBalance">-</span> BTL</p>
+        <p><span id="usd1EarningsLabel">Your USD1 Earnings:</span> <span id="usd1Earnings">-</span> USD1</p>
+        <p><span id="userBNBDepositLabel">Your BNB Deposit:</span> <span id="userBNBDeposit">-</span> BNB</p>
+        <p><span id="bnbEarningsLabel">Estimated Daily BNB:</span> <span id="bnbEarnings">-</span> BNB</p>
 
         <!-- Deposit Form -->
         <h3 id="depositLabel">Deposit BNB</h3>
-        <p><strong id="minDepositAmount">0.02</strong> BNB minimum</p>
+        <p><strong id="minDepositAmount">0.02</strong> <span id="minDepositUnit">BNB minimum</span></p>
         <input type="number" id="depositAmount" placeholder="Enter BNB to deposit" />
         <!-- 推荐人地址 -->
         <input type="text" id="referrer" placeholder="Enter referrer address (optional)" />
@@ -102,8 +103,8 @@
         <span id="referralUrl" onclick="copyToClipboard('referralUrl')">https://btluck.fun/?ref=...</span>
         <button id="copyLinkBtn" onclick="copyToClipboard('referralUrl')">Copy Link</button>
       </p>
-      <p><span id="referralCountLabel">Total Referrals:</span> <span id="referralCount">-</span></p>
-      <p><span id="referralBNBLabel">BNB from Referrals:</span> <span id="referralBNB">-</span></p>
+      <p><span id="referralCountLabel">Total Referrals:</span> <span id="referralCount">-</span><span id="referralCountUnit"></span></p>
+      <p><span id="referralBNBLabel">BNB from Referrals:</span> <span id="referralBNB">-</span> BNB</p>
     </div>
   </section>
 
@@ -114,7 +115,7 @@
       <p><span id="currentPoolLabel">Current BNB Pool:</span> <span id="poolAmount">-</span> BNB</p>
       <p><span id="usd1PoolLabel">Current USD1 Pool:</span> <span id="usd1PoolAmount">-</span> USD1</p>
     <div style="height: 20px;"></div>
-      <p><a id="fullHistory" href="https://bscscan.com/address/0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316#events" target="_blank">Full History</a></p>
+      <p><a id="fullHistory" target="_blank">Full History</a></p>
     </div>
   </section>
   
