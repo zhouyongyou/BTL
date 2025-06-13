@@ -40,9 +40,14 @@
   </header>
     <nav id="sideMenu" class="side-menu">
     <ul>
-      <li><a href="#mainInfo">Main Info</a></li>
-      <li><a href="#referral">Referral</a></li>
-      <li><a href="#walletConnection">Wallet</a></li>
+      <li><a id="menuMainInfo" href="#mainInfo">Main Info</a></li>
+      <li><a id="menuReferral" href="#referral">Referral</a></li>
+      <li><a id="menuWallet" href="#walletConnection">Wallet</a></li>
+      <li><a id="menuConnect" href="javascript:connectWallet()">Connect Wallet</a></li>
+      <li><a id="menuBuy" href="https://pancakeswap.finance/swap?outputCurrency=0xbF3fAD4C7353240F563a13A14959E68098d992E6" target="_blank">BUY $BTL</a></li>
+      <li><a id="menuInvite" href="#referral">Invite</a></li>
+      <li><a id="menuWhitepaper" href="https://bitluck.notion.site/" target="_blank">Whitepaper</a></li>
+      <li><a id="menuDocs" href="https://bitluck.notion.site/" target="_blank">Docs</a></li>
     </ul>
   </nav>
   <div id="menuOverlay" class="menu-overlay"></div>
@@ -111,9 +116,9 @@
   <!-- ===== Pool Statistics ===== -->
   <section id="poolStats">
     <div class="container">
-      <h3>Pool Statistics</h3>
-      <p>Current Pool: <span id="poolAmount">-</span> BNB</p>
-      <p>Last Winner: <span id="lastWinner">-</span></p>
+      <h3 id="poolStatsTitle">Pool Statistics</h3>
+      <p><span id="currentPoolLabel">Current Pool:</span> <span id="poolAmount">-</span> BNB</p>
+      <p><span id="lastWinnerLabel">Last Winner:</span> <span id="lastWinner">-</span></p>
       <p><a id="fullHistory" href="https://bscscan.com/address/0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316#events" target="_blank">Full History</a></p>
     </div>
   </section>
