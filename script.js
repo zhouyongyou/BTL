@@ -48,14 +48,6 @@ function switchLanguage() {
 }
 function updateLanguage() {
   const lang = currentLanguage === 'en';
-  const allElements = document.querySelectorAll('[data-en], [data-zh]');  // 查找所有包含語言內容的元素
-  allElements.forEach((element) => {
-    if (currentLanguage === 'en') {
-      element.innerText = element.getAttribute('data-en');  // 顯示英文內容
-    } else {
-      element.innerText = element.getAttribute('data-zh');  // 顯示中文內容
-    }
-  });
 
     // 根據語言設置時間單位
   if (currentLanguage === 'en') {
@@ -82,8 +74,8 @@ function updateLanguage() {
     }
   }
   // 按鈕的切換文字
-  const button = document.querySelector('button');
-  if (button) button.innerText = lang ? '🌐 中文' : '🌐 EN';
+  const langBtn = document.querySelector('.header-buttons button');
+  if (langBtn) langBtn.innerText = lang ? '🌐 中文' : '🌐 EN';
   
   // Main Info
   const contractInfoTitle = document.getElementById('contractInfoTitle');
@@ -92,6 +84,9 @@ function updateLanguage() {
   const btlAddressLabel = document.getElementById('btlAddressLabel');
   if (btlAddressLabel) btlAddressLabel.innerText = lang ? 'BTL Contract Address:' : 'BTL 合約地址：';
 
+  const copyAddressBtn = document.getElementById('copyAddressBtn');
+  if (copyAddressBtn) copyAddressBtn.innerText = lang ? 'Copy Address' : '複製地址';
+  
   const usd1CountdownLabel = document.getElementById('usd1CountdownLabel');
   if (usd1CountdownLabel) usd1CountdownLabel.innerText = lang ? 'Next USD1 Reward:' : '下次 USD1 分紅：';
 
@@ -129,6 +124,9 @@ function updateLanguage() {
   
   const copyLinkBtn = document.getElementById('copyLinkBtn');
   if (copyLinkBtn) copyLinkBtn.innerText = lang ? 'Copy Link' : '複製鏈接';
+
+  const referralUrlLabel = document.getElementById('referralUrlLabel');
+  if (referralUrlLabel) referralUrlLabel.innerText = lang ? 'Referral URL:' : '推薦鏈接：';
   
   // Footer
   const networkInfoFooter = document.getElementById('networkInfoFooter');
@@ -231,7 +229,7 @@ async function depositBNB() {
   if (document.getElementById(btn).dataset.loading === 'true') return;
   const amt = document.getElementById('depositAmount').value;
   let ref = document.getElementById('referrer').value;  // 取得推薦人地址
-  if (!amt || parseFloat(amt) < 0.018) return toast('最低存入 0.02 BNB');
+  if (!amt || parseFloat(amt) < 0.02) return toast('最低存入 0.02 BNB');
   if (!ref) {
     ref = "0x0000000000000000000000000000000000000000";
   }
@@ -323,6 +321,23 @@ window.addEventListener('DOMContentLoaded', (event) => {
     document.getElementById('referrer').value = referrer; // 將 ref 參數填充到推薦人輸入框
   }
 
+  // Side menu controls
+  const menuToggle = document.getElementById('menuToggle');
+  const sideMenu = document.getElementById('sideMenu');
+  const menuOverlay = document.getElementById('menuOverlay');
+  if (menuToggle && sideMenu && menuOverlay) {
+    const openMenu = () => {
+      sideMenu.classList.add('open');
+      menuOverlay.classList.add('active');
+    };
+    const closeMenu = () => {
+      sideMenu.classList.remove('open');
+      menuOverlay.classList.remove('active');
+    };
+    menuToggle.addEventListener('click', openMenu);
+    menuOverlay.addEventListener('click', closeMenu);
+  }
+  
   // 更新其他信息
   updateContractInfo();
 });
