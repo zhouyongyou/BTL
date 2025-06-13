@@ -18,7 +18,6 @@ let userAccount = '';
 const CONTRACT_ADDRESS = '0xbF3fAD4C7353240F563a13A14959E68098d992E6';
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
-let updateUserInfoFn;
 /* ===== Toast ===== */
 function toast(msg) {
   const t = document.getElementById('toast');
@@ -224,8 +223,6 @@ async function updateUserInfo() {
   document.getElementById('referralUrl').innerText = ref || 'No referral link';
 }
 
-updateUserInfoFn = updateUserInfo;
-
 /* ===== Deposit BNB ===== */
 async function depositBNB() {
   const btn = 'depositBtn';
@@ -243,7 +240,7 @@ async function depositBNB() {
       value: web3.utils.toWei(amt, 'ether')
     });
     toast('存款成功！');
-    if (typeof updateUserInfoFn === 'function') updateUserInfoFn();
+    updateUserInfo();
   } catch (e) {
     console.error(e);
     toast('存款失败');
@@ -344,12 +341,3 @@ window.addEventListener('DOMContentLoaded', (event) => {
   // 更新其他信息
   updateContractInfo();
 });
-
-function __setContract(c) { contract = c; }
-function __setWeb3(w) { web3 = w; }
-function __setUpdateUserInfo(fn) { updateUserInfoFn = fn; }
-
-// Export for testing in Node environment
-if (typeof module !== 'undefined') {
-  module.exports = { depositBNB, __setContract, __setWeb3, __setUpdateUserInfo };
-}
