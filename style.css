@@ -119,6 +119,21 @@ header #logo {
   text-decoration: none;
 }
 
+.side-menu button {
+  display: block;
+  width: 100%;
+  padding: 10px;
+  margin: 5px 0;
+  background: #f0b90b;
+  color: #121212;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.side-menu button:hover {
+  background: #c8a500;
+}
+
 .menu-overlay {
   position: fixed;
   top: 0;
@@ -231,6 +246,17 @@ footer a {
 
 footer a:hover {
   color: #c8a500;  /* 深一點的金黃色 */
+}
+
+/* Full History link */
+#fullHistory {
+  color: #f0b90b;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+#fullHistory:hover {
+  color: #c8a500;
 }
 
 footer p {
