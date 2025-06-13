@@ -33,3 +33,13 @@ Visit [http://localhost:8000/index.html](http://localhost:8000/index.html) in yo
 ## Wallet Setup
 - Click **Connect Wallet** in the DApp and select MetaMask or Rabby.
 - Deposit at least **0.02 BNB** to start earning rewards.
+
+## Development
+Install project dependencies and run tests with npm:
+
+```bash
+npm install
+npm test
+```
+
+The test command uses Jest, which runs in a **jsdom** environment.
