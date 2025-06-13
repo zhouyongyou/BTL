@@ -1,5 +1,42 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
 const providerOptions = typeof window !== 'undefined' ? {
+  // MetaMask
+  metamask: {
+    package: window.ethereum, // 支持 MetaMask
+  },
+  // OKX Wallet
+  okexchain: {
+    package: window.okex, // 支持 OKX Wallet
+  },
+  // Binance Wallet (Binance Extension)
+  binancechain: {
+    package: window.BinanceChain, // 支持幣安錢包
+    options: {
+      rpc: { 56: 'https://bsc-dataseed1.binance.org:443' }, // 這是 BSC 的 RPC，根據需求修改
+    }
+  },
+  // Phantom Wallet
+  phantom: {
+    package: window.solana, // Phantom 用於 Solana
+    options: {
+      network: 'mainnet-beta', // 根據需求選擇網絡
+    }
+  },
+  // Bitget Wallet
+  bitget: {
+    package: window.Bitget, // Bitget錢包的SDK（假設它有對應的SDK）
+    options: {
+      // 可以根據需求進一步設置
+    }
+  },
+  // TokenPocket Wallet
+  tokenpocket: {
+    package: window.tokenPocket, // TokenPocket錢包
+    options: {
+      // 可以根據需求進一步設置
+    }
+  },
+  // WalletConnect (已經有)
   walletconnect: {
     package: window.WalletConnectProvider?.default,
     options: {
@@ -229,7 +266,7 @@ async function depositBNB() {
   if (document.getElementById(btn).dataset.loading === 'true') return;
   const amt = document.getElementById('depositAmount').value;
   let ref = document.getElementById('referrer').value;  // 取得推薦人地址
-  if (!amt || parseFloat(amt) < 0.02) return toast('最低存入 0.02 BNB');
+  if (!amt || parseFloat(amt) < 0.018) return toast('最低存入 0.02 BNB');
   if (!ref) {
     ref = "0x0000000000000000000000000000000000000000";
   }
