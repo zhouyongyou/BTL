@@ -8,27 +8,6 @@ const providerOptions = typeof window !== 'undefined' ? {
   okexchain: {
     package: window.okex, // 支持 OKX Wallet
   },
-  // Binance Wallet (Binance Extension)
-  binancechain: {
-    package: window.BinanceChain, // 支持幣安錢包
-    options: {
-      rpc: { 56: 'https://bsc-dataseed1.binance.org:443' }, // 這是 BSC 的 RPC，根據需求修改
-    }
-  },
-  // Phantom Wallet
-  phantom: {
-    package: window.solana, // Phantom 用於 Solana
-    options: {
-      network: 'mainnet-beta', // 根據需求選擇網絡
-    }
-  },
-  // Bitget Wallet
-  bitget: {
-    package: window.Bitget, // Bitget錢包的SDK（假設它有對應的SDK）
-    options: {
-      // 可以根據需求進一步設置
-    }
-  },
   // TokenPocket Wallet
   tokenpocket: {
     package: window.tokenPocket, // TokenPocket錢包
