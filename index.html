@@ -12,14 +12,13 @@
   <meta property="og:image:height" content="630">
   <meta property="og:url" content="https://www.btluck.fun">
   <meta property="og:type" content="website">
-  <link href="https://fonts.googleapis.com/css2?family=Lato:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=VT323&display=swap" rel="stylesheet">
   <!-- Twitter Card -->
   <meta property="twitter:card" content="summary_large_image">
   <meta property="twitter:title" content="BitLuck DApp - Participate and Earn Rewards">
   <meta property="twitter:description" content="Join BitLuck today and earn rewards through holding, depositing, and referring others. A unique dual bonus system awaits you.">
   <meta property="twitter:image" content="og-1200x630.png">
   <meta property="twitter:url" content="https://www.btluck.fun">
-  <title>BitLuck DApp</title>
   <!-- 多尺寸網頁圖標 -->
   <link rel="icon" href="favicon.ico" type="image/x-icon" />
   <link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32">
@@ -34,12 +33,21 @@
   <!-- ===== Header ===== -->
   <header>
     <div class="container">
+      <button id="menuToggle" class="menu-btn">☰</button>
       <div class="header-buttons">
-        <button onclick="switchLanguage()">🌐 EN / 中文</button>
+        <button id="langBtn" onclick="switchLanguage()">🌐 EN / 中文</button>
       </div>
       <img src="logo-200x200.png" alt="BitLuck Logo" id="logo" />
     </div>
   </header>
+    <nav id="sideMenu" class="side-menu">
+    <ul>
+      <li><a href="#mainInfo">Main Info</a></li>
+      <li><a href="#referral">Referral</a></li>
+      <li><a href="#walletConnection">Wallet</a></li>
+    </ul>
+  </nav>
+  <div id="menuOverlay" class="menu-overlay"></div>
   <!-- ===== Wallet Connection ===== -->
   <section id="walletConnection">
     <div class="container">
@@ -54,7 +62,7 @@
       <h2 id="contractInfoTitle">Contract Information</h2>
       <p><strong id="btlAddressLabel">Contract Address:</strong>
         <span id="contractAddr">0xbF3fAD4C7353240F563a13A14959E68098d992E6</span>
-        <button onclick="copyToClipboard('contractAddr')">Copy Address</button>
+        <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
       </p>
 
       <!-- Reward Countdowns -->
@@ -93,7 +101,7 @@
   <section id="referral">
     <div class="container">
       <h4 id="referralLink">Your Referral Link:</h4>
-      <p>Referral URL: <span id="referralUrl">-</span></p>
+      <p><span id="referralUrlLabel">Referral URL:</span> <span id="referralUrl">-</span></p>
       <button id="copyLinkBtn" onclick="copyToClipboard('referralUrl')">Copy Link</button>
     </div>
   </section>
