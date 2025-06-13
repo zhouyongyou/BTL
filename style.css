@@ -60,24 +60,24 @@ header {
   align-items: center;
   padding: 40px 0;
 }
-header .menu-btn {
-  position: absolute;
-  top: 10px;
-  left: 10px;
-  background: none;
-  border: none;
-  color: #f0b90b;
-  font-size: 2rem;
-  cursor: pointer;
-}
 header .lang-btn {
   position: absolute;
   top: 10px;
-  right: 10px;
+  left: 10px;
   background: #f0b90b;  /* 幣安金黃色 */
   color: #121212;  /* 黑色文字 */
   border: none;
   padding: 10px 20px;
+  cursor: pointer;
+}
+header .menu-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  background: none;
+  border: none;
+  color: #f0b90b;
+  font-size: 2rem;
   cursor: pointer;
 }
 /* Hover 效果 */
