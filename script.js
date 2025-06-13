@@ -1,17 +1,17 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
-const providerOptions = {
+const providerOptions = typeof window !== 'undefined' ? {
   walletconnect: {
-    package: window.WalletConnectProvider.default,
+    package: window.WalletConnectProvider?.default,
     options: {
       rpc: { 56: 'https://bsc-dataseed1.binance.org:443' }
     }
   }
-};
-const web3Modal = new window.Web3Modal.default({
+} : {};
+const web3Modal = typeof window !== 'undefined' ? new window.Web3Modal.default({
   network: 'bsc',
   cacheProvider: true,
   providerOptions
-});
+}) : null;
 /* ===== State ===== */
 let provider, web3, contract;
 let userAccount = '';
@@ -341,3 +341,8 @@ window.addEventListener('DOMContentLoaded', (event) => {
   // 更新其他信息
   updateContractInfo();
 });
+
+// Export for testing in Node environment
+if (typeof module !== 'undefined') {
+  module.exports = { depositBNB };
+}
