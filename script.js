@@ -111,7 +111,7 @@ function updateLanguage() {
     }
   }
   // 按鈕的切換文字
-  const langBtn = document.querySelector('.header-buttons button');
+  const langBtn = document.getElementById('langBtn');
   if (langBtn) langBtn.innerText = lang ? '🌐 中文' : '🌐 EN';
   
   // Main Info
