@@ -92,8 +92,12 @@ function updateLanguage() {
   const menuWallet = document.getElementById('menuWallet');
   if (menuWallet) menuWallet.innerText = lang ? 'Wallet' : '錢包';
 
-  const menuConnect = document.getElementById('menuConnect');
-  if (menuConnect) menuConnect.innerText = lang ? 'Connect Wallet' : '連接錢包';
+  const menuConnect = document.getElementById('menuConnectBtn');
+  if (menuConnect) {
+    menuConnect.innerText = userAccount
+      ? (lang ? 'Disconnect' : '斷開錢包')
+      : (lang ? 'Connect Wallet' : '連接錢包');
+  }
 
   const menuBuy = document.getElementById('menuBuy');
   if (menuBuy) menuBuy.innerText = lang ? 'BUY $BTL' : '購買 BTL';
@@ -102,10 +106,20 @@ function updateLanguage() {
   if (menuInvite) menuInvite.innerText = lang ? 'Invite' : '邀請';
 
   const menuWhitepaper = document.getElementById('menuWhitepaper');
-  if (menuWhitepaper) menuWhitepaper.innerText = lang ? 'Whitepaper' : '白皮書';
+  if (menuWhitepaper) {
+    menuWhitepaper.innerText = lang ? 'Whitepaper' : '白皮書';
+    menuWhitepaper.href = lang
+      ? 'https://bitluck.notion.site/whitepaper-en'
+      : 'https://bitluck.notion.site/whitepaper-cn';
+  }
 
   const menuDocs = document.getElementById('menuDocs');
-  if (menuDocs) menuDocs.innerText = lang ? 'Docs' : '文檔';
+  if (menuDocs) {
+    menuDocs.innerText = lang ? 'Docs' : '文檔';
+    menuDocs.href = lang
+      ? 'https://bitluck.notion.site/'
+      : 'https://bitluck.notion.site/overview-cn';
+  }
   
   // Main Info
   const contractInfoTitle = document.getElementById('contractInfoTitle');
@@ -116,6 +130,9 @@ function updateLanguage() {
 
   const copyAddressBtn = document.getElementById('copyAddressBtn');
   if (copyAddressBtn) copyAddressBtn.innerText = lang ? 'Copy Address' : '複製地址';
+
+  const countdownTitle = document.getElementById('countdownTitle');
+  if (countdownTitle) countdownTitle.innerText = lang ? 'Reward Countdowns' : '分紅倒數';
   
   const usd1CountdownLabel = document.getElementById('usd1CountdownLabel');
   if (usd1CountdownLabel) usd1CountdownLabel.innerText = lang ? 'Next USD1 Reward:' : '下次 USD1 分紅：';
@@ -131,6 +148,12 @@ function updateLanguage() {
 
   const userBNBDepositLabel = document.getElementById('userBNBDepositLabel');
   if (userBNBDepositLabel) userBNBDepositLabel.innerText = lang ? 'Your BNB Deposit' : '你的 BNB 存款';
+
+  const bnbEarningsLabel = document.getElementById('bnbEarningsLabel');
+  if (bnbEarningsLabel) bnbEarningsLabel.innerText = lang ? 'Your BNB Earnings' : '你的 BNB 收益';
+
+  const userInfoTitle = document.getElementById('userInfoTitle');
+  if (userInfoTitle) userInfoTitle.innerText = lang ? 'Your Asset Status' : '你的資產狀況';
   
   const depositLabel = document.getElementById('depositLabel');
   if (depositLabel) depositLabel.innerText = lang ? 'Deposit BNB' : '存入 BNB';
@@ -169,8 +192,11 @@ function updateLanguage() {
   if (poolStatsTitle) poolStatsTitle.innerText = lang ? 'Pool Statistics' : '獎池統計';
 
   const currentPoolLabel = document.getElementById('currentPoolLabel');
-  if (currentPoolLabel) currentPoolLabel.innerText = lang ? 'Current Pool:' : '當前獎池：';
+  if (currentPoolLabel) currentPoolLabel.innerText = lang ? 'Current BNB Pool:' : '當前 BNB 獎池：';
 
+  const usd1PoolLabel = document.getElementById('usd1PoolLabel');
+  if (usd1PoolLabel) usd1PoolLabel.innerText = lang ? 'Current USD1 Pool:' : '當前 USD1 獎池：';
+  
   const lastWinnerLabel = document.getElementById('lastWinnerLabel');
   if (lastWinnerLabel) lastWinnerLabel.innerText = lang ? 'Last Winner:' : '上一位贏家：';
 
@@ -184,7 +210,12 @@ function updateLanguage() {
     : '本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。';
 
   const whitepaperLink = document.getElementById('whitepaperLink');
-  if (whitepaperLink) whitepaperLink.innerText = lang ? 'Whitepaper' : '白皮書';
+  if (whitepaperLink) {
+    whitepaperLink.innerText = lang ? 'Whitepaper' : '白皮書';
+    whitepaperLink.href = lang
+      ? 'https://bitluck.notion.site/whitepaper-en'
+      : 'https://bitluck.notion.site/whitepaper-cn';
+  }
 
   const telegramLink = document.getElementById('telegramLink');
   if (telegramLink) telegramLink.innerText = lang ? 'Telegram' : '電報';
@@ -213,6 +244,8 @@ async function connectWallet() {
     document.getElementById('userAccount').innerText = userAccount;
     const connectBtn = document.getElementById('connectWalletBtn');
     if (connectBtn) connectBtn.innerText = currentLanguage === 'en' ? 'Disconnect' : '斷開錢包';
+    const menuConnectBtn = document.getElementById('menuConnectBtn');
+    if (menuConnectBtn) menuConnectBtn.innerText = currentLanguage === 'en' ? 'Disconnect' : '斷開錢包';
     const networkInfo = document.getElementById('networkInfo');
     if (networkInfo) networkInfo.innerText = currentLanguage === 'en' ? 'Connected' : '已連接';
     toast('Wallet connected successfully!');
@@ -250,6 +283,8 @@ async function disconnectWallet() {
   document.getElementById('userAccount').innerText = '';
   const connectBtn = document.getElementById('connectWalletBtn');
   if (connectBtn) connectBtn.innerText = currentLanguage === 'en' ? 'Connect Wallet' : '連接錢包';
+  const menuConnectBtn = document.getElementById('menuConnectBtn');
+  if (menuConnectBtn) menuConnectBtn.innerText = currentLanguage === 'en' ? 'Connect Wallet' : '連接錢包';
   const networkInfo = document.getElementById('networkInfo');
   if (networkInfo) networkInfo.innerText = currentLanguage === 'en' ? 'Not connected' : '未連接';
   toast('Wallet disconnected');
@@ -264,6 +299,9 @@ async function updateUserInfo() {
   const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
   document.getElementById('userBNBDeposit').innerText = web3.utils.fromWei(dep, 'ether');
 
+  const bnbEarnings = await contract.methods.dailyBnbReward(userAccount).call();
+  document.getElementById('bnbEarnings').innerText = bnbEarnings ? web3.utils.fromWei(bnbEarnings, 'ether') : '0';
+  
   const usd1Earnings = await contract.methods.getAccumulatedUsd1(userAccount).call();
   document.getElementById('usd1Earnings').innerText = usd1Earnings ? web3.utils.fromWei(usd1Earnings, 'ether') : '0';
   
@@ -359,6 +397,10 @@ async function updatePoolInfo() {
   const amountEl = document.getElementById('poolAmount');
   if (amountEl) amountEl.innerText = web3.utils.fromWei(bal, 'ether');
 
+  const usd1Bal = await contract.methods.getUSD1Balance().call();
+  const usd1El = document.getElementById('usd1PoolAmount');
+  if (usd1El) usd1El.innerText = web3.utils.fromWei(usd1Bal, 'ether');
+  
   try {
   } catch (e) {
     console.error(e);
