@@ -181,10 +181,10 @@ function updateLanguage() {
   if (userBalanceLabel) userBalanceLabel.innerText = lang ? 'Your BTL Balance:' : '你的 BTL 餘額:';
 
   const usd1EarningsLabel = document.getElementById('usd1EarningsLabel');
-  if (usd1EarningsLabel) usd1EarningsLabel.innerText = lang ? 'Your USD1 Earnings:' : '你的 USD1 收益:';
+  if (usd1EarningsLabel) usd1EarningsLabel.innerText = lang ? 'Your USD1 Earnings:' : '你的 USD1 累計收益:';
 
   const userBNBDepositLabel = document.getElementById('userBNBDepositLabel');
-  if (userBNBDepositLabel) userBNBDepositLabel.innerText = lang ? 'Your BNB Deposit:' : '你的 BNB 存款:';
+  if (userBNBDepositLabel) userBNBDepositLabel.innerText = lang ? 'Your BNB Deposit:' : '你的 BNB 累計存款:';
 
   const bnbEarningsLabel = document.getElementById('bnbEarningsLabel');
   if (bnbEarningsLabel) bnbEarningsLabel.innerText = lang ? 'Daily BNB Estimate:' : '預估每日 BNB 收益:';
@@ -216,29 +216,29 @@ function updateLanguage() {
   if (copyLinkBtn) copyLinkBtn.innerText = lang ? 'Copy Link' : '複製鏈接';
 
   const referralUrlLabel = document.getElementById('referralUrlLabel');
-  if (referralUrlLabel) referralUrlLabel.innerText = lang ? 'Referral URL:' : '推薦鏈接：';
+  if (referralUrlLabel) referralUrlLabel.innerText = lang ? 'Referral URL:' : '推薦鏈接:';
 
   const referralCountLabel = document.getElementById('referralCountLabel');
-  if (referralCountLabel) referralCountLabel.innerText = lang ? 'Total Referrals:' : '推薦總數：';
+  if (referralCountLabel) referralCountLabel.innerText = lang ? 'Total Referrals:' : '推薦總數:';
 
   const referralBNBLabel = document.getElementById('referralBNBLabel');
-  if (referralBNBLabel) referralBNBLabel.innerText = lang ? 'BNB from Referrals:' : '推薦收益 BNB：';
+  if (referralBNBLabel) referralBNBLabel.innerText = lang ? 'BNB from Referrals:' : '推薦收益 BNB:';
 
   const referralCountUnit = document.getElementById('referralCountUnit');
   if (referralCountUnit) referralCountUnit.innerText = lang ? ' times' : ' 次';
 
   const minDepositUnit = document.getElementById('minDepositUnit');
-  if (minDepositUnit) minDepositUnit.innerText = lang ? 'BNB minimum' : '最低存款 BNB';
+  if (minDepositUnit) minDepositUnit.innerText = lang ? 'BNB minimum' : 'BNB 起';
   
   // Pool statistics section
   const poolStatsTitle = document.getElementById('poolStatsTitle');
   if (poolStatsTitle) poolStatsTitle.innerText = lang ? 'Pool Statistics' : '獎池統計';
 
   const currentPoolLabel = document.getElementById('currentPoolLabel');
-  if (currentPoolLabel) currentPoolLabel.innerText = lang ? 'Current BNB Pool:' : '當前 BNB 獎池：';
+  if (currentPoolLabel) currentPoolLabel.innerText = lang ? 'Current BNB Pool:' : '當前 BNB 獎池:';
 
   const usd1PoolLabel = document.getElementById('usd1PoolLabel');
-  if (usd1PoolLabel) usd1PoolLabel.innerText = lang ? 'Current USD1 Pool:' : '當前 USD1 獎池：';
+  if (usd1PoolLabel) usd1PoolLabel.innerText = lang ? 'Current USD1 Pool:' : '當前 USD1 獎池:';
   
   const lastWinnerLabel = document.getElementById('lastWinnerLabel');
   if (lastWinnerLabel) lastWinnerLabel.innerText = lang ? 'Last Winner:' : '上一位贏家：';
