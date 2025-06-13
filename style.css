@@ -54,35 +54,26 @@ header {
   background: #121212;  /* 深色背景 */
   color: #f0b90b;  /* 幣安金黃色文字 */
   text-align: center;
+  position: relative;
   display: flex;
-  flex-direction: column;  /* 讓元素垂直排列 */
-  align-items: center;  /* 垂直居中對齊 */
-  padding: 20px;
+  justify-content: center;
+  align-items: center;
+  padding: 40px 0;
 }
 header .menu-btn {
-  align-self: flex-start;
+  position: absolute;
+  top: 10px;
+  left: 10px;
   background: none;
   border: none;
   color: #f0b90b;
   font-size: 2rem;
   cursor: pointer;
-  margin-bottom: 10px;
 }
-header .header-buttons {
-  display: flex;
-  flex-direction: column;  /* 改為垂直排列 */
-  gap: 10px;  /* 增加按鈕之間的間距 */
-  margin-bottom: 15px;  /* 底部間距 */
-}
-header .header-buttons button:first-child {
-  align-self: flex-start;  /* 讓語言切換按鈕顯示在左邊 */
-  background: #f0b90b;  /* 幣安金黃色 */
-  color: #121212;  /* 黑色文字 */
-  border: none;
-  padding: 10px 20px;
-  cursor: pointer;
-}
-header .header-buttons button:nth-child(2) {
+header .lang-btn {
+  position: absolute;
+  top: 10px;
+  right: 10px;
   background: #f0b90b;  /* 幣安金黃色 */
   color: #121212;  /* 黑色文字 */
   border: none;
@@ -97,14 +88,6 @@ header button:hover {
 header #logo {
   width: 150px;  /* 調整 Logo 寬度 */
   height: auto;  /* 高度自動調整，保持比例 */
-}
-/* 語言切換和連接錢包按鈕容器 */
-.header-buttons {
-  display: flex;
-  justify-content: space-between;  /* 按鈕在左右兩邊 */
-  width: 100%;  /* 確保容器寬度為100% */
-  gap: 15px;  /* 增加按鈕間距 */
-  margin-top: 10px; /* 調整上邊距 */
 }
 
 /* Side menu */
@@ -158,6 +141,16 @@ section {
   margin: 20px 0;
   padding: 20px;
   line-height: 1.6;
+}
+#walletConnection .container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 10px;
+  padding: 10px 0;
+}
+#walletConnection #connectWalletBtn {
+  padding: 8px 16px;
 }
 #mainInfo {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
