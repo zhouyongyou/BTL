@@ -54,6 +54,15 @@
       <p id="userAccount"></p>
     </div>
   </section>
+  <!-- ===== Pool Statistics ===== -->
+  <section id="poolStats">
+    <div class="container">
+      <h3>Pool Statistics</h3>
+      <p>Current Pool: <span id="poolAmount">-</span> BNB</p>
+      <p>Last Winner: <span id="lastWinner">-</span></p>
+      <p><a id="fullHistory" href="https://bscscan.com/address/0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316#events" target="_blank">Full History</a></p>
+    </div>
+  </section>
   <!-- ===== Main Info ===== -->
   <section id="mainInfo">
     <div class="container">
@@ -101,7 +110,10 @@
       <h4 id="referralLink">Your Referral Link:</h4>
       <p><span id="referralUrlLabel">Referral URL:</span>
         <span id="referralUrl" onclick="copyToClipboard('referralUrl')">https://btluck.fun/?ref=...</span>
-      <button id="copyLinkBtn" onclick="copyToClipboard('referralUrl')">Copy Link</button>
+        <button id="copyLinkBtn" onclick="copyToClipboard('referralUrl')">Copy Link</button>
+      </p>
+      <p><span id="referralCountLabel">Total Referrals:</span> <span id="referralCount">-</span></p>
+      <p><span id="referralBNBLabel">BNB from Referrals:</span> <span id="referralBNB">-</span></p>
     </div>
   </section>
   
