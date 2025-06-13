@@ -18,6 +18,11 @@ let userAccount = '';
 const CONTRACT_ADDRESS = '0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316';
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
+
+// 可調整的更新頻率（毫秒）
+const COUNTDOWN_INTERVAL_MS = 1000;       // 倒數更新間隔
+const POOL_INFO_INTERVAL_MS = 30000;       // 池子資訊更新間隔
+const USER_INFO_INTERVAL_MS = 30000;       // 用戶資訊更新間隔
 /* ===== Toast ===== */
 function toast(msg) {
   const t = document.getElementById('toast');
@@ -76,6 +81,31 @@ function updateLanguage() {
   // 按鈕的切換文字
   const langBtn = document.getElementById('langBtn');
   if (langBtn) langBtn.innerText = lang ? '🌐 中文' : '🌐 EN';
+
+  // Side menu texts
+  const menuMainInfo = document.getElementById('menuMainInfo');
+  if (menuMainInfo) menuMainInfo.innerText = lang ? 'Main Info' : '主信息';
+
+  const menuReferral = document.getElementById('menuReferral');
+  if (menuReferral) menuReferral.innerText = lang ? 'Referral' : '推薦';
+
+  const menuWallet = document.getElementById('menuWallet');
+  if (menuWallet) menuWallet.innerText = lang ? 'Wallet' : '錢包';
+
+  const menuConnect = document.getElementById('menuConnect');
+  if (menuConnect) menuConnect.innerText = lang ? 'Connect Wallet' : '連接錢包';
+
+  const menuBuy = document.getElementById('menuBuy');
+  if (menuBuy) menuBuy.innerText = lang ? 'BUY $BTL' : '購買 BTL';
+
+  const menuInvite = document.getElementById('menuInvite');
+  if (menuInvite) menuInvite.innerText = lang ? 'Invite' : '邀請';
+
+  const menuWhitepaper = document.getElementById('menuWhitepaper');
+  if (menuWhitepaper) menuWhitepaper.innerText = lang ? 'Whitepaper' : '白皮書';
+
+  const menuDocs = document.getElementById('menuDocs');
+  if (menuDocs) menuDocs.innerText = lang ? 'Docs' : '文檔';
   
   // Main Info
   const contractInfoTitle = document.getElementById('contractInfoTitle');
@@ -133,6 +163,19 @@ function updateLanguage() {
 
   const referralBNBLabel = document.getElementById('referralBNBLabel');
   if (referralBNBLabel) referralBNBLabel.innerText = lang ? 'BNB from Referrals:' : '推薦收益 BNB：';
+
+  // Pool statistics section
+  const poolStatsTitle = document.getElementById('poolStatsTitle');
+  if (poolStatsTitle) poolStatsTitle.innerText = lang ? 'Pool Statistics' : '獎池統計';
+
+  const currentPoolLabel = document.getElementById('currentPoolLabel');
+  if (currentPoolLabel) currentPoolLabel.innerText = lang ? 'Current Pool:' : '當前獎池：';
+
+  const lastWinnerLabel = document.getElementById('lastWinnerLabel');
+  if (lastWinnerLabel) lastWinnerLabel.innerText = lang ? 'Last Winner:' : '上一位贏家：';
+
+  const fullHistory = document.getElementById('fullHistory');
+  if (fullHistory) fullHistory.innerText = lang ? 'Full History' : '完整記錄';
   
   // Footer
   const networkInfoFooter = document.getElementById('networkInfoFooter');
@@ -317,7 +360,13 @@ async function updatePoolInfo() {
   if (amountEl) amountEl.innerText = web3.utils.fromWei(bal, 'ether');
 
   try {
-    const events = await contract.getPastEvents('BNBRewardDistributed', { fromBlock: 0, toBlock: 'latest' });
+    const latestBlock = await web3.eth.getBlockNumber();
+    const fromBlock = latestBlock - 3600;
+    const toBlock = latestBlock;
+    const events = await contract.getPastEvents('BNBRewardDistributed', {
+      fromBlock,
+      toBlock
+    });
     if (events && events.length > 0) {
       const last = events[events.length - 1];
       const winner = last.returnValues.sender || last.returnValues.user;
@@ -341,9 +390,10 @@ window.onload = async () => {
   // 動態加載 ABI
   ABI = (await fetch('contract.json').then(r => r.json())).abi;
   if (web3Modal.cachedProvider) connectWallet();
-  setInterval(updateCountdowns, 1000);
+  setInterval(updateCountdowns, COUNTDOWN_INTERVAL_MS);
   updatePoolInfo();
-  setInterval(updatePoolInfo, 30000);
+  setInterval(updatePoolInfo, POOL_INFO_INTERVAL_MS);
+  setInterval(updateUserInfo, USER_INFO_INTERVAL_MS);
 };
 
 // 放在 script.js 的結尾
@@ -370,6 +420,7 @@ window.addEventListener('DOMContentLoaded', (event) => {
     };
     menuToggle.addEventListener('click', openMenu);
     menuOverlay.addEventListener('click', closeMenu);
+    sideMenu.querySelectorAll('a').forEach(a => a.addEventListener('click', closeMenu));
   }
   
   // 更新其他信息
