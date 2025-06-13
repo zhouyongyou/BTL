@@ -19,6 +19,40 @@ const CONTRACT_ADDRESS = '0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316';
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
 
+function applyContractAddress() {
+  const addr = CONTRACT_ADDRESS;
+  const menuBuy = document.getElementById('menuBuy');
+  if (menuBuy) {
+    menuBuy.href = `https://pancakeswap.finance/swap?outputCurrency=${addr}&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d`;
+  }
+  const contractAddr = document.getElementById('contractAddr');
+  if (contractAddr) contractAddr.innerText = addr;
+  const fullHistory = document.getElementById('fullHistory');
+  if (fullHistory) fullHistory.href = `https://bscscan.com/address/${addr}#events`;
+}
+
+/* ===== Placeholder helpers ===== */
+function setPlaceholder(id, value = '-') {
+  const el = document.getElementById(id);
+  if (el) el.innerText = value;
+}
+
+function resetPlaceholders() {
+  [
+    'usd1Time',
+    'bnbTime',
+    'userBalance',
+    'usd1Earnings',
+    'userBNBDeposit',
+    'bnbEarnings',
+    'referralUrl',
+    'referralCount',
+    'referralBNB',
+    'poolAmount',
+    'usd1PoolAmount'
+  ].forEach(id => setPlaceholder(id));
+}
+
 // 可調整的更新頻率（毫秒）
 const COUNTDOWN_INTERVAL_MS = 1000;       // 倒數更新間隔
 const POOL_INFO_INTERVAL_MS = 30000;       // 池子資訊更新間隔
@@ -100,8 +134,11 @@ function updateLanguage() {
   }
 
   const menuBuy = document.getElementById('menuBuy');
-  if (menuBuy) menuBuy.innerText = lang ? 'BUY $BTL' : '購買 BTL';
+  if (menuBuy) menuBuy.innerText = lang ? 'BUY $BTL' : '購買 $BTL';
 
+  const buyBtlLink = document.getElementById('buyBtlLink');
+  if (buyBtlLink) buyBtlLink.innerText = lang ? 'BUY $BTL' : '購買 $BTL';
+  
   const menuInvite = document.getElementById('menuInvite');
   if (menuInvite) menuInvite.innerText = lang ? 'Invite' : '邀請';
 
@@ -126,7 +163,7 @@ function updateLanguage() {
   if (contractInfoTitle) contractInfoTitle.innerText = lang ? 'Contract Information' : '合約信息';
   
   const btlAddressLabel = document.getElementById('btlAddressLabel');
-  if (btlAddressLabel) btlAddressLabel.innerText = lang ? 'BTL Contract Address:' : 'BTL 合約地址：';
+  if (btlAddressLabel) btlAddressLabel.innerText = lang ? '$BTL Contract Address:' : '$BTL 合約地址:';
 
   const copyAddressBtn = document.getElementById('copyAddressBtn');
   if (copyAddressBtn) copyAddressBtn.innerText = lang ? 'Copy Address' : '複製地址';
@@ -135,23 +172,23 @@ function updateLanguage() {
   if (countdownTitle) countdownTitle.innerText = lang ? 'Reward Countdowns' : '分紅倒數';
   
   const usd1CountdownLabel = document.getElementById('usd1CountdownLabel');
-  if (usd1CountdownLabel) usd1CountdownLabel.innerText = lang ? 'Next USD1 Reward:' : '下次 USD1 分紅：';
+  if (usd1CountdownLabel) usd1CountdownLabel.innerText = lang ? 'Next USD1 Reward:' : '下次 USD1 分紅:';
 
   const bnbCountdownLabel = document.getElementById('bnbCountdownLabel');
-  if (bnbCountdownLabel) bnbCountdownLabel.innerText = lang ? 'Next BNB Reward:' : '下次 BNB 分紅：';
+  if (bnbCountdownLabel) bnbCountdownLabel.innerText = lang ? 'Next BNB Reward:' : '下次 BNB 分紅:';
 
   const userBalanceLabel = document.getElementById('userBalanceLabel');
-  if (userBalanceLabel) userBalanceLabel.innerText = lang ? 'Your BTL Balance' : '你的 BTL 餘額';
+  if (userBalanceLabel) userBalanceLabel.innerText = lang ? 'Your BTL Balance:' : '你的 BTL 餘額:';
 
   const usd1EarningsLabel = document.getElementById('usd1EarningsLabel');
-  if (usd1EarningsLabel) usd1EarningsLabel.innerText = lang ? 'Your USD1 Earnings' : '你的 USD1 收益';
+  if (usd1EarningsLabel) usd1EarningsLabel.innerText = lang ? 'Your USD1 Earnings:' : '你的 USD1 收益:';
 
   const userBNBDepositLabel = document.getElementById('userBNBDepositLabel');
-  if (userBNBDepositLabel) userBNBDepositLabel.innerText = lang ? 'Your BNB Deposit' : '你的 BNB 存款';
+  if (userBNBDepositLabel) userBNBDepositLabel.innerText = lang ? 'Your BNB Deposit:' : '你的 BNB 存款:';
 
   const bnbEarningsLabel = document.getElementById('bnbEarningsLabel');
-  if (bnbEarningsLabel) bnbEarningsLabel.innerText = lang ? 'Your BNB Earnings' : '你的 BNB 收益';
-
+  if (bnbEarningsLabel) bnbEarningsLabel.innerText = lang ? 'Daily BNB Estimate:' : '預估每日 BNB 收益:';
+  
   const userInfoTitle = document.getElementById('userInfoTitle');
   if (userInfoTitle) userInfoTitle.innerText = lang ? 'Your Asset Status' : '你的資產狀況';
   
@@ -187,6 +224,12 @@ function updateLanguage() {
   const referralBNBLabel = document.getElementById('referralBNBLabel');
   if (referralBNBLabel) referralBNBLabel.innerText = lang ? 'BNB from Referrals:' : '推薦收益 BNB：';
 
+  const referralCountUnit = document.getElementById('referralCountUnit');
+  if (referralCountUnit) referralCountUnit.innerText = lang ? ' times' : ' 次';
+
+  const minDepositUnit = document.getElementById('minDepositUnit');
+  if (minDepositUnit) minDepositUnit.innerText = lang ? 'BNB minimum' : '最低存款 BNB';
+  
   // Pool statistics section
   const poolStatsTitle = document.getElementById('poolStatsTitle');
   if (poolStatsTitle) poolStatsTitle.innerText = lang ? 'Pool Statistics' : '獎池統計';
@@ -242,6 +285,7 @@ async function connectWallet() {
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById('userAccount').innerText = userAccount;
+    resetPlaceholders();
     const connectBtn = document.getElementById('connectWalletBtn');
     if (connectBtn) connectBtn.innerText = currentLanguage === 'en' ? 'Disconnect' : '斷開錢包';
     const menuConnectBtn = document.getElementById('menuConnectBtn');
@@ -281,6 +325,7 @@ async function disconnectWallet() {
   contract = null;
   userAccount = '';
   document.getElementById('userAccount').innerText = '';
+  resetPlaceholders();
   const connectBtn = document.getElementById('connectWalletBtn');
   if (connectBtn) connectBtn.innerText = currentLanguage === 'en' ? 'Connect Wallet' : '連接錢包';
   const menuConnectBtn = document.getElementById('menuConnectBtn');
@@ -293,6 +338,7 @@ async function disconnectWallet() {
 /* ===== Update user info ===== */
 async function updateUserInfo() {
   if (!userAccount) return;
+  resetPlaceholders();
   const bal = await contract.methods.balanceOf(userAccount).call();
   document.getElementById('userBalance').innerText = bal;
 
@@ -345,6 +391,8 @@ async function depositBNB() {
 /* ===== Countdown ===== */
 async function updateCountdowns() {
   if (!contract) return;
+  setPlaceholder('usd1Time');
+  setPlaceholder('bnbTime');
   const u = await contract.methods.getUSD1RewardCountdown().call();
   const b = await contract.methods.getBNBRewardCountdown().call();
 
@@ -393,6 +441,8 @@ async function updateContractInfo() {
 /* ===== Pool statistics ===== */
 async function updatePoolInfo() {
   if (!contract) return;
+  setPlaceholder('poolAmount');
+  setPlaceholder('usd1PoolAmount');
   const bal = await contract.methods.getBnbPoolBalance().call();
   const amountEl = document.getElementById('poolAmount');
   if (amountEl) amountEl.innerText = web3.utils.fromWei(bal, 'ether');
@@ -415,6 +465,7 @@ function copyToClipboard(id) {
 /* ===== Dark mode ===== */
 window.onload = async () => {
   document.body.classList.add('dark-mode');  // 預設啟用深色模式
+  applyContractAddress();
   updateLanguage();
   // 動態加載 ABI
   ABI = (await fetch('contract.json').then(r => r.json())).abi;
@@ -427,6 +478,7 @@ window.onload = async () => {
 
 // 放在 script.js 的結尾
 window.addEventListener('DOMContentLoaded', (event) => {
+  applyContractAddress();
   // 自動填充推薦人地址
   const urlParams = new URLSearchParams(window.location.search);
   const referrer = urlParams.get('ref');
