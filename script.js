@@ -127,6 +127,12 @@ function updateLanguage() {
 
   const referralUrlLabel = document.getElementById('referralUrlLabel');
   if (referralUrlLabel) referralUrlLabel.innerText = lang ? 'Referral URL:' : '推薦鏈接：';
+
+  const referralCountLabel = document.getElementById('referralCountLabel');
+  if (referralCountLabel) referralCountLabel.innerText = lang ? 'Total Referrals:' : '推薦總數：';
+
+  const referralBNBLabel = document.getElementById('referralBNBLabel');
+  if (referralBNBLabel) referralBNBLabel.innerText = lang ? 'BNB from Referrals:' : '推薦收益 BNB：';
   
   // Footer
   const networkInfoFooter = document.getElementById('networkInfoFooter');
@@ -221,6 +227,12 @@ async function updateUserInfo() {
   const ref = await contract.methods.getReferralLink(userAccount).call();
   console.log("Referral link:", ref);
   document.getElementById('referralUrl').innerText = ref || 'No referral link';
+
+  const count = await contract.methods.getReferralCount(userAccount).call();
+  document.getElementById('referralCount').innerText = count;
+
+  const refBnb = await contract.methods.getReferralBNBIncome(userAccount).call();
+  document.getElementById('referralBNB').innerText = web3.utils.fromWei(refBnb, 'ether');
 }
 
 /* ===== Deposit BNB ===== */
@@ -297,6 +309,26 @@ async function updateContractInfo() {
   }
 }
 
+/* ===== Pool statistics ===== */
+async function updatePoolInfo() {
+  if (!contract) return;
+  const bal = await contract.methods.getBnbPoolBalance().call();
+  const amountEl = document.getElementById('poolAmount');
+  if (amountEl) amountEl.innerText = web3.utils.fromWei(bal, 'ether');
+
+  try {
+    const events = await contract.getPastEvents('BNBRewardDistributed', { fromBlock: 0, toBlock: 'latest' });
+    if (events && events.length > 0) {
+      const last = events[events.length - 1];
+      const winner = last.returnValues.sender || last.returnValues.user;
+      const winEl = document.getElementById('lastWinner');
+      if (winEl) winEl.innerText = winner;
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
+
 /* ===== Copy helper ===== */
 function copyToClipboard(id) {
   navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => toast('Copied!'));
@@ -310,6 +342,8 @@ window.onload = async () => {
   ABI = (await fetch('contract.json').then(r => r.json())).abi;
   if (web3Modal.cachedProvider) connectWallet();
   setInterval(updateCountdowns, 1000);
+  updatePoolInfo();
+  setInterval(updatePoolInfo, 30000);
 };
 
 // 放在 script.js 的結尾
