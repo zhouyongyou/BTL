@@ -17,6 +17,7 @@ let provider, web3, contract;
 let userAccount = '';
 const CONTRACT_ADDRESS = '0xbF3fAD4C7353240F563a13A14959E68098d992E6';
 let ABI = []; // 从 contract.json 动态加载
+let timeUnits = [];
 /* ===== Toast ===== */
 function toast(msg) {
   const t = document.getElementById('toast');
@@ -65,11 +66,21 @@ function updateLanguage() {
   
   // Header
   const networkInfo = document.getElementById('networkInfo');
-  if (networkInfo) networkInfo.innerText = lang ? 'Connecting...' : '連接中...';
-
+  if (networkInfo) {
+    if (userAccount) {
+      networkInfo.innerText = lang ? 'Connected' : '已連接';
+    } else {
+      networkInfo.innerText = lang ? 'Not connected' : '未連接';
+    }
+  }
   const connectWalletBtn = document.getElementById('connectWalletBtn');
-  if (connectWalletBtn) connectWalletBtn.innerText = lang ? 'Connect Wallet' : '連接錢包';
-
+  if (connectWalletBtn) {
+    if (userAccount) {
+      connectWalletBtn.innerText = lang ? 'Disconnect' : '斷開錢包';
+    } else {
+      connectWalletBtn.innerText = lang ? 'Connect Wallet' : '連接錢包';
+    }
+  }
   // 按鈕的切換文字
   const button = document.querySelector('button');
   if (button) button.innerText = lang ? '🌐 中文' : '🌐 EN';
@@ -87,13 +98,13 @@ function updateLanguage() {
   const bnbCountdownLabel = document.getElementById('bnbCountdownLabel');
   if (bnbCountdownLabel) bnbCountdownLabel.innerText = lang ? 'Next BNB Reward:' : '下次 BNB 分紅：';
 
-  const userBalance = document.getElementById('userBalanceLabel');
+  const userBalanceLabel = document.getElementById('userBalanceLabel');
   if (userBalanceLabel) userBalanceLabel.innerText = lang ? 'Your BTL Balance' : '你的 BTL 餘額';
 
-  const usd1Earnings = document.getElementById('usd1EarningsLabel');
+  const usd1EarningsLabel = document.getElementById('usd1EarningsLabel');
   if (usd1EarningsLabel) usd1EarningsLabel.innerText = lang ? 'Your USD1 Earnings' : '你的 USD1 收益';
 
-  const userBNBDeposit = document.getElementById('userBNBDepositLabel');
+  const userBNBDepositLabel = document.getElementById('userBNBDepositLabel');
   if (userBNBDepositLabel) userBNBDepositLabel.innerText = lang ? 'Your BNB Deposit' : '你的 BNB 存款';
   
   const depositLabel = document.getElementById('depositLabel');
@@ -138,18 +149,11 @@ function updateLanguage() {
   if (twitterLink) twitterLink.innerText = lang ? 'Twitter' : '推特';
 }
 
-/* ===== Dark mode ===== */
-window.onload = async () => {
-  document.body.classList.add('dark-mode');
-  updateLanguage();
-  // 动态加载 ABI
-  ABI = (await fetch('contract.json').then(r => r.json())).abi;
-  if (web3Modal.cachedProvider) connectWallet();
-  setInterval(updateCountdowns, 1000);
-};
-
 /* ===== Connect wallet ===== */
 async function connectWallet() {
+  if (userAccount) {
+    return disconnectWallet();
+  }
   if (document.getElementById('connectWalletBtn').dataset.loading === 'true') return;
   showLoading('connectWalletBtn');
   try {
@@ -163,6 +167,10 @@ async function connectWallet() {
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById('userAccount').innerText = userAccount;
+    const connectBtn = document.getElementById('connectWalletBtn');
+    if (connectBtn) connectBtn.innerText = currentLanguage === 'en' ? 'Disconnect' : '斷開錢包';
+    const networkInfo = document.getElementById('networkInfo');
+    if (networkInfo) networkInfo.innerText = currentLanguage === 'en' ? 'Connected' : '已連接';
     toast('Wallet connected successfully!');
 
     provider.on('accountsChanged', acc => {
@@ -181,6 +189,26 @@ async function connectWallet() {
   } finally {
     hideLoading('connectWalletBtn');
   }
+}
+
+async function disconnectWallet() {
+  if (provider && provider.disconnect) {
+    try { await provider.disconnect(); } catch (e) { console.error(e); }
+  }
+  if (provider && provider.close) {
+    try { await provider.close(); } catch (e) { console.error(e); }
+  }
+  await web3Modal.clearCachedProvider();
+  provider = null;
+  web3 = null;
+  contract = null;
+  userAccount = '';
+  document.getElementById('userAccount').innerText = '';
+  const connectBtn = document.getElementById('connectWalletBtn');
+  if (connectBtn) connectBtn.innerText = currentLanguage === 'en' ? 'Connect Wallet' : '連接錢包';
+  const networkInfo = document.getElementById('networkInfo');
+  if (networkInfo) networkInfo.innerText = currentLanguage === 'en' ? 'Not connected' : '未連接';
+  toast('Wallet disconnected');
 }
 
 /* ===== Update user info ===== */
