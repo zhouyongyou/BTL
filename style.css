@@ -43,6 +43,7 @@ body.dark-mode button {
   .container {
     width: 80%;
   }
+}
 @media (max-width: 768px) {
   .container {
     width: 90%;
