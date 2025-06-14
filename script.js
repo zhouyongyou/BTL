@@ -242,6 +242,12 @@ function updateLanguage() {
     menuDocs.target = "_blank";
   }
 
+  const menuTelegramText = document.getElementById("menuTelegramText");
+  if (menuTelegramText) menuTelegramText.innerText = lang ? "Telegram" : "電報";
+
+  const menuTwitterText = document.getElementById("menuTwitterText");
+  if (menuTwitterText) menuTwitterText.innerText = lang ? "Twitter" : "推特";
+
   // Main Info
   const contractInfoTitle = document.getElementById("contractInfoTitle");
   if (contractInfoTitle)
