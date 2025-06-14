@@ -246,10 +246,10 @@ function updateLanguage() {
 
   setLabel(
     "usd1CountdownLabel",
-    lang ? "Next USD1 Reward:" : "下次 USD1 分紅:",
+    lang ? " Next USD1 Reward:" : " 下次 USD1 分紅:",
   );
 
-  setLabel("bnbCountdownLabel", lang ? "Next BNB Reward:" : "下次 BNB 分紅:");
+  setLabel("bnbCountdownLabel", lang ? " Next BNB Reward:" : " 下次 BNB 分紅:");
 
   const userInfoTitle = document.getElementById("userInfoTitle");
   if (userInfoTitle)
