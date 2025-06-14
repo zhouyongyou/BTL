@@ -36,6 +36,17 @@ function formatBTLBalance(balance) {
   }
 }
 
+function formatNumber(value, decimals = 4) {
+  const num = parseFloat(value);
+  if (isNaN(num)) return value;
+  const fixed = num.toFixed(decimals);
+  return fixed.replace(/0+$/, "").replace(/\.$/, "");
+}
+
+function fromWeiFormatted(value, decimals = 4) {
+  return formatNumber(web3.utils.fromWei(value, "ether"), decimals);
+}
+
 const ERC20_ABI = [
   {
     constant: true,
@@ -482,35 +493,28 @@ async function updateUserInfo() {
   document.getElementById("userBalance").innerText = formatBTLBalance(bal);
 
   const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
-  document.getElementById("userBNBDeposit").innerText = web3.utils.fromWei(
-    dep,
-    "ether",
-  );
+  document.getElementById("userBNBDeposit").innerText = fromWeiFormatted(dep);
 
   const bnbEarnings = await contract.methods.dailyBnbReward(userAccount).call();
   document.getElementById("bnbEarnings").innerText = bnbEarnings
-    ? web3.utils.fromWei(bnbEarnings, "ether")
+    ? fromWeiFormatted(bnbEarnings)
     : "0";
 
   const walletBnb = await web3.eth.getBalance(userAccount);
-  document.getElementById("walletBnb").innerText = web3.utils.fromWei(
-    walletBnb,
-    "ether",
-  );
+  document.getElementById("walletBnb").innerText = fromWeiFormatted(walletBnb);
 
   const usd1Earnings = await contract.methods
     .getAccumulatedUsd1(userAccount)
     .call();
   document.getElementById("usd1Earnings").innerText = usd1Earnings
-    ? web3.utils.fromWei(usd1Earnings, "ether")
+    ? fromWeiFormatted(usd1Earnings)
     : "0";
 
   const usd1Addr = await contract.methods.USD1Address().call();
   const usd1Contract = new web3.eth.Contract(ERC20_ABI, usd1Addr);
   const walletUsd1 = await usd1Contract.methods.balanceOf(userAccount).call();
-  document.getElementById("walletUsd1").innerText = web3.utils.fromWei(
+  document.getElementById("walletUsd1").innerText = fromWeiFormatted(
     walletUsd1,
-    "ether",
   );
 
   const ref = await contract.methods.getReferralLink(userAccount).call();
@@ -523,10 +527,7 @@ async function updateUserInfo() {
   const refBnb = await contract.methods
     .getReferralBNBIncome(userAccount)
     .call();
-  document.getElementById("referralBNB").innerText = web3.utils.fromWei(
-    refBnb,
-    "ether",
-  );
+  document.getElementById("referralBNB").innerText = fromWeiFormatted(refBnb);
 }
 
 /* ===== Deposit BNB ===== */
@@ -595,19 +596,19 @@ async function updateContractInfo() {
   const total = await contract.methods.totalBnbDeposited().call();
   const totalBnbElement = document.getElementById("totalBnbDeposited");
   if (totalBnbElement) {
-    totalBnbElement.innerText = web3.utils.fromWei(total, "ether");
+    totalBnbElement.innerText = fromWeiFormatted(total);
   }
 
   const th = await contract.methods.getHolderThreshold().call();
   const thresholdElement = document.getElementById("holderThreshold");
   if (thresholdElement) {
-    thresholdElement.innerText = web3.utils.fromWei(th, "ether");
+    thresholdElement.innerText = fromWeiFormatted(th);
   }
 
   const min = await contract.methods.minDeposit().call();
   const minDepositElement = document.getElementById("minDepositAmount");
   if (minDepositElement) {
-    minDepositElement.innerText = web3.utils.fromWei(min, "ether");
+    minDepositElement.innerText = fromWeiFormatted(min);
   }
 }
 
@@ -618,11 +619,11 @@ async function updatePoolInfo() {
   setPlaceholder("usd1PoolAmount");
   const bal = await contract.methods.getBnbPoolBalance().call();
   const amountEl = document.getElementById("poolAmount");
-  if (amountEl) amountEl.innerText = web3.utils.fromWei(bal, "ether");
+  if (amountEl) amountEl.innerText = fromWeiFormatted(bal);
 
   const usd1Bal = await contract.methods.getUSD1Balance().call();
   const usd1El = document.getElementById("usd1PoolAmount");
-  if (usd1El) usd1El.innerText = web3.utils.fromWei(usd1Bal, "ether");
+  if (usd1El) usd1El.innerText = fromWeiFormatted(usd1Bal);
 
   try {
   } catch (e) {
