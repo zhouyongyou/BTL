@@ -6,25 +6,27 @@
 }
 /* Base */
 body {
-  font-family: 'Noto Sans Mono', monospace;
-  background-color: #121212;  /* 深色背景 */
-  color: #f0b90b;  /* 幣安金黃色文字 */
-  transition: background 0.3s, color 0.3s;
+  font-family: "Noto Sans Mono", monospace;
+  background-color: #121212; /* 深色背景 */
+  color: #f0b90b; /* 幣安金黃色文字 */
+  transition:
+    background 0.3s,
+    color 0.3s;
 }
 /* Dark Mode */
 body.dark-mode {
-  background-color: #121212;  /* 深色背景 */
-  color: #f0b90b;  /* 幣安金黃色文字 */
+  background-color: #121212; /* 深色背景 */
+  color: #f0b90b; /* 幣安金黃色文字 */
 }
 body.dark-mode header {
-  background: #333;  /* 深色背景 */
+  background: #333; /* 深色背景 */
 }
 body.dark-mode footer {
-  background: #111;  /* 更深的背景 */
+  background: #111; /* 更深的背景 */
 }
 body.dark-mode button {
-  background: #f0b90b;  /* 幣安金黃色 */
-  color: #121212;  /* 黑色文字 */
+  background: #f0b90b; /* 幣安金黃色 */
+  color: #121212; /* 黑色文字 */
 }
 /* Container */
 .container {
@@ -56,10 +58,18 @@ body.dark-mode button {
   margin-right: 4px;
 }
 
+.icon-right {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-left: 4px;
+  margin-right: 0;
+}
+
 /* Header */
 header {
-  background: #121212;  /* 深色背景 */
-  color: #f0b90b;  /* 幣安金黃色文字 */
+  background: #121212; /* 深色背景 */
+  color: #f0b90b; /* 幣安金黃色文字 */
   text-align: center;
   position: relative;
   display: flex;
@@ -71,8 +81,8 @@ header .lang-btn {
   position: absolute;
   top: 10px;
   right: 10px;
-  background: #f0b90b;  /* 幣安金黃色 */
-  color: #121212;  /* 黑色文字 */
+  background: #f0b90b; /* 幣安金黃色 */
+  color: #121212; /* 黑色文字 */
   border: none;
   padding: 10px 20px;
   cursor: pointer;
@@ -89,12 +99,12 @@ header .menu-btn {
 }
 /* Hover 效果 */
 header button:hover {
-  background: #c8a500;  /* 深黃色懸停 */
+  background: #c8a500; /* 深黃色懸停 */
 }
 /* Logo */
 header #logo {
-  width: 50px;  /* 調整 Logo 寬度 */
-  height: auto;  /* 高度自動調整，保持比例 */
+  width: 50px; /* 調整 Logo 寬度 */
+  height: auto; /* 高度自動調整，保持比例 */
 }
 
 /* Side menu */
@@ -157,7 +167,7 @@ header #logo {
 }
 /* Sections */
 section {
-  background: #1e1e1e;  /* 稍微淺一點的暗色背景 */
+  background: #1e1e1e; /* 稍微淺一點的暗色背景 */
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
   margin: 10px 0;
@@ -186,12 +196,12 @@ section {
 h2 {
   font-size: 1.8rem;
   margin-bottom: 20px;
-  color: #f0b90b;  /* 幣安金黃色 */
+  color: #f0b90b; /* 幣安金黃色 */
   line-height: 1.6;
 }
 h3 {
   margin-top: 20px;
-  color: #f0b90b;  /* 幣安金黃色 */
+  color: #f0b90b; /* 幣安金黃色 */
   line-height: 1.6;
 }
 
@@ -210,18 +220,17 @@ input[type="text"] {
 
 button {
   font-size: 16px;
-  background: #f0b90b;  /* 幣安金黃色 */
-  color: #121212;  /* 黑色文字 */
+  background: #f0b90b; /* 幣安金黃色 */
+  color: #121212; /* 黑色文字 */
   border: none;
   padding: 10px 20px;
   border-radius: 5px;
   cursor: pointer;
   margin: 10px auto;
   transition: background 0.3s;
-  
 }
 button:hover {
-  background: #c8a500;  /* 深黃色懸停 */
+  background: #c8a500; /* 深黃色懸停 */
 }
 button.loading {
   pointer-events: none;
@@ -233,14 +242,18 @@ button.loading::after {
   animation: blink 1s infinite steps(2);
 }
 @keyframes blink {
-  0% { opacity: 0; }
-  100% { opacity: 1; }
+  0% {
+    opacity: 0;
+  }
+  100% {
+    opacity: 1;
+  }
 }
 
 /* Footer */
 footer {
   background: #222222;
-  color: #f0b90b;  /* 幣安金黃色文字 */
+  color: #f0b90b; /* 幣安金黃色文字 */
   text-align: center;
   padding: 10px 0;
   margin-top: 30px;
@@ -250,13 +263,13 @@ footer {
 /* Footer Links */
 footer a {
   font-weight: bold;
-  color: #f0b90b;  /* 幣安金黃色 */
-  text-decoration: none;  /* 去除底線 */
+  color: #f0b90b; /* 幣安金黃色 */
+  text-decoration: none; /* 去除底線 */
   transition: color 0.3s;
 }
 
 footer a:hover {
-  color: #c8a500;  /* 深一點的金黃色 */
+  color: #c8a500; /* 深一點的金黃色 */
 }
 
 /* Full History link */
@@ -290,8 +303,12 @@ footer p {
   font-size: 0.9rem;
 }
 @keyframes fadein {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
 }
 
 /* Responsive */
@@ -311,10 +328,9 @@ footer p {
 #contractAddr,
 #referralUrl,
 #userAccount,  /* 用戶地址 */
-#referralLink  /* 用戶推薦鏈接 */
-{
-  word-wrap: break-word;  /* 讓超長文字換行 */
-  overflow-wrap: break-word;  /* 兼容舊版本的瀏覽器 */
+#referralLink  /* 用戶推薦鏈接 */ {
+  word-wrap: break-word; /* 讓超長文字換行 */
+  overflow-wrap: break-word; /* 兼容舊版本的瀏覽器 */
 }
 
 #contractAddr,
@@ -328,7 +344,6 @@ footer p {
 #referralUrl {
   cursor: pointer;
 }
-
 
 .bscscan-icon {
   width: 116.5px;
