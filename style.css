@@ -8,7 +8,7 @@
 body {
   font-family: "Noto Sans Mono", monospace;
   background-color: #121212; /* 深色背景 */
-  color: #f0b90b; /* 幣安金黃色文字 */
+  color: #eee; /* 淺色文字提高可讀性 */
   transition:
     background 0.3s,
     color 0.3s;
@@ -16,7 +16,7 @@ body {
 /* Dark Mode */
 body.dark-mode {
   background-color: #121212; /* 深色背景 */
-  color: #f0b90b; /* 幣安金黃色文字 */
+  color: #eee; /* 淺色文字提高可讀性 */
 }
 body.dark-mode header {
   background: #333; /* 深色背景 */
@@ -36,6 +36,11 @@ body.dark-mode button {
   padding: 20px;
   line-height: 1.6;
 }
+@media (min-width: 1400px) {
+  .container {
+    width: 60%;
+  }
+}
 @media (max-width: 1200px) {
   .container {
     width: 65%;
@@ -50,6 +55,22 @@ body.dark-mode button {
   .container {
     width: 90%;
   }
+}
+
+/* Hero */
+#hero {
+  text-align: center;
+  margin: 20px 0;
+}
+.hero-img {
+  max-width: 100%;
+  height: auto;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+#heroDesc {
+  font-size: 1.2rem;
+  color: #eee;
 }
 .icon {
   width: 1em;
@@ -86,6 +107,7 @@ header .lang-btn {
   border: none;
   padding: 10px 20px;
   cursor: pointer;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
 }
 header .menu-btn {
   position: absolute;
@@ -96,10 +118,13 @@ header .menu-btn {
   color: #f0b90b;
   font-size: 2rem;
   cursor: pointer;
+  transition: color 0.3s, transform 0.2s, box-shadow 0.2s;
 }
 /* Hover 效果 */
 header button:hover {
   background: #c8a500; /* 深黃色懸停 */
+  box-shadow: 0 0 6px rgba(240, 185, 11, 0.6);
+  transform: scale(1.05);
 }
 /* Logo */
 header #logo {
@@ -170,12 +195,12 @@ section {
   background: #1e1e1e; /* 稍微淺一點的暗色背景 */
   border-radius: 8px;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
-  margin: 10px 0;
+  margin: 20px 0;
   padding: 20px;
   line-height: 1.6;
 }
 #walletConnection {
-  margin: 10px 0;
+  margin: 20px 0;
   padding: 10px;
 }
 #walletConnection .container {
@@ -227,10 +252,12 @@ button {
   border-radius: 5px;
   cursor: pointer;
   margin: 10px auto;
-  transition: background 0.3s;
+  transition: background 0.3s, transform 0.2s, box-shadow 0.2s;
 }
 button:hover {
   background: #c8a500; /* 深黃色懸停 */
+  box-shadow: 0 0 8px rgba(240, 185, 11, 0.6);
+  transform: scale(1.05);
 }
 button.loading {
   pointer-events: none;
