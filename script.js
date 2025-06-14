@@ -18,13 +18,48 @@ let userAccount = '';
 const CONTRACT_ADDRESS = '0xb9167Fc8B91EdeEee8a03627be20b057Ad9D7316';
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
+const BTL_DECIMALS = 9; // Number of decimals for BTL token
+
+function formatBTLBalance(balance) {
+  try {
+    const factor = 10n ** BigInt(BTL_DECIMALS);
+    return (BigInt(balance) / factor).toLocaleString('en-US');
+  } catch (e) {
+    console.error(e);
+    return balance;
+  }
+}
+
+const ERC20_ABI = [
+  {
+    constant: true,
+    inputs: [{ name: '_owner', type: 'address' }],
+    name: 'balanceOf',
+    outputs: [{ name: 'balance', type: 'uint256' }],
+    stateMutability: 'view',
+    type: 'function'
+  },
+  {
+    constant: true,
+    inputs: [],
+    name: 'decimals',
+    outputs: [{ name: '', type: 'uint8' }],
+    stateMutability: 'view',
+    type: 'function'
+  }
+];
+
+function formatAddress(addr) {
+  return addr.slice(0, 6) + '...' + addr.slice(-4);
+}
 
 function applyContractAddress() {
   const addr = CONTRACT_ADDRESS;
-  const menuBuy = document.getElementById('menuBuy');
-  if (menuBuy) {
-    menuBuy.href = `https://pancakeswap.finance/swap?outputCurrency=${addr}&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d`;
-  }
+  const link = `https://pancakeswap.finance/swap?outputCurrency=${addr}&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d`;
+  const menuBuyBtn = document.getElementById('menuBuyBtn');
+  if (menuBuyBtn) menuBuyBtn.onclick = () => window.open(link, '_blank');
+  const buyBtlBtn = document.getElementById('buyBtlBtn');
+  if (buyBtlBtn) buyBtlBtn.onclick = () => window.open(link, '_blank');
   const contractAddr = document.getElementById('contractAddr');
   if (contractAddr) contractAddr.innerText = addr;
   const fullHistory = document.getElementById('fullHistory');
@@ -45,6 +80,8 @@ function resetPlaceholders() {
     'usd1Earnings',
     'userBNBDeposit',
     'bnbEarnings',
+    'walletBnb',
+    'walletUsd1',
     'referralUrl',
     'referralCount',
     'referralBNB',
@@ -133,11 +170,11 @@ function updateLanguage() {
       : (lang ? 'Connect Wallet' : '連接錢包');
   }
 
-  const menuBuy = document.getElementById('menuBuy');
-  if (menuBuy) menuBuy.innerText = lang ? 'BUY $BTL' : '購買 $BTL';
+  const menuBuyBtn = document.getElementById('menuBuyBtn');
+  if (menuBuyBtn) menuBuyBtn.innerText = lang ? 'BUY $BTL' : '購買 $BTL';
 
-  const buyBtlLink = document.getElementById('buyBtlLink');
-  if (buyBtlLink) buyBtlLink.innerText = lang ? 'BUY $BTL' : '購買 $BTL';
+  const buyBtlBtn = document.getElementById('buyBtlBtn');
+  if (buyBtlBtn) buyBtlBtn.innerText = lang ? 'BUY $BTL' : '購買 $BTL';
   
   const menuInvite = document.getElementById('menuInvite');
   if (menuInvite) menuInvite.innerText = lang ? 'Invite' : '邀請';
@@ -177,6 +214,9 @@ function updateLanguage() {
   const bnbCountdownLabel = document.getElementById('bnbCountdownLabel');
   if (bnbCountdownLabel) bnbCountdownLabel.innerText = lang ? 'Next BNB Reward:' : '下次 BNB 分紅:';
 
+  const userInfoTitle = document.getElementById('userInfoTitle');
+  if (userInfoTitle) userInfoTitle.innerText = lang ? 'Your Asset Status' : '你的資產狀況';
+  
   const userBalanceLabel = document.getElementById('userBalanceLabel');
   if (userBalanceLabel) userBalanceLabel.innerText = lang ? 'Your BTL Balance:' : '你的 BTL 餘額:';
 
@@ -188,9 +228,12 @@ function updateLanguage() {
 
   const bnbEarningsLabel = document.getElementById('bnbEarningsLabel');
   if (bnbEarningsLabel) bnbEarningsLabel.innerText = lang ? 'Daily BNB Estimate:' : '預估每日 BNB 收益:';
-  
-  const userInfoTitle = document.getElementById('userInfoTitle');
-  if (userInfoTitle) userInfoTitle.innerText = lang ? 'Your Asset Status' : '你的資產狀況';
+
+  const walletBnbLabel = document.getElementById('walletBnbLabel');
+  if (walletBnbLabel) walletBnbLabel.innerText = lang ? 'Wallet BNB:' : '錢包 BNB：';
+
+  const walletUsd1Label = document.getElementById('walletUsd1Label');
+  if (walletUsd1Label) walletUsd1Label.innerText = lang ? 'Wallet USD1:' : '錢包 USD1：';
   
   const depositLabel = document.getElementById('depositLabel');
   if (depositLabel) depositLabel.innerText = lang ? 'Deposit BNB' : '存入 BNB';
@@ -346,16 +389,24 @@ async function updateUserInfo() {
   if (!userAccount) return;
   resetPlaceholders();
   const bal = await contract.methods.balanceOf(userAccount).call();
-  document.getElementById('userBalance').innerText = bal;
+  document.getElementById('userBalance').innerText = formatBTLBalance(bal);
 
   const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
   document.getElementById('userBNBDeposit').innerText = web3.utils.fromWei(dep, 'ether');
 
   const bnbEarnings = await contract.methods.dailyBnbReward(userAccount).call();
   document.getElementById('bnbEarnings').innerText = bnbEarnings ? web3.utils.fromWei(bnbEarnings, 'ether') : '0';
+
+  const walletBnb = await web3.eth.getBalance(userAccount);
+  document.getElementById('walletBnb').innerText = web3.utils.fromWei(walletBnb, 'ether');
   
   const usd1Earnings = await contract.methods.getAccumulatedUsd1(userAccount).call();
   document.getElementById('usd1Earnings').innerText = usd1Earnings ? web3.utils.fromWei(usd1Earnings, 'ether') : '0';
+
+  const usd1Addr = await contract.methods.USD1Address().call();
+  const usd1Contract = new web3.eth.Contract(ERC20_ABI, usd1Addr);
+  const walletUsd1 = await usd1Contract.methods.balanceOf(userAccount).call();
+  document.getElementById('walletUsd1').innerText = web3.utils.fromWei(walletUsd1, 'ether');
   
   const ref = await contract.methods.getReferralLink(userAccount).call();
   console.log("Referral link:", ref);
@@ -472,7 +523,10 @@ async function updatePoolInfo() {
 
 /* ===== Copy helper ===== */
 function copyToClipboard(id) {
-  navigator.clipboard.writeText(document.getElementById(id).innerText).then(() => toast('Copied!'));
+  const el = document.getElementById(id);
+  if (!el) return;
+  const text = el.dataset.full || el.innerText;
+  navigator.clipboard.writeText(text).then(() => toast('Copied!'));
 }
 
 /* ===== Dark mode ===== */
