@@ -25,6 +25,7 @@ const CONTRACT_ADDRESS = "0xac3789a484f4585bc7e30ec25b167a51ea2211d0";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
+const IS_UPGRADING = true; // Flag to disable contract interactions during upgrade
 
 function formatBTLBalance(balance) {
   try {
@@ -323,7 +324,14 @@ function updateLanguage() {
     );
 
   const depositBtn = document.getElementById("depositBtn");
-  if (depositBtn) depositBtn.innerText = lang ? "Deposit" : "存入";
+  if (depositBtn)
+    depositBtn.innerText = IS_UPGRADING
+      ? lang
+        ? "Deposit Disabled"
+        : "存款暫停"
+      : lang
+      ? "Deposit"
+      : "存入";
 
   // Referral section
   const referralLink = document.getElementById("referralLink");
@@ -554,6 +562,7 @@ async function updateUserInfo() {
 /* ===== Deposit BNB ===== */
 async function depositBNB() {
   const btn = "depositBtn";
+  if (IS_UPGRADING) return toast("Contract upgrade in progress");
   if (document.getElementById(btn).dataset.loading === "true") return;
   const amt = document.getElementById("depositAmount").value;
   let ref = document.getElementById("referrer").value; // 取得推薦人地址
@@ -575,6 +584,19 @@ async function depositBNB() {
   } finally {
     hideLoading(btn);
   }
+}
+
+function handleUpgradeNotice() {
+  if (!IS_UPGRADING) return;
+  const depositInput = document.getElementById("depositAmount");
+  if (depositInput) depositInput.disabled = true;
+  const depositBtn = document.getElementById("depositBtn");
+  if (depositBtn) {
+    depositBtn.disabled = true;
+    depositBtn.innerText = currentLanguage === "en" ? "Deposit Disabled" : "存款暫停";
+  }
+  const notice = document.getElementById("upgradeNotice");
+  if (notice) notice.style.display = "block";
 }
 
 /* ===== PancakeSwap Link ===== */
@@ -666,6 +688,7 @@ if (typeof window !== "undefined" && window)
     document.body.classList.add("dark-mode"); // 預設啟用深色模式
     applyContractAddress();
     updateLanguage();
+    handleUpgradeNotice();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
     if (web3Modal.cachedProvider) connectWallet();
@@ -679,6 +702,7 @@ if (typeof window !== "undefined" && window)
 if (typeof window !== "undefined" && window.addEventListener)
   window.addEventListener("DOMContentLoaded", (event) => {
     applyContractAddress();
+    handleUpgradeNotice();
     // 自動填充推薦人地址
     const urlParams = new URLSearchParams(window.location.search);
     const referrer = urlParams.get("ref");
