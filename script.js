@@ -67,10 +67,10 @@ function applyContractAddress() {
     fullHistory.href = `https://bscscan.com/address/${addr}#events`;
     fullHistory.target = '_blank';
   }
-  const bnbScanBtn = document.getElementById('bnbScanBtn');
-  if (bnbScanBtn) bnbScanBtn.onclick = () => window.open(`https://bscscan.com/address/${addr}`, '_blank');
-  const usd1ScanBtn = document.getElementById('usd1ScanBtn');
-  if (usd1ScanBtn) usd1ScanBtn.onclick = () => window.open(`https://bscscan.com/address/${addr}`, '_blank');
+  const bnbScanLink = document.getElementById("bnbScanLink");
+  if (bnbScanLink) bnbScanLink.href = `https://bscscan.com/address/${addr}`;
+  const usd1ScanLink = document.getElementById("usd1ScanLink");
+  if (usd1ScanLink) usd1ScanLink.href = `https://bscscan.com/token/0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d?a=${addr}`;
 }
 
 /* ===== Placeholder helpers ===== */
@@ -302,11 +302,11 @@ function updateLanguage() {
     fullHistory.target = '_blank';
   }
 
-  const bnbScanBtn = document.getElementById('bnbScanBtn');
-  if (bnbScanBtn) bnbScanBtn.innerText = lang ? 'View on BscScan' : '在 BscScan 查看';
+  const bnbScanLink = document.getElementById("bnbScanLink");
+  if (bnbScanLink) bnbScanLink.href = `https://bscscan.com/address/${CONTRACT_ADDRESS}`;
 
-  const usd1ScanBtn = document.getElementById('usd1ScanBtn');
-  if (usd1ScanBtn) usd1ScanBtn.innerText = lang ? 'View on BscScan' : '在 BscScan 查看';
+  const usd1ScanLink = document.getElementById("usd1ScanLink");
+  if (usd1ScanLink) usd1ScanLink.href = `https://bscscan.com/token/0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d?a=${CONTRACT_ADDRESS}`;
 
   const contractAddrEl = document.getElementById('contractAddr');
   if (contractAddrEl) contractAddrEl.innerText = CONTRACT_ADDRESS;
