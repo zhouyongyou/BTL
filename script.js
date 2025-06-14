@@ -67,6 +67,10 @@ function applyContractAddress() {
     fullHistory.href = `https://bscscan.com/address/${addr}#events`;
     fullHistory.target = '_blank';
   }
+  const bnbScanBtn = document.getElementById('bnbScanBtn');
+  if (bnbScanBtn) bnbScanBtn.onclick = () => window.open(`https://bscscan.com/address/${addr}`, '_blank');
+  const usd1ScanBtn = document.getElementById('usd1ScanBtn');
+  if (usd1ScanBtn) usd1ScanBtn.onclick = () => window.open(`https://bscscan.com/address/${addr}`, '_blank');
 }
 
 /* ===== Placeholder helpers ===== */
@@ -297,6 +301,12 @@ function updateLanguage() {
     fullHistory.href = `https://bscscan.com/address/${CONTRACT_ADDRESS}#events`;
     fullHistory.target = '_blank';
   }
+
+  const bnbScanBtn = document.getElementById('bnbScanBtn');
+  if (bnbScanBtn) bnbScanBtn.innerText = lang ? 'View on BscScan' : '在 BscScan 查看';
+
+  const usd1ScanBtn = document.getElementById('usd1ScanBtn');
+  if (usd1ScanBtn) usd1ScanBtn.innerText = lang ? 'View on BscScan' : '在 BscScan 查看';
 
   const contractAddrEl = document.getElementById('contractAddr');
   if (contractAddrEl) contractAddrEl.innerText = CONTRACT_ADDRESS;
@@ -545,7 +555,7 @@ function copyToClipboard(id) {
 }
 
 /* ===== Dark mode ===== */
-window.onload = async () => {
+if (typeof window !== 'undefined' && window) window.onload = async () => {
   document.body.classList.add('dark-mode');  // 預設啟用深色模式
   applyContractAddress();
   updateLanguage();
@@ -559,7 +569,7 @@ window.onload = async () => {
 };
 
 // 放在 script.js 的結尾
-window.addEventListener('DOMContentLoaded', (event) => {
+if (typeof window !== 'undefined' && window.addEventListener) window.addEventListener('DOMContentLoaded', (event) => {
   applyContractAddress();
   // 自動填充推薦人地址
   const urlParams = new URLSearchParams(window.location.search);
