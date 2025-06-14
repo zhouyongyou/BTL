@@ -84,6 +84,12 @@ function applyContractAddress() {
     fullHistory.href = `https://bscscan.com/address/${addr}#events`;
     fullHistory.target = "_blank";
   }
+  const usd1History = document.getElementById("usd1History");
+  if (usd1History) {
+    usd1History.href =
+      `https://bscscan.com/advanced-filter?tkn=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d&txntype=2&fadd=${addr}&tadd=!${addr}`;
+    usd1History.target = "_blank";
+  }
   const bnbScanBtn = document.getElementById("bnbScanBtn");
   if (bnbScanBtn)
     bnbScanBtn.onclick = () =>
@@ -354,6 +360,15 @@ function updateLanguage() {
     fullHistory.innerText = lang ? "Full History" : "完整記錄";
     fullHistory.href = `https://bscscan.com/address/${CONTRACT_ADDRESS}#events`;
     fullHistory.target = "_blank";
+  }
+  const usd1History = document.getElementById("usd1History");
+  if (usd1History) {
+    usd1History.innerText = lang
+      ? "USD1 Pool History"
+      : "USD1 獎池發放紀錄";
+    usd1History.href =
+      `https://bscscan.com/advanced-filter?tkn=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d&txntype=2&fadd=${CONTRACT_ADDRESS}&tadd=!${CONTRACT_ADDRESS}`;
+    usd1History.target = "_blank";
   }
 
   const bnbScanBtn = document.getElementById("bnbScanBtn");
