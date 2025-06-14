@@ -337,29 +337,36 @@ contract TOKEN is Context, IERC20, Ownable {
         uint256 totalDepositsWeight = 0;
         uint256 totalWeight = 0;
         uint256 totalBNBDistributed = 0;
-        address[] memory rewardBNBAllHolders = new address[](BNBholdersArray.length);
-        uint256[] memory rewardsBNBAll = new uint256[](BNBholdersArray.length);
-        uint256 depositsIndex = 0;
+        address[] memory rewardBNBAllHolders = new address[](BNBholdersArray.length + holders.length);
+        uint256[] memory rewardsBNBAll = new uint256[](BNBholdersArray.length + holders.length);
+
+        for (uint i = 0; i < BNBholdersArray.length; i++) {
+            totalDepositsWeight += userBNBDeposits[BNBholdersArray[i]];
+        }
+        for (uint i = 0; i < holders.length; i++) {
+            totalWeight += balanceOf(holders[i]) * 10000 / _tTotal;
+        }
+
+        uint256 index = 0;
         for (uint i = 0; i < BNBholdersArray.length; i++) {
             address depositsHolder = BNBholdersArray[i];
             uint256 depositsWeight = userBNBDeposits[depositsHolder];
-            totalDepositsWeight += depositsWeight;
-            uint256 depositsBNBReward = (depositsWeight * depositsBNBRewardPool) / totalDepositsWeight;
-            rewardBNBAllHolders[depositsIndex] = depositsHolder;
-            rewardsBNBAll[depositsIndex] = depositsBNBReward;
+            uint256 depositsBNBReward = totalDepositsWeight == 0 ? 0 :
+                depositsWeight * depositsBNBRewardPool / totalDepositsWeight;
+            rewardBNBAllHolders[index] = depositsHolder;
+            rewardsBNBAll[index] = depositsBNBReward;
             totalBNBDistributed += depositsBNBReward;
-            depositsIndex++;
+            index++;
         }
-        uint256 currentHolderIndex = depositsIndex;
         for (uint i = 0; i < holders.length; i++) {
             address holder = holders[i];
             uint256 weight = balanceOf(holder) * 10000 / _tTotal;
-            totalWeight += weight;
-            uint256 holderBNBReward = (weight * holderBNBRewardPool) / totalWeight;
-            rewardBNBAllHolders[currentHolderIndex] = holder;
-            rewardsBNBAll[currentHolderIndex] = holderBNBReward;
+            uint256 holderBNBReward = totalWeight == 0 ? 0 :
+                weight * holderBNBRewardPool / totalWeight;
+            rewardBNBAllHolders[index] = holder;
+            rewardsBNBAll[index] = holderBNBReward;
             totalBNBDistributed += holderBNBReward;
-            currentHolderIndex++;
+            index++;
         }
         for (uint i = 0; i < rewardBNBAllHolders.length; i++) {
             address rewardBNBHolder = rewardBNBAllHolders[i];
