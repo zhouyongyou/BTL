@@ -63,7 +63,10 @@ function applyContractAddress() {
   const contractAddr = document.getElementById('contractAddr');
   if (contractAddr) contractAddr.innerText = addr;
   const fullHistory = document.getElementById('fullHistory');
-  if (fullHistory) fullHistory.href = `https://bscscan.com/address/${addr}#events`;
+  if (fullHistory) {
+    fullHistory.href = `https://bscscan.com/address/${addr}#events`;
+    fullHistory.target = '_blank';
+  }
 }
 
 /* ===== Placeholder helpers ===== */
@@ -185,6 +188,7 @@ function updateLanguage() {
     menuWhitepaper.href = lang
       ? 'https://bitluck.notion.site/whitepaper-en'
       : 'https://bitluck.notion.site/whitepaper-cn';
+    menuWhitepaper.target = '_blank';
   }
 
   const menuDocs = document.getElementById('menuDocs');
@@ -193,6 +197,7 @@ function updateLanguage() {
     menuDocs.href = lang
       ? 'https://bitluck.notion.site/'
       : 'https://bitluck.notion.site/overview-cn';
+    menuDocs.target = '_blank';
   }
   
   // Main Info
@@ -290,6 +295,7 @@ function updateLanguage() {
   if (fullHistory) {
     fullHistory.innerText = lang ? 'Full History' : '完整記錄';
     fullHistory.href = `https://bscscan.com/address/${CONTRACT_ADDRESS}#events`;
+    fullHistory.target = '_blank';
   }
 
   const contractAddrEl = document.getElementById('contractAddr');
@@ -307,13 +313,20 @@ function updateLanguage() {
     whitepaperLink.href = lang
       ? 'https://bitluck.notion.site/whitepaper-en'
       : 'https://bitluck.notion.site/whitepaper-cn';
+    whitepaperLink.target = '_blank';
   }
 
   const telegramLink = document.getElementById('telegramLink');
-  if (telegramLink) telegramLink.innerText = lang ? 'Telegram' : '電報';
+  if (telegramLink) {
+    telegramLink.innerText = lang ? 'Telegram' : '電報';
+    telegramLink.target = '_blank';
+  }
 
   const twitterLink = document.getElementById('twitterLink');
-  if (twitterLink) twitterLink.innerText = lang ? 'Twitter' : '推特';
+  if (twitterLink) {
+    twitterLink.innerText = lang ? 'Twitter' : '推特';
+    twitterLink.target = '_blank';
+  }
 }
 
 /* ===== Connect wallet ===== */
