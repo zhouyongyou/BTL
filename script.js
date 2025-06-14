@@ -80,7 +80,7 @@ function applyContractAddress() {
   const usd1ScanBtn = document.getElementById("usd1ScanBtn");
   if (usd1ScanBtn)
     usd1ScanBtn.onclick = () =>
-      window.open(`https://bscscan.com/address/${addr}`, "_blank");
+      window.open(`https://bscscan.com/token/0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d?a=${addr}`, "_blank");
 }
 
 /* ===== Placeholder helpers ===== */
