@@ -321,3 +321,11 @@ footer p {
 #referralUrl {
   cursor: pointer;
 }
+
+
+.bscscan-icon {
+  width: 20px;
+  height: 20px;
+  vertical-align: middle;
+  margin-left: 6px;
+}
