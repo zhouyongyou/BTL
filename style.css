@@ -309,6 +309,16 @@ footer a:hover {
 #fullHistory:hover {
   color: #c8a500;
 }
+#usd1History {
+  color: #f0b90b;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+#usd1History:hover {
+  color: #c8a500;
+}
+
 
 footer p {
   margin-bottom: 15px; /* 增加段落間距 */
@@ -357,6 +367,7 @@ footer p {
 #userAccount,  /* 用戶地址 */
 #referralLink  /* 用戶推薦鏈接 */ {
   word-wrap: break-word; /* 讓超長文字換行 */
+  color: #f0b90b;
   overflow-wrap: break-word; /* 兼容舊版本的瀏覽器 */
 }
 
