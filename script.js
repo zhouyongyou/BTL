@@ -300,6 +300,8 @@ function updateLanguage() {
 
   const contractAddrEl = document.getElementById('contractAddr');
   if (contractAddrEl) contractAddrEl.innerText = CONTRACT_ADDRESS;
+  const bscScanLink = document.getElementById("bscScanLink");
+  if (bscScanLink) bscScanLink.href = `https://bscscan.com/token/${CONTRACT_ADDRESS}`;
   
   // Footer
   const networkInfoFooter = document.getElementById('networkInfoFooter');
