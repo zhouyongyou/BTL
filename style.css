@@ -389,3 +389,17 @@ footer p {
   vertical-align: middle;
   margin-left: 6px;
 }
+
+#dexscreenerLink,
+#aveaiLink {
+  margin-left: 6px;
+  color: #f0b90b;
+  font-weight: bold;
+  text-decoration: none;
+  transition: color 0.3s;
+}
+
+#dexscreenerLink:hover,
+#aveaiLink:hover {
+  color: #c8a500;
+}
