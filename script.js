@@ -328,16 +328,14 @@ function updateLanguage() {
     whitepaperLink.target = '_blank';
   }
 
-  const telegramLink = document.getElementById('telegramLink');
-  if (telegramLink) {
-    telegramLink.innerText = lang ? 'Telegram' : '電報';
-    telegramLink.target = '_blank';
+  const telegramText = document.getElementById('telegramText');
+  if (telegramText) {
+    telegramText.innerText = lang ? 'Telegram' : '電報';
   }
 
-  const twitterLink = document.getElementById('twitterLink');
-  if (twitterLink) {
-    twitterLink.innerText = lang ? 'Twitter' : '推特';
-    twitterLink.target = '_blank';
+  const twitterText = document.getElementById('twitterText');
+  if (twitterText) {
+    twitterText.innerText = lang ? 'Twitter' : '推特';
   }
 }
 
