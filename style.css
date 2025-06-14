@@ -43,12 +43,18 @@ body.dark-mode button {
   .container {
     width: 80%;
   }
-}
 @media (max-width: 768px) {
   .container {
     width: 90%;
   }
 }
+.icon {
+  width: 1em;
+  height: 1em;
+  vertical-align: middle;
+  margin-right: 4px;
+}
+
 /* Header */
 header {
   background: #121212;  /* 深色背景 */
