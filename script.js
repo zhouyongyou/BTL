@@ -29,7 +29,7 @@ let web3Modal = initWeb3Modal();
 /* ===== State ===== */
 let provider, web3, contract;
 let userAccount = "";
-const CONTRACT_ADDRESS = "0xac3789a484f4585bc7e30ec25b167a51ea2211d0";
+const CONTRACT_ADDRESS = "0x95748E32EC0F3B6CD0925B61367c1939dAf1f2e3";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
