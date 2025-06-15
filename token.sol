@@ -96,8 +96,8 @@ contract TOKEN is Context, IERC20, Ownable {
     uint256 private constant _tTotal = 1000000000000 * 10**_decimals;
     string private constant _name = unicode"BitLuck";
     string private constant _symbol = unicode"BTL";
-    uint256 public constant holderCondition = 200000000 * 10**_decimals; // 0.02%
-    uint256 public drawIntervalBlocks = 2400; // 60 mins
+    uint256 public constant holderCondition = 1000000000 * 10**_decimals; // 0.1%
+    uint256 public drawIntervalBlocks = 1200; // 30 mins
     uint256 public lastDrawBlock;
     IUniswapV2Router02 private immutable uniswapV2Router;
     mapping(address => bool) public _swapPairList;
@@ -165,7 +165,7 @@ contract TOKEN is Context, IERC20, Ownable {
         _approve(_msgSender(), spender, amount);
         return true;
     }
-    function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
+    function transferFrom(address sender, address recipient, uint256 amount) public override lockTheSwap returns (bool) {
         _transfer(sender, recipient, amount);
         if (_allowances[sender][msg.sender] != MAX) {
             unchecked {
@@ -178,7 +178,7 @@ contract TOKEN is Context, IERC20, Ownable {
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
-    function _updateRewards(address account) private {
+    function _updateRewards(address account) private lockTheSwap {
         uint256 owed = _balances[account] * (totalDividendPerShare - lastDividendPerShare[account]) / ACC_PRECISION;
         if (owed > 0) {
             safeTransfer(_USD1, account, owed);
@@ -187,7 +187,7 @@ contract TOKEN is Context, IERC20, Ownable {
         }
         lastDividendPerShare[account] = totalDividendPerShare;
     }
-    function _transfer(address from, address to, uint256 amount) private {
+    function _transfer(address from, address to, uint256 amount) private lockTheSwap {
         uint256 balance = balanceOf(from);
         require(balance >= amount, "balanceNotEnough");
         bool takeFee;
@@ -312,9 +312,11 @@ contract TOKEN is Context, IERC20, Ownable {
             delete holderIndex[adr];
         }
     }
+    uint256 public batchSize = 100;
+    uint256 public minGas = 400000;
+    uint256 public lastProcessedIndex = 0;
     function processReward() private lockTheSwap {
         if (block.number < lastDrawBlock + drawIntervalBlocks) return;
-
         IERC20 USD1 = IERC20(_USD1);
         uint256 balance = USD1.balanceOf(address(this));
         uint256 available = balance > accDividendBalance ? balance - accDividendBalance : 0;
@@ -323,24 +325,30 @@ contract TOKEN is Context, IERC20, Ownable {
         uint256 holderRewardPool = available / 40;
         uint256 lotteryRewardPool = available / 120;
 
-        if (holderRewardPool > 0) {
-            totalDividendPerShare += holderRewardPool * ACC_PRECISION / _tTotal;
-            accDividendBalance += holderRewardPool;
-            for (uint i = 0; i < holders.length; i++) {
-                address holder = holders[i];
-                _updateRewards(holder);
-            }
+        totalDividendPerShare += holderRewardPool * ACC_PRECISION / _tTotal;
+        accDividendBalance += holderRewardPool;
+        lastDrawBlock = block.number;
+
+        uint256 len = holders.length;
+        uint256 processed = 0;
+        for (uint i = lastProcessedIndex;
+             i < len && processed < batchSize && gasleft() > minGas;
+             i++) {
+            _updateRewards(holders[i]);
+            processed++;
+            lastProcessedIndex = i + 1;
         }
-        // lottery draw
-        if (lotteryRewardPool > 0 && holders.length > 0) {
-            uint256 randIndex = random(0) % holders.length;
+        if (lastProcessedIndex >= len) {
+            lastProcessedIndex = 0;
+        }
+
+        if (lotteryRewardPool > 0 && len > 0) {
+            uint256 randIndex = random(0) % len;
             address winner = holders[randIndex];
             safeTransfer(_USD1, winner, lotteryRewardPool);
             accumulatedUsd1[winner] += lotteryRewardPool;
             emit USD1RewardDistributed(winner, lotteryRewardPool);
         }
-
-        lastDrawBlock = block.number;
     }
     uint256 private randNonce;
     function random(uint256 salt) internal returns (uint256) {
