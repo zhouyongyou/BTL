@@ -83,9 +83,9 @@ contract TOKEN is Context, IERC20, Ownable {
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
     mapping(address => bool) private _isExcludedFromFee;
-    address payable private _taxWallet;
+    address payable private immutable _taxWallet = payable(_msgSender());
     address public constant RouterAddress = address(0x10ED43C718714eb63d5aA57B78B54704E256024E);  // PancakeSwap: Router v2
-    address public constant USD1Address = address(0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d);  // USD1
+    address public constant _USD1 = address(0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d);  // USD1
     uint256 public _buyFundFee = 100;
     uint256 public _buyRewardFee = 300;
     uint256 public _sellRewardFee = 300;
@@ -98,7 +98,6 @@ contract TOKEN is Context, IERC20, Ownable {
     uint256 public drawIntervalBlocks = 2400; // 60 mins
     uint256 public lastDrawBlock;
     IUniswapV2Router02 private uniswapV2Router;
-    address public _USD1;
     mapping(address => bool) public _swapPairList;
     uint256 private constant MAX = ~uint256(0);
     TokenDistributor public _tokenDistributor;
@@ -112,13 +111,11 @@ contract TOKEN is Context, IERC20, Ownable {
         inSwap = false;
     }
     constructor () {
-        _taxWallet = payable(_msgSender());
         IUniswapV2Router02 swapRouter = IUniswapV2Router02(RouterAddress);
         uniswapV2Router = swapRouter;
-        _USD1 = USD1Address;
 
         IUniswapV2Factory swapFactory = IUniswapV2Factory(swapRouter.factory());
-        address swapPair = swapFactory.createPair(address(this), USD1Address);
+        address swapPair = swapFactory.createPair(address(this), _USD1);
         _swapPairList[swapPair] = true;
 
         _approve(address(this), address(swapRouter), MAX);
@@ -181,12 +178,6 @@ contract TOKEN is Context, IERC20, Ownable {
     function _transfer(address from, address to, uint256 amount) private {
         uint256 balance = balanceOf(from);
         require(balance >= amount, "balanceNotEnough");
-        if (!_isExcludedFromFee[from] && !_isExcludedFromFee[to]) {
-            uint256 maxSellAmount = balance * 999 / 1000;
-            if (amount > maxSellAmount) {
-                amount = maxSellAmount;
-            }
-        }
         bool takeFee;
         bool isSell;
         if (_swapPairList[from] || _swapPairList[to]) {
@@ -386,10 +377,6 @@ contract TOKEN is Context, IERC20, Ownable {
             )
         );
     }
-    function blocksUntilNextDraw() public view returns (uint256) {
-        if (block.number >= lastDrawBlock + drawIntervalBlocks) return 0;
-        return (lastDrawBlock + drawIntervalBlocks) - block.number;
-    }
     function safeTransfer(address token, address to, uint256 value) internal {
         (bool success, bytes memory data) = token.call(
             abi.encodeWithSelector(IERC20(token).transfer.selector, to, value)
@@ -415,17 +402,11 @@ contract TOKEN is Context, IERC20, Ownable {
     }
     receive() external payable {
     }
-    function getHolderThreshold() public view returns (uint256) {
-        return holderCondition;
-    }
-    function getUSD1RewardCountdown() public view returns (uint256) {
+    function blocksUntilNextDraw() public view returns (uint256) { // getUSD1RewardCountdown
         if (block.number >= lastDrawBlock + drawIntervalBlocks) return 0;
         return (lastDrawBlock + drawIntervalBlocks) - block.number;
     }
-    function checkUSD1Eligibility(address user) public view returns (bool) {
-        return balanceOf(user) >= holderCondition;
-    }
-    function getUSD1Balance() public view returns (uint256) {
+    function getUSD1Balance() external view returns (uint256) {
         IERC20 usd1Token = IERC20(_USD1);
         return usd1Token.balanceOf(address(this));
     }
