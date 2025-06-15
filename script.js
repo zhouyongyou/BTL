@@ -406,7 +406,6 @@ async function tryConnect() {
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-    depositContract = new web3.eth.Contract(ABI, DEPOSIT_CONTRACT_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     resetPlaceholders();
@@ -491,15 +490,6 @@ async function updateUserInfo() {
   resetPlaceholders();
   // user BTL balance hidden by request
 
-  const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
-  document.getElementById("userBNBDeposit").innerText = fromWeiFormatted(dep);
-
-  const bnbEarnings = await contract.methods.dailyBnbReward(userAccount).call();
-  document.getElementById("bnbEarnings").innerText = bnbEarnings
-    ? fromWeiFormatted(bnbEarnings)
-    : "0";
-
-
   const usd1Earnings = await contract.methods
     .getAccumulatedUsd1(userAccount)
     .call();
@@ -510,53 +500,6 @@ async function updateUserInfo() {
   const usd1Addr = await contract.methods.USD1Address().call();
   const usd1Contract = new web3.eth.Contract(ERC20_ABI, usd1Addr);
   // wallet USD1 balance hidden by request
-
-  const ref = await contract.methods.getReferralLink(userAccount).call();
-  console.log("Referral link:", ref);
-  document.getElementById("referralUrl").innerText = ref || "No referral link";
-
-  const count = await contract.methods.getReferralCount(userAccount).call();
-  document.getElementById("referralCount").innerText = count;
-
-}
-
-/* ===== Deposit BTL ===== */
-async function depositBTL() {
-  const btn = "depositBtn";
-  if (IS_UPGRADING) return toast("Contract upgrade in progress");
-  if (document.getElementById(btn).dataset.loading === "true") return;
-  const amt = document.getElementById("depositAmount").value;
-  let ref = document.getElementById("referrer").value; // 取得推薦人地址
-  if (!amt || parseFloat(amt) <= 0) return toast("请输入存款数量");
-  if (!ref) {
-    ref = "0x0000000000000000000000000000000000000000";
-  }
-  showLoading(btn);
-  try {
-    await depositContract.methods.depositBTL(web3.utils.toWei(amt, "ether"), ref).send({
-      from: userAccount,
-    });
-    toast("存款成功！");
-    updateUserInfo();
-  } catch (e) {
-    console.error(e);
-    toast("存款失败");
-  } finally {
-    hideLoading(btn);
-  }
-}
-
-function handleUpgradeNotice() {
-  if (!IS_UPGRADING) return;
-  const depositInput = document.getElementById("depositAmount");
-  if (depositInput) depositInput.disabled = true;
-  const depositBtn = document.getElementById("depositBtn");
-  if (depositBtn) {
-    depositBtn.disabled = true;
-    depositBtn.innerText = currentLanguage === "en" ? "Deposit Disabled" : "存款暫停";
-  }
-  const notice = document.getElementById("upgradeNotice");
-  if (notice) notice.style.display = "block";
 }
 
 /* ===== PancakeSwap Link ===== */
@@ -569,9 +512,7 @@ function openPancakeSwap() {
 async function updateCountdowns() {
   if (!contract) return;
   setPlaceholder("usd1Time");
-  setPlaceholder("bnbTime");
   const u = await contract.methods.getUSD1RewardCountdown().call();
-  const b = await contract.methods.getBNBRewardCountdown().call();
 
   // 假設每個區塊大約 1.5 秒
   const blockTime = 1.5;
@@ -590,7 +531,6 @@ async function updateCountdowns() {
 
   // 更新顯示的時間（倒數時間格式：時：分：秒）
   document.getElementById("usd1Time").innerText = formatTime(usd1Countdown);
-  document.getElementById("bnbTime").innerText = formatTime(bnbCountdown);
 }
 
 /* ===== Contract overview ===== */
