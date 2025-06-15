@@ -67,62 +67,20 @@
           <img src="icons/usd1.svg" class="icon-right" alt="USD1"><span id="usd1CountdownLabel"> Next USD1 Reward:</span>
           <span id="usd1Time">-</span>
         </p>
-        <p>
-          <img src="icons/bnb.svg" class="icon-right" alt="BNB"><span id="bnbCountdownLabel"> Next BNB Reward:</span>
-          <span id="bnbTime">-</span>
-        </p>
-  
-        <!-- User balances -->
-        <h3 id="userInfoTitle">Your Asset Status</h3>
-        <p><span id="usd1EarningsLabel">Your USD1 Earnings:</span> <span id="usd1Earnings">-</span> USD1 <img src="icons/usd1.svg" class="icon-right" alt="USD1"></p>
-        <p><span id="userBNBDepositLabel">Your BNB Deposit:</span> <span id="userBNBDeposit">-</span> BNB <img src="icons/bnb.svg" class="icon-right" alt="BNB"></p>
-        <p><span id="bnbEarningsLabel">Estimated Daily BNB:</span> <span id="bnbEarnings">-</span> BNB <img src="icons/bnb.svg" class="icon-right" alt="BNB"></p>
-        <!-- Wallet balances removed by request -->
 
-        <!-- Deposit Form -->
-        <h3 id="depositLabel">Deposit BTL</h3>
-        <p><strong id="minDepositAmount">0</strong> <span id="minDepositUnit">BTL minimum <img src="icons/bnb.svg" class="icon-right" alt="BTL"></span></p>
-        <input type="number" id="depositAmount" placeholder="Enter BTL to deposit" />
-        <!-- 推荐人地址 -->
-        <input type="text" id="referrer" placeholder="Enter referrer address (optional)" />
-        <button id="depositBtn" onclick="depositBTL()">Deposit</button>
-        <p id="upgradeNotice" style="color:red; display:none;">Contract upgrade in progress. Deposits are temporarily disabled.</p>
-        
-      </div>
-    </div>
-  </section>
-
-  <!-- ===== Referral ===== -->
-  <section id="referral">
-    <div class="container">
-      <h4 id="referralLink">Your Referral Link:</h4>
-      <p><span id="referralUrlLabel">Referral URL:</span>
-        <span id="referralUrl" onclick="copyToClipboard('referralUrl')">https://btluck.fun/?ref=...</span>
-        <button id="copyLinkBtn" onclick="copyToClipboard('referralUrl')">Copy Link</button>
-      </p>
-      <p><span id="referralCountLabel">Total Referrals:</span> <span id="referralCount">-</span><span id="referralCountUnit"></span></p>
-      <p><span id="referralBNBLabel">BNB from Referrals:</span> <span id="referralBNB">-</span> BNB <img src="icons/bnb.svg" class="icon-right" alt="BNB"></p>
-    </div>
-  </section>
 
   <!-- ===== Pool Statistics ===== -->
   <section id="poolStats">
     <div class="container">
       <h3 id="poolStatsTitle">Pool Statistics</h3>      
-      <p><span id="currentPoolLabel">Current BNB Pool:</span>
-        <span id="poolAmount">-</span> BNB <img src="icons/bnb.svg" class="icon" alt="BNB">
-        <a id="bnbScanLink" href="#" target="_blank" rel="noopener noreferrer">
-          <img src="bscscan.svg" alt="BscScan" class="bscscan-icon"></a></p>
       <p><span id="usd1PoolLabel">Current USD1 Pool:</span>
         <span id="usd1PoolAmount">-</span> USD1 <img src="icons/usd1.svg" class="icon" alt="USD1">
         <a id="usd1ScanLink" href="#" target="_blank" rel="noopener noreferrer">
           <img src="bscscan.svg" alt="BscScan" class="bscscan-icon"></a></p>
       <div style="height: 20px;"></div>
-      <p><a id="fullHistory" target="_blank">Full History</a></p>
       <p><a id="usd1History" target="_blank">USD1 Pool History</a></p>
     </div>
   </section>
-    <!-- ===== Hero ===== -->
   <section id="hero">
     <div class="container">
       <img src="og-1200x630.png" alt="BitLuck" class="hero-img" />
@@ -133,7 +91,6 @@
     <ul>
       <li><button id="menuConnectBtn" onclick="connectWallet()">Connect Wallet</button></li>
       <li><button id="menuBuy" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button></li>
-      <li><a id="menuInvite" href="#referral">Invite</a></li>
       <li><a id="menuWhitepaper" href="https://bitluck.notion.site/whitepaper-en" target="_blank">Whitepaper</a></li>
       <li><a id="menuDocs" href="https://bitluck.notion.site/" target="_blank">Docs</a></li>
       <li><a id="menuTelegram" href="https://t.me/BitLuckBSC" target="_blank"><img src="icons/telegram.svg" class="icon" alt="Telegram"> <span id="menuTelegramText">Telegram</span></a></li>
