@@ -35,6 +35,15 @@ let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
 const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
 
+function handleUpgradeNotice() {
+  if (!IS_UPGRADING) return;
+  const msg =
+    currentLanguage === "en"
+      ? "Contract is upgrading. Please try again later."
+      : "合約升級中，請稍後再試。";
+  toast(msg);
+}
+
 function formatBTLBalance(balance) {
   try {
     const factor = 10n ** BigInt(BTL_DECIMALS);
