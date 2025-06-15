@@ -560,7 +560,6 @@ if (typeof window !== "undefined" && window)
     document.body.classList.add("dark-mode"); // 預設啟用深色模式
     applyContractAddress();
     updateLanguage();
-    handleUpgradeNotice();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
     DEPOSIT_ABI = (await fetch("deposit_contract.json").then((r) => r.json()));
@@ -575,13 +574,6 @@ if (typeof window !== "undefined" && window)
 if (typeof window !== "undefined" && window.addEventListener)
   window.addEventListener("DOMContentLoaded", (event) => {
     applyContractAddress();
-    handleUpgradeNotice();
-    // 自動填充推薦人地址
-    const urlParams = new URLSearchParams(window.location.search);
-    const referrer = urlParams.get("ref");
-    if (referrer) {
-      document.getElementById("referrer").value = referrer; // 將 ref 參數填充到推薦人輸入框
-    }
 
     // Side menu controls
     const menuToggle = document.getElementById("menuToggle");
