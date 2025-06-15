@@ -75,7 +75,7 @@ interface IUniswapV2Router02 {
 }
 contract TokenDistributor {
     constructor (address token) {
-        IERC20(token).approve(msg.sender, uint(~uint256(0)));
+        IERC20(token).approve(msg.sender, type(uint256).max);
     }
 }
 
@@ -86,10 +86,10 @@ contract TOKEN is Context, IERC20, Ownable {
     address payable private immutable _taxWallet = payable(_msgSender());
     address public constant RouterAddress = address(0x10ED43C718714eb63d5aA57B78B54704E256024E);  // PancakeSwap: Router v2
     address public constant _USD1 = address(0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d);  // USD1
-    uint256 public _buyFundFee = 100;
-    uint256 public _buyRewardFee = 300;
-    uint256 public _sellRewardFee = 300;
-    uint256 public _sellFundFee = 100;
+    uint256 public constant _buyFundFee = 100;
+    uint256 public constant _buyRewardFee = 300;
+    uint256 public constant _sellRewardFee = 300;
+    uint256 public constant _sellFundFee = 100;
     uint8 private constant _decimals = 9;
     uint256 private constant _tTotal = 1000000000000 * 10**_decimals;
     string private constant _name = unicode"BitLuck";
@@ -99,10 +99,14 @@ contract TOKEN is Context, IERC20, Ownable {
     uint256 public lastDrawBlock;
     IUniswapV2Router02 private uniswapV2Router;
     mapping(address => bool) public _swapPairList;
-    uint256 private constant MAX = ~uint256(0);
+    uint256 private constant MAX = type(uint256).max;
     TokenDistributor public _tokenDistributor;
     uint256 public startTradeBlock;
-    bool private rewardEnabled= true;
+
+    uint256 private constant ACC_PRECISION = 1e18;
+    uint256 public totalDividendPerShare;
+    uint256 private accDividendBalance;
+    mapping(address => uint256) private lastDividendPerShare;
 
     bool private inSwap;
     modifier lockTheSwap {
@@ -165,6 +169,9 @@ contract TOKEN is Context, IERC20, Ownable {
         _transfer(sender, recipient, amount);
         if (_allowances[sender][msg.sender] != MAX) {
             _allowances[sender][msg.sender] = _allowances[sender][msg.sender] - amount;
+            unchecked {
+                _allowances[sender][msg.sender] = _allowances[sender][msg.sender] - amount;
+            }
         }
         return true;
     }
@@ -172,12 +179,20 @@ contract TOKEN is Context, IERC20, Ownable {
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
-    function currentBlock() public view returns (uint256) {
-        return block.number;
+    function _updateRewards(address account) private {
+        uint256 owed = _balances[account] * (totalDividendPerShare - lastDividendPerShare[account]) / ACC_PRECISION;
+        if (owed > 0) {
+            safeTransfer(_USD1, account, owed);
+            accumulatedUsd1[account] += owed;
+            accDividendBalance -= owed;
+        }
+        lastDividendPerShare[account] = totalDividendPerShare;
     }
     function _transfer(address from, address to, uint256 amount) private {
         uint256 balance = balanceOf(from);
         require(balance >= amount, "balanceNotEnough");
+        _updateRewards(from);
+        _updateRewards(to);
         bool takeFee;
         bool isSell;
         if (_swapPairList[from] || _swapPairList[to]) {
@@ -213,7 +228,6 @@ contract TOKEN is Context, IERC20, Ownable {
                 addHolder(from);
                 addHolder(to);
             }
-            if(rewardEnabled)
             processReward();
         }
     }
@@ -224,7 +238,9 @@ contract TOKEN is Context, IERC20, Ownable {
         bool takeFee,
         bool isSell
     ) private {
-        _balances[sender] = _balances[sender] - tAmount;
+        unchecked {
+            _balances[sender] = _balances[sender] - tAmount;
+        }
         uint256 feeAmount;
         if (takeFee) {
             uint256 swapFee;
@@ -243,7 +259,9 @@ contract TOKEN is Context, IERC20, Ownable {
                 );
             }
         }
-        _takeTransfer(sender, recipient, tAmount - feeAmount);
+        unchecked {
+            _takeTransfer(sender, recipient, tAmount - feeAmount);
+        }
     }
     function swapTokenForFund(uint256 tokenAmount, uint256 swapFee) private lockTheSwap {
         address[] memory path = new address[](2);
@@ -267,7 +285,9 @@ contract TOKEN is Context, IERC20, Ownable {
         address to,
         uint256 tAmount
     ) private {
-        _balances[to] = _balances[to] + tAmount;
+        unchecked {
+            _balances[to] = _balances[to] + tAmount;
+        }
         emit Transfer(sender, to, tAmount);
     }
     function openTrading() external onlyOwner {
@@ -295,70 +315,29 @@ contract TOKEN is Context, IERC20, Ownable {
             delete holderIndex[adr];
         }
     }
-
-    event USD1TransferFailed(address indexed to, uint256 amount);
     function processReward() private lockTheSwap {
-        if (!rewardEnabled) return;
         if (block.number < lastDrawBlock + drawIntervalBlocks) return;
-        if (holders.length == 0) return;
 
         IERC20 USD1 = IERC20(_USD1);
-        uint256 rewardPool = USD1.balanceOf(address(this));
-        if (rewardPool == 0) return;
+        uint256 balance = USD1.balanceOf(address(this));
+        uint256 available = balance > accDividendBalance ? balance - accDividendBalance : 0;
+        if (available == 0) return;
 
-        uint256 holderRewardPool = rewardPool / 40;
-        uint256 lotteryRewardPool = rewardPool / 120;
+        uint256 holderRewardPool = available / 40;
+        uint256 lotteryRewardPool = available / 120;
 
-        uint256 totalWeight = 0;
-
-        address[] memory rewardAllHolders = new address[](holders.length);
-        uint256[] memory rewardsAll = new uint256[](holders.length);
-
-        uint256 currentHolderIndex = 0;
-        for (uint i = 0; i < holders.length; i++) {
-            address holder = holders[i];
-            if (holder == address(0)) continue;
-
-            uint256 weight = balanceOf(holder) * 10000 / _tTotal;
-            totalWeight += weight;
-
-            uint256 holderReward = (weight * holderRewardPool) / totalWeight;
-            rewardAllHolders[currentHolderIndex] = holder;
-            rewardsAll[currentHolderIndex] = holderReward;
-            currentHolderIndex++;
-        }
-
-        for (uint i = 0; i < rewardAllHolders.length; i++) {
-            address rewardHolder = rewardAllHolders[i];
-            uint256 reward = rewardsAll[i];
-
-            if (reward > 0 && rewardHolder != address(0)) {
-                (bool success, ) = _USD1.call(
-                    abi.encodeWithSelector(IERC20(_USD1).transfer.selector, rewardHolder, reward)
-                );
-                if (success) {
-                    accumulatedUsd1[rewardHolder] += reward;
-                } else {
-                    emit USD1TransferFailed(rewardHolder, reward);
-                }
-            }
+        if (holderRewardPool > 0) {
+            totalDividendPerShare += holderRewardPool * ACC_PRECISION / _tTotal;
+            accDividendBalance += holderRewardPool;
         }
 
         // lottery draw
-        uint256 randIndex = random(0) % holders.length;
-        address winner = holders[randIndex];
-        uint256 lotteryReward = lotteryRewardPool;
-
-        if (lotteryReward > 0 && winner != address(0)) {
-            (bool successLottery, ) = _USD1.call(
-                abi.encodeWithSelector(IERC20(_USD1).transfer.selector, winner, lotteryReward)
-            );
-            if (successLottery) {
-                accumulatedUsd1[winner] += lotteryReward;
-                emit USD1RewardDistributed(winner, lotteryReward);
-            } else {
-                emit USD1TransferFailed(winner, lotteryReward);
-            }
+        if (lotteryRewardPool > 0 && holders.length > 0) {
+            uint256 randIndex = random(0) % holders.length;
+            address winner = holders[randIndex];
+            safeTransfer(_USD1, winner, lotteryRewardPool);
+            accumulatedUsd1[winner] += lotteryRewardPool;
+            emit USD1RewardDistributed(winner, lotteryRewardPool);
         }
 
         lastDrawBlock = block.number;
@@ -410,7 +389,7 @@ contract TOKEN is Context, IERC20, Ownable {
         IERC20 usd1Token = IERC20(_USD1);
         return usd1Token.balanceOf(address(this));
     }
-    function getAccumulatedUsd1(address user) external view returns (uint256) {
-        return accumulatedUsd1[user];
+     function claimUSD1Reward() external {
+        _updateRewards(_msgSender());
     }
 }
