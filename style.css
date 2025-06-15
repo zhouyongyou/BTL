@@ -363,23 +363,18 @@ footer p {
 
 /* 讓長地址和文字自動換行 */
 #contractAddr,
-#referralUrl,
-#userAccount,  /* 用戶地址 */
-#referralLink  /* 用戶推薦鏈接 */ {
+#userAccount /* 用戶地址 */ {
   word-wrap: break-word; /* 讓超長文字換行 */
   color: #f0b90b;
   overflow-wrap: break-word; /* 兼容舊版本的瀏覽器 */
 }
 
 #contractAddr,
-#referralUrl,
-#userAccount,
-#referralLink {
+#userAccount {
   word-break: break-all; /* 在需要的地方強制換行 */
 }
 
-#contractAddr,
-#referralUrl {
+#contractAddr {
   cursor: pointer;
 }
 
