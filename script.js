@@ -1,8 +1,8 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
 const RPC_ENDPOINTS = [
-  "https://bsc-dataseed.bnbchain.org",
-  "https://bscrpc.com",
-  "https://bsc-dataseed1.binance.org",
+  "https://bsc-dataseed1.binance.org:443",
+  "https://bscrpc.com:433",
+  "https://bsc-dataseed1.binance.org:433",
 ];
 let currentRpcIndex = 0;
 
