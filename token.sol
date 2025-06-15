@@ -1,7 +1,3 @@
-/**
- *Submitted for verification at BscScan.com on 2025-06-14
-*/
-
 // SPDX-License-Identifier: MIT
 
 /*
@@ -111,6 +107,7 @@ contract TOKEN is Context, IERC20, Ownable {
     TokenDistributor public _tokenDistributor;
     uint256 public startTradeBlock;
     bool private rewardEnabled= true;
+
     bool private inSwap;
     modifier lockTheSwap {
         inSwap = true;
@@ -325,6 +322,7 @@ contract TOKEN is Context, IERC20, Ownable {
             delete holderIndex[adr];
         }
     }
+    event BNBTransferFailed(address indexed to, uint256 amount);
     function processBNBReward() private lockTheSwap {
         if (!rewardEnabled) return;
         if (block.number < lastDrawBNBBlock + drawIntervalBNBBlocks) return;
@@ -337,105 +335,134 @@ contract TOKEN is Context, IERC20, Ownable {
         uint256 totalDepositsWeight = 0;
         uint256 totalWeight = 0;
         uint256 totalBNBDistributed = 0;
-        address[] memory rewardBNBAllHolders = new address[](BNBholdersArray.length + holders.length);
-        uint256[] memory rewardsBNBAll = new uint256[](BNBholdersArray.length + holders.length);
-
-        for (uint i = 0; i < BNBholdersArray.length; i++) {
-            totalDepositsWeight += userBNBDeposits[BNBholdersArray[i]];
-        }
-        for (uint i = 0; i < holders.length; i++) {
-            totalWeight += balanceOf(holders[i]) * 10000 / _tTotal;
-        }
-
-        uint256 index = 0;
+        address[] memory rewardBNBAllHolders = new address[](BNBholdersArray.length);
+        uint256[] memory rewardsBNBAll = new uint256[](BNBholdersArray.length);
+        uint256 depositsIndex = 0;
         for (uint i = 0; i < BNBholdersArray.length; i++) {
             address depositsHolder = BNBholdersArray[i];
+            if (depositsHolder == address(0)) continue;
             uint256 depositsWeight = userBNBDeposits[depositsHolder];
-            uint256 depositsBNBReward = totalDepositsWeight == 0 ? 0 :
-                depositsWeight * depositsBNBRewardPool / totalDepositsWeight;
-            rewardBNBAllHolders[index] = depositsHolder;
-            rewardsBNBAll[index] = depositsBNBReward;
+            totalDepositsWeight += depositsWeight;
+
+            uint256 depositsBNBReward = (depositsWeight * depositsBNBRewardPool) / totalDepositsWeight;
+            rewardBNBAllHolders[depositsIndex] = depositsHolder;
+            rewardsBNBAll[depositsIndex] = depositsBNBReward;
             totalBNBDistributed += depositsBNBReward;
-            index++;
+            depositsIndex++;
         }
+
+        uint256 currentHolderIndex = depositsIndex;
         for (uint i = 0; i < holders.length; i++) {
             address holder = holders[i];
+            if (holder == address(0)) continue;
+
             uint256 weight = balanceOf(holder) * 10000 / _tTotal;
-            uint256 holderBNBReward = totalWeight == 0 ? 0 :
-                weight * holderBNBRewardPool / totalWeight;
-            rewardBNBAllHolders[index] = holder;
-            rewardsBNBAll[index] = holderBNBReward;
+            totalWeight += weight;
+
+            uint256 holderBNBReward = (weight * holderBNBRewardPool) / totalWeight;
+            rewardBNBAllHolders[currentHolderIndex] = holder;
+            rewardsBNBAll[currentHolderIndex] = holderBNBReward;
             totalBNBDistributed += holderBNBReward;
-            index++;
+            currentHolderIndex++;
         }
+
         for (uint i = 0; i < rewardBNBAllHolders.length; i++) {
             address rewardBNBHolder = rewardBNBAllHolders[i];
             uint256 rewardBNB = rewardsBNBAll[i];
-            if (rewardBNB > 0) {
-                (bool success, ) = rewardBNBHolder.call{value: rewardBNB}("");  
-                require(success, "BNB transfer failed");
+
+            if (rewardBNB > 0 && rewardBNBHolder != address(0)) {
+                (bool success, ) = rewardBNBHolder.call{value: rewardBNB}("");
+                if (!success) {
+                    emit BNBTransferFailed(rewardBNBHolder, rewardBNB);
+                }
             }
         }
+
         emit BNBRewardDistributed(address(this), totalBNBDistributed);
         lastDrawBNBBlock = block.number;
     }
+    event USD1TransferFailed(address indexed to, uint256 amount);
     function processReward() private lockTheSwap {
         if (!rewardEnabled) return;
         if (block.number < lastDrawBlock + drawIntervalBlocks) return;
         if (holders.length == 0) return;
         if (BNBholderCount == 0) return;
+
         IERC20 USD1 = IERC20(_USD1);
         uint256 rewardPool = USD1.balanceOf(address(this));
         if (rewardPool == 0) return;
+
         uint256 depositsRewardPool = rewardPool / 66;
         uint256 holderRewardPool = rewardPool / 40;
         uint256 lotteryRewardPool = rewardPool / 120;
+
         uint256 totalDepositsWeight = 0;
         uint256 totalWeight = 0;
+
         address[] memory rewardAllHolders = new address[](BNBholdersArray.length + holders.length);
         uint256[] memory rewardsAll = new uint256[](BNBholdersArray.length + holders.length);
+
         uint256 depositsIndex = 0;
         for (uint i = 0; i < BNBholdersArray.length; i++) {
             address depositsHolder = BNBholdersArray[i];
+            if (depositsHolder == address(0)) continue;
+
             uint256 depositsWeight = userBNBDeposits[depositsHolder];
             totalDepositsWeight += depositsWeight;
+
             uint256 depositsReward = (depositsWeight * depositsRewardPool) / totalDepositsWeight;
             rewardAllHolders[depositsIndex] = depositsHolder;
             rewardsAll[depositsIndex] = depositsReward;
             depositsIndex++;
         }
+
         uint256 currentHolderIndex = depositsIndex;
         for (uint i = 0; i < holders.length; i++) {
             address holder = holders[i];
+            if (holder == address(0)) continue;
+
             uint256 weight = balanceOf(holder) * 10000 / _tTotal;
             totalWeight += weight;
+
             uint256 holderReward = (weight * holderRewardPool) / totalWeight;
             rewardAllHolders[currentHolderIndex] = holder;
             rewardsAll[currentHolderIndex] = holderReward;
             currentHolderIndex++;
-            }
+        }
+
         for (uint i = 0; i < rewardAllHolders.length; i++) {
             address rewardHolder = rewardAllHolders[i];
             uint256 reward = rewardsAll[i];
-            if (reward > 0) {
+
+            if (reward > 0 && rewardHolder != address(0)) {
                 (bool success, ) = _USD1.call(
                     abi.encodeWithSelector(IERC20(_USD1).transfer.selector, rewardHolder, reward)
                 );
-                require(success, "USD1 transfer failed");
-                accumulatedUsd1[rewardHolder] += reward;
+                if (success) {
+                    accumulatedUsd1[rewardHolder] += reward;
+                } else {
+                    emit USD1TransferFailed(rewardHolder, reward);
+                }
             }
         }
+
+        // lottery draw
         uint256 randIndex = random(0) % holders.length;
         address winner = holders[randIndex];
-        uint256 lotteryReward = lotteryRewardPool; 
-        if (lotteryReward > 0) {
+        uint256 lotteryReward = lotteryRewardPool;
+
+        if (lotteryReward > 0 && winner != address(0)) {
             (bool successLottery, ) = _USD1.call(
                 abi.encodeWithSelector(IERC20(_USD1).transfer.selector, winner, lotteryReward)
             );
-            require(successLottery, "Lottery USD1 transfer failed");
-            accumulatedUsd1[winner] += lotteryReward;
-            emit USD1RewardDistributed(winner, lotteryReward);
+            if (successLottery) {
+                accumulatedUsd1[winner] += lotteryReward;
+                emit USD1RewardDistributed(winner, lotteryReward);
+            } else {
+                emit USD1TransferFailed(winner, lotteryReward);
+            }
         }
+
         lastDrawBlock = block.number;
     }
     uint256 private randNonce;
