@@ -91,21 +91,12 @@ function applyContractAddress() {
   if (buyBtlBtn) buyBtlBtn.onclick = () => window.open(link, "_blank");
   const contractAddr = document.getElementById("contractAddr");
   if (contractAddr) contractAddr.innerText = addr;
-  const fullHistory = document.getElementById("fullHistory");
-  if (fullHistory) {
-    fullHistory.href = `https://bscscan.com/address/${addr}#events`;
-    fullHistory.target = "_blank";
-  }
   const usd1History = document.getElementById("usd1History");
   if (usd1History) {
     usd1History.href =
       `https://bscscan.com/advanced-filter?tkn=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d&txntype=2&fadd=${addr}&tadd=!${addr}`;
     usd1History.target = "_blank";
   }
-  const bnbScanBtn = document.getElementById("bnbScanBtn");
-  if (bnbScanBtn)
-    bnbScanBtn.onclick = () =>
-      window.open(`https://bscscan.com/address/${addr}`, "_blank");
   const usd1ScanBtn = document.getElementById("usd1ScanBtn");
   if (usd1ScanBtn)
     usd1ScanBtn.onclick = () =>
@@ -121,15 +112,7 @@ function setPlaceholder(id, value = "-") {
 function resetPlaceholders() {
   [
     "usd1Time",
-    "bnbTime",
     "usd1Earnings",
-    "userBNBDeposit",
-    "bnbEarnings",
-    // userBalance, walletBnb and walletUsd1 removed by request
-    "referralUrl",
-    "referralCount",
-    "referralBNB",
-    "poolAmount",
     "usd1PoolAmount",
   ].forEach((id) => setPlaceholder(id));
 }
@@ -365,27 +348,12 @@ function updateLanguage() {
   const lastWinnerLabel = document.getElementById("lastWinnerLabel");
   if (lastWinnerLabel)
     lastWinnerLabel.innerText = lang ? "Last Winner:" : "上一位贏家：";
-
-  const fullHistory = document.getElementById("fullHistory");
-  if (fullHistory) {
-    fullHistory.innerText = lang ? "Full History" : "完整記錄";
-    fullHistory.href = `https://bscscan.com/address/${CONTRACT_ADDRESS}#events`;
-    fullHistory.target = "_blank";
-  }
   const usd1History = document.getElementById("usd1History");
   if (usd1History) {
-    usd1History.innerText = lang
-      ? "USD1 Pool History"
-      : "USD1 獎池發放紀錄";
-    usd1History.href =
-      `https://bscscan.com/advanced-filter?tkn=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d&txntype=2&fadd=${CONTRACT_ADDRESS}&tadd=!${CONTRACT_ADDRESS}`;
+    usd1History.innerText = lang ? "USD1 Pool History" : "USD1 獎池發放紀錄";
+    usd1History.href = `https://bscscan.com/advanced-filter?tkn=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d&txntype=2&fadd=${CONTRACT_ADDRESS}&tadd=!${CONTRACT_ADDRESS}`;
     usd1History.target = "_blank";
   }
-
-  const bnbScanBtn = document.getElementById("bnbScanBtn");
-  if (bnbScanBtn)
-    bnbScanBtn.innerText = lang ? "View on BscScan" : "在 BscScan 查看";
-
   const usd1ScanBtn = document.getElementById("usd1ScanBtn");
   if (usd1ScanBtn)
     usd1ScanBtn.innerText = lang ? "View on BscScan" : "在 BscScan 查看";
@@ -652,11 +620,7 @@ async function updateContractInfo() {
 /* ===== Pool statistics ===== */
 async function updatePoolInfo() {
   if (!contract) return;
-  setPlaceholder("poolAmount");
   setPlaceholder("usd1PoolAmount");
-  const bal = await contract.methods.getBnbPoolBalance().call();
-  const amountEl = document.getElementById("poolAmount");
-  if (amountEl) amountEl.innerText = fromWeiFormatted(bal);
 
   const usd1Bal = await contract.methods.getUSD1Balance().call();
   const usd1El = document.getElementById("usd1PoolAmount");
