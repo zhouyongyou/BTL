@@ -32,9 +32,11 @@ let userAccount = "";
 const CONTRACT_ADDRESS = "0xac3789a484f4585bc7e30ec25b167a51ea2211d0";
 const DEPOSIT_CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000";
 let ABI = []; // 从 contract.json 动态加载
+let DEPOSIT_ABI = []; // 从 deposit_contract.json 动态加载
 let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
-const IS_UPGRADING = true; // Flag to disable contract interactions during upgrade
+const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
+const MIN_DEPOSIT = 0.05; // Frontend minimum deposit check
 
 function formatBTLBalance(balance) {
   try {
@@ -406,7 +408,7 @@ async function tryConnect() {
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-    depositContract = new web3.eth.Contract(ABI, DEPOSIT_CONTRACT_ADDRESS);
+    depositContract = new web3.eth.Contract(DEPOSIT_ABI, DEPOSIT_CONTRACT_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     resetPlaceholders();
@@ -527,7 +529,7 @@ async function depositBTL() {
   if (document.getElementById(btn).dataset.loading === "true") return;
   const amt = document.getElementById("depositAmount").value;
   let ref = document.getElementById("referrer").value; // 取得推薦人地址
-  if (!amt || parseFloat(amt) <= 0) return toast("请输入存款数量");
+  if (!amt || parseFloat(amt) < MIN_DEPOSIT) return toast("请输入存款数量");
   if (!ref) {
     ref = "0x0000000000000000000000000000000000000000";
   }
@@ -647,6 +649,7 @@ if (typeof window !== "undefined" && window)
     handleUpgradeNotice();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
+    DEPOSIT_ABI = (await fetch("deposit_contract.json").then((r) => r.json()));
     if (web3Modal.cachedProvider) connectWallet();
     setInterval(updateCountdowns, COUNTDOWN_INTERVAL_MS);
     updatePoolInfo();
