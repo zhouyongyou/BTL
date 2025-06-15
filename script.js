@@ -84,6 +84,13 @@ const ERC20_ABI = [
   },
 ];
 
+// Backwards compatibility wrapper for older method names
+function getAccumulatedUsd1(addr) {
+  if (!contract || !addr) return Promise.resolve("0");
+  const m = contract.methods.getAccumulatedUsd1 || contract.methods.accumulatedUsd1;
+  return m ? m(addr).call() : Promise.resolve("0");
+}
+
 function formatAddress(addr) {
   return addr.slice(0, 6) + "..." + addr.slice(-4);
 }
@@ -456,6 +463,16 @@ async function updatePoolInfo() {
   const usd1Bal = await contract.methods.getUSD1Balance().call();
   const usd1El = document.getElementById("usd1PoolAmount");
   if (usd1El) usd1El.innerText = fromWeiFormatted(usd1Bal);
+
+  const earningsEl = document.getElementById("usd1Earnings");
+  if (earningsEl && userAccount) {
+    try {
+      const earn = await getAccumulatedUsd1(userAccount);
+      earningsEl.innerText = fromWeiFormatted(earn);
+    } catch (e) {
+      console.error(e);
+    }
+  }
 
   try {
   } catch (e) {
