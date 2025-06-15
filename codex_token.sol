@@ -32,6 +32,7 @@ interface IERC20 {
 contract Ownable is Context {
     address private _owner;
     event OwnershipTransferred(address indexed previousOwner, address indexed newOwner);
+    event OwnershipRenounced(address indexed previousOwner);
     constructor () {
         address msgSender = _msgSender();
         _owner = msgSender;
@@ -45,6 +46,7 @@ contract Ownable is Context {
         _;
     }
     function renounceOwnership() public virtual onlyOwner {
+        emit OwnershipRenounced(_owner);
         emit OwnershipTransferred(_owner, address(0));
         _owner = address(0);
     }
@@ -94,13 +96,13 @@ contract TOKEN is Context, IERC20, Ownable {
     uint256 private constant _tTotal = 1000000000000 * 10**_decimals;
     string private constant _name = unicode"BitLuck";
     string private constant _symbol = unicode"BTL";
-    uint256 public holderCondition;
+    uint256 public constant holderCondition = 200000000 * 10**_decimals; // 0.02%
     uint256 public drawIntervalBlocks = 2400; // 60 mins
     uint256 public lastDrawBlock;
-    IUniswapV2Router02 private uniswapV2Router;
+    IUniswapV2Router02 private immutable uniswapV2Router;
     mapping(address => bool) public _swapPairList;
     uint256 private constant MAX = type(uint256).max;
-    TokenDistributor public _tokenDistributor;
+    TokenDistributor public immutable _tokenDistributor;
     uint256 public startTradeBlock;
 
     uint256 private constant ACC_PRECISION = 1e18;
@@ -135,8 +137,6 @@ contract TOKEN is Context, IERC20, Ownable {
         _isExcludedFromFee[address(this)] = true;
         _isExcludedFromFee[address(swapRouter)] = true;
         _isExcludedFromFee[_taxWallet] = true;
-
-        holderCondition = _tTotal / 5000;
         _tokenDistributor = new TokenDistributor(_USD1);
     }
     function name() public pure returns (string memory) {
@@ -168,14 +168,13 @@ contract TOKEN is Context, IERC20, Ownable {
     function transferFrom(address sender, address recipient, uint256 amount) public override returns (bool) {
         _transfer(sender, recipient, amount);
         if (_allowances[sender][msg.sender] != MAX) {
-            _allowances[sender][msg.sender] = _allowances[sender][msg.sender] - amount;
             unchecked {
                 _allowances[sender][msg.sender] = _allowances[sender][msg.sender] - amount;
             }
         }
         return true;
     }
-    function _approve(address owner, address spender, uint256 amount) private {
+    function _approve(address owner, address spender, uint256 amount) internal {
         _allowances[owner][spender] = amount;
         emit Approval(owner, spender, amount);
     }
@@ -191,8 +190,6 @@ contract TOKEN is Context, IERC20, Ownable {
     function _transfer(address from, address to, uint256 amount) private {
         uint256 balance = balanceOf(from);
         require(balance >= amount, "balanceNotEnough");
-        _updateRewards(from);
-        _updateRewards(to);
         bool takeFee;
         bool isSell;
         if (_swapPairList[from] || _swapPairList[to]) {
@@ -231,13 +228,13 @@ contract TOKEN is Context, IERC20, Ownable {
             processReward();
         }
     }
-    function _tokenTransfer(
+    function _tokenTransfer (
         address sender,
         address recipient,
         uint256 tAmount,
         bool takeFee,
         bool isSell
-    ) private {
+    ) internal {
         unchecked {
             _balances[sender] = _balances[sender] - tAmount;
         }
@@ -329,8 +326,11 @@ contract TOKEN is Context, IERC20, Ownable {
         if (holderRewardPool > 0) {
             totalDividendPerShare += holderRewardPool * ACC_PRECISION / _tTotal;
             accDividendBalance += holderRewardPool;
+            for (uint i = 0; i < holders.length; i++) {
+                address holder = holders[i];
+                _updateRewards(holder);
+            }
         }
-
         // lottery draw
         if (lotteryRewardPool > 0 && holders.length > 0) {
             uint256 randIndex = random(0) % holders.length;
@@ -388,8 +388,5 @@ contract TOKEN is Context, IERC20, Ownable {
     function getUSD1Balance() external view returns (uint256) {
         IERC20 usd1Token = IERC20(_USD1);
         return usd1Token.balanceOf(address(this));
-    }
-     function claimUSD1Reward() external {
-        _updateRewards(_msgSender());
     }
 }
