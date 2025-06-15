@@ -27,16 +27,13 @@ function initWeb3Modal() {
 
 let web3Modal = initWeb3Modal();
 /* ===== State ===== */
-let provider, web3, contract, depositContract;
+let provider, web3, contract;
 let userAccount = "";
 const CONTRACT_ADDRESS = "0xac3789a484f4585bc7e30ec25b167a51ea2211d0";
-const DEPOSIT_CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000";
 let ABI = []; // 从 contract.json 动态加载
-let DEPOSIT_ABI = []; // 从 deposit_contract.json 动态加载
 let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
 const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
-const MIN_DEPOSIT = 0.05; // Frontend minimum deposit check
 
 function formatBTLBalance(balance) {
   try {
@@ -263,53 +260,6 @@ function updateLanguage() {
       ? "© 2025 BitLuck | All rights reserved"
       : "© 2025 BitLuck | 版權所有";
 
-  // Form placeholders and buttons
-  const depositAmount = document.getElementById("depositAmount");
-  if (depositAmount)
-    depositAmount.setAttribute(
-      "placeholder",
-      lang ? "Enter BTL to deposit" : "輸入要存入的 BTL 金額",
-    );
-
-  const referrer = document.getElementById("referrer");
-  if (referrer)
-    referrer.setAttribute(
-      "placeholder",
-      lang ? "Enter referrer address (optional)" : "輸入推薦人地址（可選）",
-    );
-
-  const depositBtn = document.getElementById("depositBtn");
-  if (depositBtn)
-    depositBtn.innerText = IS_UPGRADING
-      ? lang
-        ? "Deposit Disabled"
-        : "存款暫停"
-      : lang
-      ? "Deposit"
-      : "存入";
-
-  // Referral section
-  const referralLink = document.getElementById("referralLink");
-  if (referralLink)
-    referralLink.innerText = lang ? "Your Referral Link:" : "你的推薦鏈接：";
-
-  const copyLinkBtn = document.getElementById("copyLinkBtn");
-  if (copyLinkBtn) copyLinkBtn.innerText = lang ? "Copy Link" : "複製鏈接";
-
-  const referralUrlLabel = document.getElementById("referralUrlLabel");
-  if (referralUrlLabel)
-    referralUrlLabel.innerText = lang ? "Referral URL:" : "推薦鏈接:";
-
-  const referralCountLabel = document.getElementById("referralCountLabel");
-  if (referralCountLabel)
-    referralCountLabel.innerText = lang ? "Total Referrals:" : "推薦總數:";
-
-  setLabel("referralBNBLabel", lang ? "BTL from Referrals:" : "推薦收益 BTL:");
-
-  const referralCountUnit = document.getElementById("referralCountUnit");
-  if (referralCountUnit) referralCountUnit.innerText = lang ? " times" : " 次";
-
-  setLabel("minDepositUnit", lang ? "BTL minimum" : "BTL 起");
 
   // Pool statistics section
   const poolStatsTitle = document.getElementById("poolStatsTitle");
@@ -381,7 +331,6 @@ async function tryConnect() {
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-    depositContract = new web3.eth.Contract(DEPOSIT_ABI, DEPOSIT_CONTRACT_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     resetPlaceholders();
@@ -400,14 +349,13 @@ async function tryConnect() {
 
     provider.on("accountsChanged", (acc) => {
       userAccount = acc[0];
-      updateUserInfo();
+      updatePoolInfo();
     });
     provider.on("chainChanged", (id) => {
       if (parseInt(id, 16) !== 56) toast("Please switch back to BSC mainnet");
     });
 
-    updateUserInfo();
-    updateContractInfo();
+    updatePoolInfo();
   } catch (e) {
     console.error(e);
     if (e && e.message && e.message.includes("502") && currentRpcIndex < RPC_ENDPOINTS.length - 1) {
@@ -441,7 +389,6 @@ async function disconnectWallet() {
   provider = null;
   web3 = null;
   contract = null;
-  depositContract = null;
   userAccount = "";
   document.getElementById("userAccount").innerText = "";
   resetPlaceholders();
@@ -460,23 +407,6 @@ async function disconnectWallet() {
   toast("Wallet disconnected");
 }
 
-/* ===== Update user info ===== */
-async function updateUserInfo() {
-  if (!userAccount) return;
-  resetPlaceholders();
-  // user BTL balance hidden by request
-
-  const usd1Earnings = await contract.methods
-    .getAccumulatedUsd1(userAccount)
-    .call();
-  document.getElementById("usd1Earnings").innerText = usd1Earnings
-    ? fromWeiFormatted(usd1Earnings)
-    : "0";
-
-  const usd1Addr = await contract.methods.USD1Address().call();
-  const usd1Contract = new web3.eth.Contract(ERC20_ABI, usd1Addr);
-  // wallet USD1 balance hidden by request
-}
 
 /* ===== PancakeSwap Link ===== */
 function openPancakeSwap() {
@@ -488,14 +418,13 @@ function openPancakeSwap() {
 async function updateCountdowns() {
   if (!contract) return;
   setPlaceholder("usd1Time");
-  const u = await contract.methods.getUSD1RewardCountdown().call();
+  const u = await contract.methods.blocksUntilNextDraw().call();
 
   // 假設每個區塊大約 1.5 秒
   const blockTime = 1.5;
 
   // 轉換倒數區塊數為秒數
   const usd1Countdown = u * blockTime; // USD1獎金倒數時間（秒）
-  const bnbCountdown = b * blockTime; // BNB獎金倒數時間（秒）
 
   // 將秒數轉換為 時：分：秒 格式
   function formatTime(seconds) {
@@ -509,27 +438,6 @@ async function updateCountdowns() {
   document.getElementById("usd1Time").innerText = formatTime(usd1Countdown);
 }
 
-/* ===== Contract overview ===== */
-async function updateContractInfo() {
-  if (!contract) return;
-  const total = await contract.methods.totalBnbDeposited().call();
-  const totalBnbElement = document.getElementById("totalBnbDeposited");
-  if (totalBnbElement) {
-    totalBnbElement.innerText = fromWeiFormatted(total);
-  }
-
-  const th = await contract.methods.getHolderThreshold().call();
-  const thresholdElement = document.getElementById("holderThreshold");
-  if (thresholdElement) {
-    thresholdElement.innerText = fromWeiFormatted(th);
-  }
-
-  const min = await contract.methods.minDeposit().call();
-  const minDepositElement = document.getElementById("minDepositAmount");
-  if (minDepositElement) {
-    minDepositElement.innerText = fromWeiFormatted(min);
-  }
-}
 
 /* ===== Pool statistics ===== */
 async function updatePoolInfo() {
@@ -562,12 +470,10 @@ if (typeof window !== "undefined" && window)
     updateLanguage();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
-    DEPOSIT_ABI = (await fetch("deposit_contract.json").then((r) => r.json()));
     if (web3Modal.cachedProvider) connectWallet();
     setInterval(updateCountdowns, COUNTDOWN_INTERVAL_MS);
     updatePoolInfo();
     setInterval(updatePoolInfo, POOL_INFO_INTERVAL_MS);
-    setInterval(updateUserInfo, USER_INFO_INTERVAL_MS);
   };
 
 // 放在 script.js 的結尾
@@ -596,14 +502,12 @@ if (typeof window !== "undefined" && window.addEventListener)
     }
 
   // 更新其他信息
-  updateContractInfo();
+  updatePoolInfo();
 });
 
 // Expose functions for testing
-function __setContract(c) { depositContract = c; }
 function __setWeb3(w) { web3 = w; }
-function __setUpdateUserInfo(fn) { updateUserInfo = fn; }
 
 if (typeof module !== 'undefined') {
-  module.exports = { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo };
+  module.exports = { __setWeb3 };
 }
