@@ -312,12 +312,14 @@ contract TOKEN is Context, IERC20, Ownable {
         if (adr == address(0)) return;
         
         if (balanceOf(adr) >= holderCondition && holderIndex[adr] == 0) {
-            holderIndex[adr] = holders.length;
+            holderIndex[adr] = holders.length + 1;
             holders.push(adr);
         }
         if (balanceOf(adr) < holderCondition && holderIndex[adr] != 0) {
-            uint index = holderIndex[adr];
-            holders[index] = holders[holders.length - 1];
+            uint index = holderIndex[adr] - 1;
+            address moved = holders[holders.length - 1];
+            holders[index] = moved;
+            holderIndex[moved] = index + 1;
             holders.pop();
             delete holderIndex[adr];
         }
