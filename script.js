@@ -111,12 +111,10 @@ function resetPlaceholders() {
   [
     "usd1Time",
     "bnbTime",
-    "userBalance",
     "usd1Earnings",
     "userBNBDeposit",
     "bnbEarnings",
-    "walletBnb",
-    "walletUsd1",
+    // userBalance, walletBnb and walletUsd1 removed by request
     "referralUrl",
     "referralCount",
     "referralBNB",
@@ -279,7 +277,6 @@ function updateLanguage() {
   if (userInfoTitle)
     userInfoTitle.innerText = lang ? "Your Asset Status" : "你的資產狀況";
 
-  setLabel("userBalanceLabel", lang ? "Your BTL Balance:" : "你的 BTL 餘額:");
 
   setLabel(
     "usd1EarningsLabel",
@@ -296,9 +293,6 @@ function updateLanguage() {
     lang ? "Estimated Daily BNB:" : "預估每日 BNB 收益:",
   );
 
-  setLabel("walletBnbLabel", lang ? "Wallet BNB:" : "錢包 BNB：");
-
-  setLabel("walletUsd1Label", lang ? "Wallet USD1:" : "錢包 USD1：");
 
   setLabel("depositLabel", lang ? "Deposit BNB" : "存入 BNB");
 
@@ -518,8 +512,7 @@ async function disconnectWallet() {
 async function updateUserInfo() {
   if (!userAccount) return;
   resetPlaceholders();
-  const bal = await contract.methods.balanceOf(userAccount).call();
-  document.getElementById("userBalance").innerText = formatBTLBalance(bal);
+  // user BTL balance hidden by request
 
   const dep = await contract.methods.getUserBNBDeposits(userAccount).call();
   document.getElementById("userBNBDeposit").innerText = fromWeiFormatted(dep);
@@ -529,8 +522,6 @@ async function updateUserInfo() {
     ? fromWeiFormatted(bnbEarnings)
     : "0";
 
-  const walletBnb = await web3.eth.getBalance(userAccount);
-  document.getElementById("walletBnb").innerText = fromWeiFormatted(walletBnb);
 
   const usd1Earnings = await contract.methods
     .getAccumulatedUsd1(userAccount)
@@ -541,10 +532,7 @@ async function updateUserInfo() {
 
   const usd1Addr = await contract.methods.USD1Address().call();
   const usd1Contract = new web3.eth.Contract(ERC20_ABI, usd1Addr);
-  const walletUsd1 = await usd1Contract.methods.balanceOf(userAccount).call();
-  document.getElementById("walletUsd1").innerText = fromWeiFormatted(
-    walletUsd1,
-  );
+  // wallet USD1 balance hidden by request
 
   const ref = await contract.methods.getReferralLink(userAccount).call();
   console.log("Referral link:", ref);
