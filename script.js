@@ -6,7 +6,7 @@ const providerOptions =
           package: window.WalletConnectProvider?.default,
           options: {
             // Use a more reliable RPC endpoint
-            rpc: { 56: "https://rpc.ankr.com/bsc" },
+            rpc: { 56: "https://bsc-dataseed.bnbchain.org" },
           },
         },
       }
