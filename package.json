@@ -1,6 +1,8 @@
 {
   "name": "btl",
   "version": "1.0.0",
-  "devDependencies": {},
+  "devDependencies": {
+    "jest-environment-jsdom": "^30.0.0"
+  },
   "scripts": {}
 }
