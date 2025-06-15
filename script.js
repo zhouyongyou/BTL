@@ -1,23 +1,33 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
-const providerOptions =
-  typeof window !== "undefined"
-    ? {
-        walletconnect: {
-          package: window.WalletConnectProvider?.default,
-          options: {
-            rpc: { 56: 'https://bsc-dataseed1.binance.org:443' }
-          },
-        },
-      }
-    : {};
-const web3Modal =
-  typeof window !== "undefined"
+const RPC_ENDPOINTS = [
+  "https://bsc-dataseed1.binance.org:443",
+  "https://bscrpc.com:433",
+  "https://bsc-dataseed1.binance.org:433",
+];
+let currentRpcIndex = 0;
+
+function buildProviderOptions() {
+  return {
+    walletconnect: {
+      package: window.WalletConnectProvider?.default,
+      options: {
+        rpc: { 56: RPC_ENDPOINTS[currentRpcIndex] },
+      },
+    },
+  };
+}
+
+function initWeb3Modal() {
+  return typeof window !== "undefined"
     ? new window.Web3Modal.default({
         network: "bsc",
         cacheProvider: true,
-        providerOptions,
+        providerOptions: buildProviderOptions(),
       })
     : null;
+}
+
+let web3Modal = initWeb3Modal();
 /* ===== State ===== */
 let provider, web3, contract, depositContract;
 let userAccount = "";
@@ -207,14 +217,6 @@ function updateLanguage() {
   const menuInvite = document.getElementById("menuInvite");
   if (menuInvite) menuInvite.innerText = lang ? "Invite" : "邀請";
 
-  const menuWhitepaper = document.getElementById("menuWhitepaper");
-  if (menuWhitepaper) {
-    menuWhitepaper.innerText = lang ? "Whitepaper" : "白皮書";
-    menuWhitepaper.href = lang
-      ? "https://bitluck.notion.site/whitepaper-en"
-      : "https://bitluck.notion.site/whitepaper-cn";
-    menuWhitepaper.target = "_blank";
-  }
 
   const menuDocs = document.getElementById("menuDocs");
   if (menuDocs) {
@@ -369,14 +371,6 @@ function updateLanguage() {
       ? "This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet."
       : "本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。";
 
-  const whitepaperLink = document.getElementById("whitepaperLink");
-  if (whitepaperLink) {
-    whitepaperLink.innerText = lang ? "Whitepaper" : "白皮書";
-    whitepaperLink.href = lang
-      ? "https://bitluck.notion.site/whitepaper-en"
-      : "https://bitluck.notion.site/whitepaper-cn";
-    whitepaperLink.target = "_blank";
-  }
 
   const telegramText = document.getElementById("telegramText");
   if (telegramText) {
@@ -394,9 +388,17 @@ async function connectWallet() {
   if (userAccount) {
     return disconnectWallet();
   }
-  if (document.getElementById("connectWalletBtn").dataset.loading === "true")
-    return;
+  const btn = document.getElementById("connectWalletBtn");
+  if (btn.dataset.loading === "true") return;
   showLoading("connectWalletBtn");
+  try {
+    await tryConnect();
+  } finally {
+    hideLoading("connectWalletBtn");
+  }
+}
+
+async function tryConnect() {
   try {
     provider = await web3Modal.connect();
     web3 = new Web3(provider);
@@ -435,12 +437,15 @@ async function connectWallet() {
     updateContractInfo();
   } catch (e) {
     console.error(e);
+    if (e && e.message && e.message.includes("502") && currentRpcIndex < RPC_ENDPOINTS.length - 1) {
+      currentRpcIndex++;
+      web3Modal = initWeb3Modal();
+      return tryConnect();
+    }
     const msg = e && e.message && e.message.includes("502")
       ? "RPC error, please try again later."
       : "Connection failed";
     toast(msg);
-  } finally {
-    hideLoading("connectWalletBtn");
   }
 }
 

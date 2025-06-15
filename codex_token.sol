@@ -4,7 +4,7 @@
 
 DApp: https://www.btluck.fun/
 
-Overview & Whitepaper: https://bitluck.notion.site/
+Overview: https://bitluck.notion.site/
 
 Twitter: https://x.com/BitLuckBSC
 
