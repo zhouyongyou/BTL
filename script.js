@@ -488,7 +488,7 @@ function openPancakeSwap() {
 async function updateCountdowns() {
   if (!contract) return;
   setPlaceholder("usd1Time");
-  const u = await contract.methods.getUSD1RewardCountdown().call();
+  const u = await contract.methods.blocksUntilNextDraw().call();
 
   // 假設每個區塊大約 1.5 秒
   const blockTime = 1.5;
