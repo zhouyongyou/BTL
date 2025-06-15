@@ -512,6 +512,7 @@ if (typeof window !== "undefined" && window.addEventListener)
 
   // 更新其他信息
   updatePoolInfo();
+});
 
 // Expose functions for testing
 function __setWeb3(w) { web3 = w; }
