@@ -5,7 +5,8 @@ const providerOptions =
         walletconnect: {
           package: window.WalletConnectProvider?.default,
           options: {
-            rpc: { 56: "https://bsc-dataseed1.binance.org:443" },
+            // Use a more reliable RPC endpoint
+            rpc: { 56: "https://rpc.ankr.com/bsc" },
           },
         },
       }
@@ -467,7 +468,10 @@ async function connectWallet() {
     updateContractInfo();
   } catch (e) {
     console.error(e);
-    toast("Connection failed");
+    const msg = e && e.message && e.message.includes("502")
+      ? "RPC error, please try again later."
+      : "Connection failed";
+    toast(msg);
   } finally {
     hideLoading("connectWalletBtn");
   }
