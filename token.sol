@@ -85,8 +85,8 @@ contract TOKEN is Context, IERC20, Ownable {
     mapping(address => bool) private _isExcludedFromFee;
     uint256 public minDepositAmount = 0.018 ether; // 0.018 BNB for becoming a referrer
     address payable private _taxWallet;
-    address public RouterAddress = address(0x10ED43C718714eb63d5aA57B78B54704E256024E);  // PancakeSwap: Router v2
-    address public USD1Address = address(0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d);  // USD1
+    address public constant RouterAddress = address(0x10ED43C718714eb63d5aA57B78B54704E256024E);  // PancakeSwap: Router v2
+    address public constant USD1Address = address(0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d);  // USD1
     uint256 public _buyFundFee = 100;
     uint256 public _buyRewardFee = 300;
     uint256 public _sellRewardFee = 300;
