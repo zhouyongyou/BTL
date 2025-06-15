@@ -5,8 +5,7 @@ const providerOptions =
         walletconnect: {
           package: window.WalletConnectProvider?.default,
           options: {
-            // Use a more reliable RPC endpoint
-            rpc: { 56: "https://bsc-dataseed.bnbchain.org" },
+            rpc: { 56: 'https://bsc-dataseed1.binance.org:443' }
           },
         },
       }
