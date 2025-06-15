@@ -19,9 +19,10 @@ const web3Modal =
       })
     : null;
 /* ===== State ===== */
-let provider, web3, contract;
+let provider, web3, contract, depositContract;
 let userAccount = "";
 const CONTRACT_ADDRESS = "0xac3789a484f4585bc7e30ec25b167a51ea2211d0";
+const DEPOSIT_CONTRACT_ADDRESS = "0x0000000000000000000000000000000000000000";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
@@ -294,7 +295,7 @@ function updateLanguage() {
   );
 
 
-  setLabel("depositLabel", lang ? "Deposit BNB" : "存入 BNB");
+  setLabel("depositLabel", lang ? "Deposit BTL" : "存入 BTL");
 
   const footerText = document.getElementById("footerText");
   if (footerText)
@@ -307,7 +308,7 @@ function updateLanguage() {
   if (depositAmount)
     depositAmount.setAttribute(
       "placeholder",
-      lang ? "Enter BNB to deposit" : "輸入要存入的 BNB 金額",
+      lang ? "Enter BTL to deposit" : "輸入要存入的 BTL 金額",
     );
 
   const referrer = document.getElementById("referrer");
@@ -343,12 +344,12 @@ function updateLanguage() {
   if (referralCountLabel)
     referralCountLabel.innerText = lang ? "Total Referrals:" : "推薦總數:";
 
-  setLabel("referralBNBLabel", lang ? "BNB from Referrals:" : "推薦收益 BNB:");
+  setLabel("referralBNBLabel", lang ? "BTL from Referrals:" : "推薦收益 BTL:");
 
   const referralCountUnit = document.getElementById("referralCountUnit");
   if (referralCountUnit) referralCountUnit.innerText = lang ? " times" : " 次";
 
-  setLabel("minDepositUnit", lang ? "BNB minimum" : "BNB 起");
+  setLabel("minDepositUnit", lang ? "BTL minimum" : "BTL 起");
 
   // Pool statistics section
   const poolStatsTitle = document.getElementById("poolStatsTitle");
@@ -437,6 +438,7 @@ async function connectWallet() {
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    depositContract = new web3.eth.Contract(ABI, DEPOSIT_CONTRACT_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     resetPlaceholders();
@@ -490,6 +492,7 @@ async function disconnectWallet() {
   provider = null;
   web3 = null;
   contract = null;
+  depositContract = null;
   userAccount = "";
   document.getElementById("userAccount").innerText = "";
   resetPlaceholders();
@@ -541,28 +544,23 @@ async function updateUserInfo() {
   const count = await contract.methods.getReferralCount(userAccount).call();
   document.getElementById("referralCount").innerText = count;
 
-  const refBnb = await contract.methods
-    .getReferralBNBIncome(userAccount)
-    .call();
-  document.getElementById("referralBNB").innerText = fromWeiFormatted(refBnb);
 }
 
-/* ===== Deposit BNB ===== */
-async function depositBNB() {
+/* ===== Deposit BTL ===== */
+async function depositBTL() {
   const btn = "depositBtn";
   if (IS_UPGRADING) return toast("Contract upgrade in progress");
   if (document.getElementById(btn).dataset.loading === "true") return;
   const amt = document.getElementById("depositAmount").value;
   let ref = document.getElementById("referrer").value; // 取得推薦人地址
-  if (!amt || parseFloat(amt) < 0.02) return toast("最低存入 0.02 BNB");
+  if (!amt || parseFloat(amt) <= 0) return toast("请输入存款数量");
   if (!ref) {
     ref = "0x0000000000000000000000000000000000000000";
   }
   showLoading(btn);
   try {
-    await contract.methods.depositBNB(ref).send({
+    await depositContract.methods.depositBTL(web3.utils.toWei(amt, "ether"), ref).send({
       from: userAccount,
-      value: web3.utils.toWei(amt, "ether"),
     });
     toast("存款成功！");
     updateUserInfo();
@@ -718,6 +716,15 @@ if (typeof window !== "undefined" && window.addEventListener)
         .forEach((a) => a.addEventListener("click", closeMenu));
     }
 
-    // 更新其他信息
-    updateContractInfo();
-  });
+  // 更新其他信息
+  updateContractInfo();
+});
+
+// Expose functions for testing
+function __setContract(c) { depositContract = c; }
+function __setWeb3(w) { web3 = w; }
+function __setUpdateUserInfo(fn) { updateUserInfo = fn; }
+
+if (typeof module !== 'undefined') {
+  module.exports = { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo };
+}

@@ -83,7 +83,6 @@ contract TOKEN is Context, IERC20, Ownable {
     mapping(address => uint256) private _balances;
     mapping(address => mapping(address => uint256)) private _allowances;
     mapping(address => bool) private _isExcludedFromFee;
-    uint256 public minDepositAmount = 0.02 ether; // 0.02 BNB for becoming a referrer
     address payable private _taxWallet;
     address public constant RouterAddress = address(0x10ED43C718714eb63d5aA57B78B54704E256024E);  // PancakeSwap: Router v2
     address public constant USD1Address = address(0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d);  // USD1
@@ -98,8 +97,6 @@ contract TOKEN is Context, IERC20, Ownable {
     uint256 public holderCondition;
     uint256 public drawIntervalBlocks = 2400; // 60 mins
     uint256 public lastDrawBlock;
-    uint256 public drawIntervalBNBBlocks = 3601; // 90 mins
-    uint256 public lastDrawBNBBlock;
     IUniswapV2Router02 private uniswapV2Router;
     address public _USD1;
     mapping(address => bool) public _swapPairList;
@@ -226,7 +223,6 @@ contract TOKEN is Context, IERC20, Ownable {
                 addHolder(to);
             }
             if(rewardEnabled)
-            processBNBReward();
             processReward();
         }
     }
@@ -286,26 +282,11 @@ contract TOKEN is Context, IERC20, Ownable {
     function openTrading() external onlyOwner {
         require(0 == startTradeBlock, "Trading has already started");
         lastDrawBlock = block.number;
-        lastDrawBNBBlock = block.number;
         startTradeBlock = block.number;
     }
     event USD1RewardDistributed(address indexed user, uint256 amount);
-    event BNBRewardDistributed(address indexed sender, uint256 totalAmount);
     mapping(address => uint256) public accumulatedUsd1;
-    mapping(address => uint256) public userBNBDeposits;
-    mapping(address => bool) public isEligibleForReferral;
-    uint256 public BNBholderCount;
-    mapping(address => bool) public BNBholders;
-    address[] public BNBholdersArray;
-    function addBNBHolder(address adr) private {
-        if (adr == address(0)) return;
-    
-        if (!BNBholders[adr]) {
-            BNBholders[adr] = true;
-            BNBholdersArray.push(adr);
-            BNBholderCount++;
-        }
-    }
+    // BNB deposit functionality removed
     address[] public holders;
     mapping(address => uint256) holderIndex;
     function addHolder(address adr) private {
@@ -324,131 +305,39 @@ contract TOKEN is Context, IERC20, Ownable {
             delete holderIndex[adr];
         }
     }
-    event BNBTransferFailed(address indexed to, uint256 amount);
-    function processBNBReward() private lockTheSwap {
-        if (!rewardEnabled) return;
-        if (block.number < lastDrawBNBBlock + drawIntervalBNBBlocks) return;
-        if (holders.length == 0) return;
-        if (BNBholderCount == 0) return;
-        uint256 BNBRewardPool = address(this).balance;
-        if (BNBRewardPool == 0) return;
-        uint256 depositsBNBRewardPool = BNBRewardPool / 300;
-        uint256 holderBNBRewardPool = BNBRewardPool / 900;
-        uint256 totalDepositsWeight = 0;
-        uint256 totalWeight = 0;
-        uint256 totalBNBDistributed = 0;
-        address[] memory rewardBNBAllHolders = new address[](BNBholdersArray.length);
-        uint256[] memory rewardsBNBAll = new uint256[](BNBholdersArray.length);
-        uint256 depositsIndex = 0;
-        for (uint i = 0; i < BNBholdersArray.length; i++) {
-            address depositsHolder = BNBholdersArray[i];
-            if (depositsHolder == address(0)) continue;
-            uint256 depositsWeight = userBNBDeposits[depositsHolder];
-            totalDepositsWeight += depositsWeight;
-
-            uint256 depositsBNBReward = (depositsWeight * depositsBNBRewardPool) / totalDepositsWeight;
-            rewardBNBAllHolders[depositsIndex] = depositsHolder;
-            rewardsBNBAll[depositsIndex] = depositsBNBReward;
-            totalBNBDistributed += depositsBNBReward;
-            depositsIndex++;
-        }
-
-        uint256 currentHolderIndex = depositsIndex;
-        for (uint i = 0; i < holders.length; i++) {
-            address holder = holders[i];
-            if (holder == address(0)) continue;
-
-            uint256 weight = balanceOf(holder) * 10000 / _tTotal;
-            totalWeight += weight;
-
-            uint256 holderBNBReward = (weight * holderBNBRewardPool) / totalWeight;
-            rewardBNBAllHolders[currentHolderIndex] = holder;
-            rewardsBNBAll[currentHolderIndex] = holderBNBReward;
-            totalBNBDistributed += holderBNBReward;
-            currentHolderIndex++;
-        }
-
-        for (uint i = 0; i < rewardBNBAllHolders.length; i++) {
-            address rewardBNBHolder = rewardBNBAllHolders[i];
-            uint256 rewardBNB = rewardsBNBAll[i];
-
-            if (rewardBNB > 0 && rewardBNBHolder != address(0)) {
-                (bool success, ) = rewardBNBHolder.call{value: rewardBNB}("");
-                if (!success) {
-                    emit BNBTransferFailed(rewardBNBHolder, rewardBNB);
-                }
-            }
-        }
-
-        emit BNBRewardDistributed(address(this), totalBNBDistributed);
-        lastDrawBNBBlock = block.number;
-    }
     event USD1TransferFailed(address indexed to, uint256 amount);
     function processReward() private lockTheSwap {
         if (!rewardEnabled) return;
         if (block.number < lastDrawBlock + drawIntervalBlocks) return;
         if (holders.length == 0) return;
-        if (BNBholderCount == 0) return;
 
         IERC20 USD1 = IERC20(_USD1);
         uint256 rewardPool = USD1.balanceOf(address(this));
         if (rewardPool == 0) return;
 
-        uint256 depositsRewardPool = rewardPool / 66;
         uint256 holderRewardPool = rewardPool / 40;
         uint256 lotteryRewardPool = rewardPool / 120;
 
-        uint256 totalDepositsWeight = 0;
         uint256 totalWeight = 0;
-
-        address[] memory rewardAllHolders = new address[](BNBholdersArray.length + holders.length);
-        uint256[] memory rewardsAll = new uint256[](BNBholdersArray.length + holders.length);
-
-        uint256 depositsIndex = 0;
-        for (uint i = 0; i < BNBholdersArray.length; i++) {
-            address depositsHolder = BNBholdersArray[i];
-            if (depositsHolder == address(0)) continue;
-
-            uint256 depositsWeight = userBNBDeposits[depositsHolder];
-            totalDepositsWeight += depositsWeight;
-
-            uint256 depositsReward = (depositsWeight * depositsRewardPool) / totalDepositsWeight;
-            rewardAllHolders[depositsIndex] = depositsHolder;
-            rewardsAll[depositsIndex] = depositsReward;
-            depositsIndex++;
+        for (uint i = 0; i < holders.length; i++) {
+            totalWeight += balanceOf(holders[i]);
         }
 
-        uint256 currentHolderIndex = depositsIndex;
         for (uint i = 0; i < holders.length; i++) {
             address holder = holders[i];
-            if (holder == address(0)) continue;
-
-            uint256 weight = balanceOf(holder) * 10000 / _tTotal;
-            totalWeight += weight;
-
-            uint256 holderReward = (weight * holderRewardPool) / totalWeight;
-            rewardAllHolders[currentHolderIndex] = holder;
-            rewardsAll[currentHolderIndex] = holderReward;
-            currentHolderIndex++;
-        }
-
-        for (uint i = 0; i < rewardAllHolders.length; i++) {
-            address rewardHolder = rewardAllHolders[i];
-            uint256 reward = rewardsAll[i];
-
-            if (reward > 0 && rewardHolder != address(0)) {
+            uint256 holderReward = holderRewardPool * balanceOf(holder) / totalWeight;
+            if (holderReward > 0) {
                 (bool success, ) = _USD1.call(
-                    abi.encodeWithSelector(IERC20(_USD1).transfer.selector, rewardHolder, reward)
+                    abi.encodeWithSelector(IERC20(_USD1).transfer.selector, holder, holderReward)
                 );
                 if (success) {
-                    accumulatedUsd1[rewardHolder] += reward;
+                    accumulatedUsd1[holder] += holderReward;
                 } else {
-                    emit USD1TransferFailed(rewardHolder, reward);
+                    emit USD1TransferFailed(holder, holderReward);
                 }
             }
         }
 
-        // lottery draw
         uint256 randIndex = random(0) % holders.length;
         address winner = holders[randIndex];
         uint256 lotteryReward = lotteryRewardPool;
@@ -506,119 +395,7 @@ contract TOKEN is Context, IERC20, Ownable {
             safeTransfer(token, _taxWallet, toSend);
         }
     }
-    mapping(address => uint256) public referralCount;
-    mapping(address => uint256) public referralBNBIncome;
-    event Deposit(address indexed user, uint256 amount);
-    function depositBNB(address referrer) public payable lockTheSwap {
-        require(msg.value >= minDepositAmount, "Minimum deposit is 0.02 BNB");
-        uint256 depositAmount = msg.value;
-        uint256 referralBonus = depositAmount / 10;
-        uint256 refundAmount = depositAmount / 10;
-        uint256 taxAmount = depositAmount / 10;
-        if (referrer != address(0) && referrer != msg.sender && isEligibleForReferral[referrer]) {
-            isEligibleForReferral[msg.sender] = true;
-            (bool successReferrer, ) = referrer.call{value: referralBonus}("");  
-            require(successReferrer, "Referral bonus transfer failed");
-            (bool successRefund, ) = msg.sender.call{value: refundAmount}("");  
-            require(successRefund, "Refund transfer failed");
-            referralCount[referrer] += 1;
-            referralBNBIncome[referrer] += referralBonus;
-        } else {
-            isEligibleForReferral[msg.sender] = true;
-        }
-        (bool successTax, ) = _taxWallet.call{value: taxAmount}("");  
-        require(successTax, "Tax transfer failed");
-        userBNBDeposits[msg.sender] += depositAmount;
-        addBNBHolder(msg.sender);
-        emit Deposit(msg.sender, depositAmount);
-    }
-    fallback() external payable {
-    }
-    receive() external payable {
-    }
-    function getTotalThresholdHolders() public view returns (uint256) {
-        return holders.length;
-    }
-    function getHolderThreshold() public view returns (uint256) {
-        return holderCondition;
-    }
-    function getTotalBNBHolders() public view returns (uint256) {
-        return BNBholdersArray.length;
-    }
-    function getUserBNBDeposits(address user) public view returns (uint256) {
-        return userBNBDeposits[user];
-    }
-    function getUSD1RewardCountdown() public view returns (uint256) {
-        if (block.number >= lastDrawBlock + drawIntervalBlocks) return 0;
-        return (lastDrawBlock + drawIntervalBlocks) - block.number;
-    }
-    function getBNBRewardCountdown() public view returns (uint256) {
-        if (block.number >= lastDrawBNBBlock + drawIntervalBNBBlocks) return 0;
-        return (lastDrawBNBBlock + drawIntervalBNBBlocks) - block.number;
-    }
-    function userBtlBalance(address user) external view returns (uint256) {
-        return balanceOf(user);
-    }
-    function checkUSD1Eligibility(address user) public view returns (bool) {
-        return balanceOf(user) >= holderCondition;
-    }
-    function checkBNBEligibility(address user) public view returns (bool) {
-        return userBNBDeposits[user] >= minDepositAmount;
-    }
-    function minDeposit() external view returns (uint256) {
-        return minDepositAmount;
-    }
-    function getBnbPoolBalance() external view returns (uint256) {
-        return address(this).balance;
-    }
-    function getUSD1Balance() public view returns (uint256) {
-        IERC20 usd1Token = IERC20(_USD1);
-        return usd1Token.balanceOf(address(this));
-    }
-    function totalBnbDeposited() external view returns (uint256 sum) {
-        for (uint i = 0; i < BNBholdersArray.length; i++) {
-            sum += userBNBDeposits[BNBholdersArray[i]];
-        }
-        return sum;
-    }
-    string public referralBaseUrl = "https://btluck.fun/?ref=";
-    function getReferralLink(address user) public view returns (string memory) {
-        return string(abi.encodePacked(referralBaseUrl, toAsciiString(user)));
-    }
-    function setReferralBaseUrl(string memory newBaseUrl) public onlyOwner {
-        referralBaseUrl = newBaseUrl;
-    }
-    function toAsciiString(address x) internal pure returns (string memory) {
-        bytes memory s = new bytes(42);
-        s[0] = '0';
-        s[1] = 'x';
-        bytes20 addr = bytes20(x);
-        for (uint i = 0; i < 20; i++) {
-            uint8 b = uint8(addr[i]);
-            s[2 + i * 2] = byteToChar(b / 16);
-            s[3 + i * 2] = byteToChar(b - 16 * (b / 16));
-        }
-        return string(s);
-    }
-    function byteToChar(uint8 b) internal pure returns (bytes1) {
-        return (b < 10) ? bytes1(b + 48) : bytes1(b + 87);
-    }
-    function getAccumulatedUsd1(address user) external view returns (uint256) {
-        return accumulatedUsd1[user];
-    }
-    function dailyBnbReward(address user) external view returns (uint256) {
-        uint256 depositsBNBRewardPool = address(this).balance / 300;
-        uint256 totalDepositsWeight = 0;
-        for (uint i = 0; i < BNBholdersArray.length; i++) {
-            totalDepositsWeight += userBNBDeposits[BNBholdersArray[i]];
-        }
-        if (totalDepositsWeight == 0) return 0;
-        return depositsBNBRewardPool * userBNBDeposits[user] / totalDepositsWeight * 16;
-    }
     function getReferralCount(address referrer) external view returns (uint256) {
         return referralCount[referrer];
-    }
-    function getReferralBNBIncome(address referrer) external view returns (uint256) {
-        return referralBNBIncome[referrer];
     }
 }

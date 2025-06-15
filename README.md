@@ -14,7 +14,7 @@ BitLuck is a decentralized application (DApp) that enables users to participate 
 
 ## How to Use
 1. **Connect Wallet**: Connect your MetaMask or Rabby wallet.
-2. **Deposit BNB**: Deposit a minimum of 0.02 BNB to participate in the reward system.
+2. **Deposit BTL**: Deposit your BTL tokens to participate in the reward system.
 3. **Earn Rewards**: Receive rewards based on your activity and holding duration.
 4. **Referral System**: Share your referral link and earn additional rewards. The DApp now displays how many users you referred and the BNB earned from referrals.
 
@@ -37,7 +37,7 @@ Visit [http://localhost:8000/index.html](http://localhost:8000/index.html) in yo
 
 ## Wallet Setup
 - Click **Connect Wallet** in the DApp and select MetaMask or Rabby.
-- Deposit at least **0.02 BNB** to start earning rewards.
+- Deposit BTL tokens to start earning rewards.
 
 The **Pool Statistics** section on the page shows the amount of BNB currently in the reward pool and the address of the most recent winner. A **Full History** link opens BscScan with an advanced filter so you can verify every payout.
 
