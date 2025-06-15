@@ -234,14 +234,6 @@ function updateLanguage() {
   const menuInvite = document.getElementById("menuInvite");
   if (menuInvite) menuInvite.innerText = lang ? "Invite" : "邀請";
 
-  const menuWhitepaper = document.getElementById("menuWhitepaper");
-  if (menuWhitepaper) {
-    menuWhitepaper.innerText = lang ? "Whitepaper" : "白皮書";
-    menuWhitepaper.href = lang
-      ? "https://bitluck.notion.site/whitepaper-en"
-      : "https://bitluck.notion.site/whitepaper-cn";
-    menuWhitepaper.target = "_blank";
-  }
 
   const menuDocs = document.getElementById("menuDocs");
   if (menuDocs) {
@@ -411,14 +403,6 @@ function updateLanguage() {
       ? "This DApp only supports the BSC mainnet. Please make sure your wallet is switched to the Binance Smart Chain mainnet."
       : "本 DApp 僅支持 BSC 主網，請確保你的錢包已切換至 Binance Smart Chain 主網。";
 
-  const whitepaperLink = document.getElementById("whitepaperLink");
-  if (whitepaperLink) {
-    whitepaperLink.innerText = lang ? "Whitepaper" : "白皮書";
-    whitepaperLink.href = lang
-      ? "https://bitluck.notion.site/whitepaper-en"
-      : "https://bitluck.notion.site/whitepaper-cn";
-    whitepaperLink.target = "_blank";
-  }
 
   const telegramText = document.getElementById("telegramText");
   if (telegramText) {
