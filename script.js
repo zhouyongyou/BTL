@@ -255,31 +255,6 @@ function updateLanguage() {
     lang ? " Next USD1 Reward:" : " 下次 USD1 分紅:",
   );
 
-  setLabel("bnbCountdownLabel", lang ? " Next BNB Reward:" : " 下次 BNB 分紅:");
-
-  const userInfoTitle = document.getElementById("userInfoTitle");
-  if (userInfoTitle)
-    userInfoTitle.innerText = lang ? "Your Asset Status" : "你的資產狀況";
-
-
-  setLabel(
-    "usd1EarningsLabel",
-    lang ? "Your USD1 Earnings:" : "你的 USD1 累計收益:",
-  );
-
-  setLabel(
-    "userBNBDepositLabel",
-    lang ? "Your BNB Deposit:" : "你的 BNB 累計存款:",
-  );
-
-  setLabel(
-    "bnbEarningsLabel",
-    lang ? "Estimated Daily BNB:" : "預估每日 BNB 收益:",
-  );
-
-
-  setLabel("depositLabel", lang ? "Deposit BTL" : "存入 BTL");
-
   const footerText = document.getElementById("footerText");
   if (footerText)
     footerText.innerText = lang
@@ -338,8 +313,6 @@ function updateLanguage() {
   const poolStatsTitle = document.getElementById("poolStatsTitle");
   if (poolStatsTitle)
     poolStatsTitle.innerText = lang ? "Pool Statistics" : "獎池統計";
-
-  setLabel("currentPoolLabel", lang ? "Current BNB Pool:" : "當前 BNB 獎池:");
 
   setLabel("usd1PoolLabel", lang ? "Current USD1 Pool:" : "當前 USD1 獎池:");
 
