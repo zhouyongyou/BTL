@@ -32,6 +32,9 @@ let userAccount = "";
 const CONTRACT_ADDRESS = "0xb1b8ea6e684603f328ed401426c465f55d064444";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
+let roastpadContract;
+let roastpadABI = [];
+const ROASTPAD_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
 const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
 
@@ -299,6 +302,7 @@ async function tryConnect() {
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    roastpadContract = new web3.eth.Contract(roastpadABI, ROASTPAD_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     resetPlaceholders();
@@ -388,6 +392,57 @@ function copyToClipboard(id) {
   if (!el) return;
   const text = el.dataset.full || el.innerText;
   navigator.clipboard.writeText(text).then(() => toast("Copied!"));
+
+async function depositBNB() {
+  if (IS_UPGRADING) return handleUpgradeNotice();
+  if (!roastpadContract) return toast("Connect wallet first");
+  const amount = document.getElementById("bnbAmount").value;
+  const ref = document.getElementById("bnbReferrer").value || "0x0000000000000000000000000000000000000000";
+  if (!amount || parseFloat(amount) <= 0) {
+    toast(currentLanguage === "en" ? "Enter deposit amount" : "\u8bf7\u8f93\u5165\u5b58\u6b3e\u6570\u91cf");
+    return;
+  }
+  showLoading("depositBnbBtn");
+  try {
+    await roastpadContract.methods.deposit(ref).send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
+    toast(currentLanguage === "en" ? "Deposit successful" : "\u5b58\u6b3e\u6210\u529f");
+  } catch (e) {
+    console.error(e);
+    toast("Transaction failed");
+  } finally {
+    hideLoading("depositBnbBtn");
+  }
+}
+
+async function withdraw() {
+  if (!roastpadContract) return toast("Connect wallet first");
+  showLoading("withdrawBtn");
+  try {
+    await roastpadContract.methods.withdraw().send({ from: userAccount });
+    toast(currentLanguage === "en" ? "Withdraw successful" : "\u63d0\u6b3e\u6210\u529f");
+  } catch (e) {
+    console.error(e);
+    toast("Transaction failed");
+  } finally {
+    hideLoading("withdrawBtn");
+  }
+}
+
+async function claimReferralRewards() {
+  if (!roastpadContract) return toast("Connect wallet first");
+  showLoading("claimRewardsBtn");
+  try {
+    await roastpadContract.methods.claimReferralRewards().send({ from: userAccount });
+    toast(currentLanguage === "en" ? "Rewards claimed" : "\u9818\u53d6\u6210\u529f");
+  } catch (e) {
+    console.error(e);
+    toast("Transaction failed");
+  } finally {
+    hideLoading("claimRewardsBtn");
+  }
+}
+
+
 }
 
 /* ===== Dark mode ===== */
@@ -398,6 +453,7 @@ if (typeof window !== "undefined" && window)
     updateLanguage();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
+    roastpadABI = (await fetch("roastpad_contract.json").then((r) => r.json())).abi;
     if (web3Modal.cachedProvider) connectWallet();
     // Removed countdown and pool info updates
   };
@@ -433,5 +489,5 @@ if (typeof window !== "undefined" && window.addEventListener)
 function __setWeb3(w) { web3 = w; }
 
 if (typeof module !== 'undefined') {
-  module.exports = { __setWeb3 };
+  module.exports = { __setWeb3, depositBNB, withdraw, claimReferralRewards };
 }

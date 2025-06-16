@@ -67,6 +67,15 @@
       <p id="heroDesc">Join BitLuck today and earn rewards through holding, depositing, and referring others.</p>
     </div>
   </section>
+  <section id="bnbSection">
+    <div class="container">
+      <input id="bnbAmount" type="text" placeholder="Amount BNB" />
+      <input id="bnbReferrer" type="text" placeholder="Referral address (optional)" />
+      <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
+      <button id="withdrawBtn" onclick="withdraw()">Withdraw</button>
+      <button id="claimRewardsBtn" onclick="claimReferralRewards()">Claim Rewards</button>
+    </div>
+  </section>
   <nav id="sideMenu" class="side-menu">
     <ul>
       <li><button id="menuConnectBtn" onclick="connectWallet()">Connect Wallet</button></li>
