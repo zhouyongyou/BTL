@@ -29,6 +29,8 @@ let web3Modal = initWeb3Modal();
 /* ===== State ===== */
 let provider, web3, contract;
 let userAccount = "";
+let depositContract;
+let updateUserInfo = () => {};
 const CONTRACT_ADDRESS = "0xb1b8ea6e684603f328ed401426c465f55d064444";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
@@ -380,6 +382,37 @@ function openPancakeSwap() {
   window.open(url, "_blank");
 }
 
+async function depositBTL() {
+  if (IS_UPGRADING) return handleUpgradeNotice();
+  const amountEl = document.getElementById("depositAmount");
+  const refEl = document.getElementById("referrer");
+  if (!amountEl || !depositContract || !web3) return;
+  const amountStr = amountEl.value.trim();
+  const amount = parseFloat(amountStr);
+  if (!amountStr || isNaN(amount) || amount < 0.05) {
+    toast("请输入存款数量");
+    return;
+  }
+  const btn = document.getElementById("depositBtn");
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading("depositBtn");
+  try {
+    const weiAmount = web3.utils.toWei(amountStr, "ether");
+    const referrer = refEl ? refEl.value.trim() : "";
+    await depositContract.methods
+      .depositBTL(weiAmount, referrer)
+      .send({ from: userAccount });
+    if (typeof updateUserInfo === "function") updateUserInfo();
+    toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
+  } catch (e) {
+    console.error(e);
+    const msg = e && e.message ? e.message : currentLanguage === "en" ? "Deposit failed" : "存款失败";
+    toast(msg);
+  } finally {
+    hideLoading("depositBtn");
+  }
+}
+
 
 
 /* ===== Copy helper ===== */
@@ -431,7 +464,9 @@ if (typeof window !== "undefined" && window.addEventListener)
 
 // Expose functions for testing
 function __setWeb3(w) { web3 = w; }
+function __setContract(c) { depositContract = c; }
+function __setUpdateUserInfo(fn) { updateUserInfo = fn; }
 
 if (typeof module !== 'undefined') {
-  module.exports = { __setWeb3 };
+  module.exports = { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo };
 }
