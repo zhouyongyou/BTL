@@ -104,16 +104,6 @@ function applyContractAddress() {
   if (buyBtlBtn) buyBtlBtn.onclick = () => window.open(link, "_blank");
   const contractAddr = document.getElementById("contractAddr");
   if (contractAddr) contractAddr.innerText = addr;
-  const usd1History = document.getElementById("usd1History");
-  if (usd1History) {
-    usd1History.href =
-      `https://bscscan.com/advanced-filter?tkn=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d&txntype=2&fadd=${addr}&tadd=!${addr}`;
-    usd1History.target = "_blank";
-  }
-  const usd1ScanBtn = document.getElementById("usd1ScanBtn");
-  if (usd1ScanBtn)
-    usd1ScanBtn.onclick = () =>
-      window.open(`https://bscscan.com/token/0x8d0d000ee44948fc98c9b98a4fa4921476f08b0d?a=${addr}`, "_blank");
 }
 
 /* ===== Placeholder helpers ===== */
@@ -123,17 +113,9 @@ function setPlaceholder(id, value = "-") {
 }
 
 function resetPlaceholders() {
-  [
-    "usd1Time",
-    "usd1Earnings",
-    "usd1PoolAmount",
-  ].forEach((id) => setPlaceholder(id));
+  // no placeholders to reset after removing USD1 sections
 }
 
-// 可調整的更新頻率（毫秒）
-const COUNTDOWN_INTERVAL_MS = 1000; // 倒數更新間隔
-const POOL_INFO_INTERVAL_MS = 30000; // 池子資訊更新間隔
-const USER_INFO_INTERVAL_MS = 30000; // 用戶資訊更新間隔
 /* ===== Toast ===== */
 function toast(msg) {
   const t = document.getElementById("toast");
@@ -261,41 +243,11 @@ function updateLanguage() {
   if (copyAddressBtn)
     copyAddressBtn.innerText = lang ? "Copy Address" : "複製地址";
 
-  const countdownTitle = document.getElementById("countdownTitle");
-  if (countdownTitle)
-    countdownTitle.innerText = lang ? "Reward Countdowns" : "分紅倒數";
-
-  setLabel(
-    "usd1CountdownLabel",
-    lang ? " Next USD1 Reward:" : " 下次 USD1 分紅:",
-  );
-
   const footerText = document.getElementById("footerText");
   if (footerText)
     footerText.innerText = lang
       ? "© 2025 BitLuck | All rights reserved"
       : "© 2025 BitLuck | 版權所有";
-
-
-  // Pool statistics section
-  const poolStatsTitle = document.getElementById("poolStatsTitle");
-  if (poolStatsTitle)
-    poolStatsTitle.innerText = lang ? "Pool Statistics" : "獎池統計";
-
-  setLabel("usd1PoolLabel", lang ? "Current USD1 Pool:" : "當前 USD1 獎池:");
-
-  const lastWinnerLabel = document.getElementById("lastWinnerLabel");
-  if (lastWinnerLabel)
-    lastWinnerLabel.innerText = lang ? "Last Winner:" : "上一位贏家：";
-  const usd1History = document.getElementById("usd1History");
-  if (usd1History) {
-    usd1History.innerText = lang ? "USD1 Pool History" : "USD1 獎池發放紀錄";
-    usd1History.href = `https://bscscan.com/advanced-filter?tkn=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d&txntype=2&fadd=${CONTRACT_ADDRESS}&tadd=!${CONTRACT_ADDRESS}`;
-    usd1History.target = "_blank";
-  }
-  const usd1ScanBtn = document.getElementById("usd1ScanBtn");
-  if (usd1ScanBtn)
-    usd1ScanBtn.innerText = lang ? "View on BscScan" : "在 BscScan 查看";
 
   const contractAddrEl = document.getElementById("contractAddr");
   if (contractAddrEl) contractAddrEl.innerText = CONTRACT_ADDRESS;
@@ -365,13 +317,11 @@ async function tryConnect() {
 
     provider.on("accountsChanged", (acc) => {
       userAccount = acc[0];
-      updatePoolInfo();
     });
     provider.on("chainChanged", (id) => {
       if (parseInt(id, 16) !== 56) toast("Please switch back to BSC mainnet");
     });
 
-    updatePoolInfo();
   } catch (e) {
     console.error(e);
     if (e && e.message && e.message.includes("502") && currentRpcIndex < RPC_ENDPOINTS.length - 1) {
@@ -430,55 +380,7 @@ function openPancakeSwap() {
   window.open(url, "_blank");
 }
 
-/* ===== Countdown ===== */
-async function updateCountdowns() {
-  if (!contract) return;
-  setPlaceholder("usd1Time");
-  const u = await contract.methods.blocksUntilNextDraw().call();
 
-  // 假設每個區塊大約 1.5 秒
-  const blockTime = 1.5;
-
-  // 轉換倒數區塊數為秒數
-  const usd1Countdown = u * blockTime; // USD1獎金倒數時間（秒）
-
-  // 將秒數轉換為 時：分：秒 格式
-  function formatTime(seconds) {
-    const hours = Math.floor(seconds / 3600); // 計算小時
-    const minutes = Math.floor((seconds % 3600) / 60); // 計算分鐘
-    const remainingSeconds = Math.floor(seconds % 60); // 計算秒數
-    return `${hours}${timeUnits[0]} ${minutes}${timeUnits[1]} ${remainingSeconds}${timeUnits[2]}`;
-  }
-
-  // 更新顯示的時間（倒數時間格式：時：分：秒）
-  document.getElementById("usd1Time").innerText = formatTime(usd1Countdown);
-}
-
-
-/* ===== Pool statistics ===== */
-async function updatePoolInfo() {
-  if (!contract) return;
-  setPlaceholder("usd1PoolAmount");
-
-  const usd1Bal = await contract.methods.getUSD1Balance().call();
-  const usd1El = document.getElementById("usd1PoolAmount");
-  if (usd1El) usd1El.innerText = fromWeiFormatted(usd1Bal);
-
-  const earningsEl = document.getElementById("usd1Earnings");
-  if (earningsEl && userAccount) {
-    try {
-      const earn = await getAccumulatedUsd1(userAccount);
-      earningsEl.innerText = fromWeiFormatted(earn);
-    } catch (e) {
-      console.error(e);
-    }
-  }
-
-  try {
-  } catch (e) {
-    console.error(e);
-  }
-}
 
 /* ===== Copy helper ===== */
 function copyToClipboard(id) {
@@ -497,9 +399,7 @@ if (typeof window !== "undefined" && window)
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
     if (web3Modal.cachedProvider) connectWallet();
-    setInterval(updateCountdowns, COUNTDOWN_INTERVAL_MS);
-    updatePoolInfo();
-    setInterval(updatePoolInfo, POOL_INFO_INTERVAL_MS);
+    // Removed countdown and pool info updates
   };
 
 // 放在 script.js 的結尾
@@ -527,8 +427,6 @@ if (typeof window !== "undefined" && window.addEventListener)
         .forEach((a) => a.addEventListener("click", closeMenu));
     }
 
-  // 更新其他信息
-  updatePoolInfo();
 });
 
 // Expose functions for testing
