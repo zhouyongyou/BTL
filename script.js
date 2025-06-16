@@ -27,13 +27,30 @@ function initWeb3Modal() {
 
 let web3Modal = initWeb3Modal();
 /* ===== State ===== */
-let provider, web3, contract;
+let provider, web3, contract, roastPadContract;
 let userAccount = "";
 const CONTRACT_ADDRESS = "0xb1b8ea6e684603f328ed401426c465f55d064444";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
 const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
+const ROASTPAD_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ROASTPAD_ABI = [
+  {
+    inputs: [{ internalType: "address", name: "_referrer", type: "address" }],
+    name: "deposit",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "withdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
 
 function handleUpgradeNotice() {
   if (!IS_UPGRADING) return;
@@ -299,6 +316,7 @@ async function tryConnect() {
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+    roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     resetPlaceholders();
@@ -371,6 +389,55 @@ async function disconnectWallet() {
     networkInfo.innerText =
       currentLanguage === "en" ? "Not connected" : "未連接";
   toast("Wallet disconnected");
+}
+
+
+/* ===== RoastPad ===== */
+async function depositBNB() {
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const amount = document.getElementById("depositAmount").value;
+  if (!amount || parseFloat(amount) <= 0) {
+    toast(currentLanguage === "en" ? "Enter deposit amount" : "請輸入存款數量");
+    return;
+  }
+  const btnId = "depositBnbBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    await roastPadContract.methods
+      .deposit("0x0000000000000000000000000000000000000000")
+      .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
+    toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
+}
+
+async function withdrawBNB() {
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const btnId = "withdrawBnbBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    await roastPadContract.methods.withdraw().send({ from: userAccount });
+    toast(currentLanguage === "en" ? "Withdrawal successful!" : "提領成功!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
 }
 
 
