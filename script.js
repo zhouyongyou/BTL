@@ -37,6 +37,8 @@ let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
 const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
 const ROASTPAD_ADDRESS = "0x0000000000000000000000000000000000000000";
+// Toggle to enable/disable RoastPad (BNB deposit) interactions
+const ROASTPAD_LIVE = false;
 const ROASTPAD_ABI = [
   {
     inputs: [{ internalType: "address", name: "_referrer", type: "address" }],
@@ -396,6 +398,10 @@ async function disconnectWallet() {
 
 /* ===== RoastPad ===== */
 async function depositBNB() {
+  if (!ROASTPAD_LIVE) {
+    toast(currentLanguage === "en" ? "BNB deposit not available" : "BNB\u5b58\u6b3e\u672a\u555f\u7528");
+    return;
+  }
   if (!web3 || !userAccount) {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
@@ -423,6 +429,10 @@ async function depositBNB() {
 }
 
 async function withdrawBNB() {
+  if (!ROASTPAD_LIVE) {
+    toast(currentLanguage === "en" ? "BNB deposit not available" : "BNB\u5b58\u6b3e\u672a\u555f\u7528");
+    return;
+  }
   if (!web3 || !userAccount) {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
