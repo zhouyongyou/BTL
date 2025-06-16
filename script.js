@@ -27,8 +27,10 @@ function initWeb3Modal() {
 
 let web3Modal = initWeb3Modal();
 /* ===== State ===== */
-let provider, web3, contract;
+let provider, web3, contract, roastPadContract;
 let userAccount = "";
+let depositContract;
+let updateUserInfo = () => {};
 const CONTRACT_ADDRESS = "0xb1b8ea6e684603f328ed401426c465f55d064444";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
@@ -37,6 +39,23 @@ let roastpadABI = [];
 const ROASTPAD_ADDRESS = "0x5FbDB2315678afecb367f032d93F642f64180aa3";
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
 const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
+const ROASTPAD_ADDRESS = "0x0000000000000000000000000000000000000000";
+const ROASTPAD_ABI = [
+  {
+    inputs: [{ internalType: "address", name: "_referrer", type: "address" }],
+    name: "deposit",
+    outputs: [],
+    stateMutability: "payable",
+    type: "function",
+  },
+  {
+    inputs: [],
+    name: "withdraw",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
+];
 
 function handleUpgradeNotice() {
   if (!IS_UPGRADING) return;
@@ -302,7 +321,7 @@ async function tryConnect() {
       return;
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-    roastpadContract = new web3.eth.Contract(roastpadABI, ROASTPAD_ADDRESS);
+    roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     resetPlaceholders();
@@ -378,10 +397,90 @@ async function disconnectWallet() {
 }
 
 
+/* ===== RoastPad ===== */
+async function depositBNB() {
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const amount = document.getElementById("depositAmount").value;
+  if (!amount || parseFloat(amount) <= 0) {
+    toast(currentLanguage === "en" ? "Enter deposit amount" : "請輸入存款數量");
+    return;
+  }
+  const btnId = "depositBnbBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    await roastPadContract.methods
+      .deposit("0x0000000000000000000000000000000000000000")
+      .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
+    toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
+}
+
+async function withdrawBNB() {
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const btnId = "withdrawBnbBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    await roastPadContract.methods.withdraw().send({ from: userAccount });
+    toast(currentLanguage === "en" ? "Withdrawal successful!" : "提領成功!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
+}
+
+
 /* ===== PancakeSwap Link ===== */
 function openPancakeSwap() {
   const url = `https://pancakeswap.finance/swap?outputCurrency=${CONTRACT_ADDRESS}&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d`;
   window.open(url, "_blank");
+}
+
+async function depositBTL() {
+  if (IS_UPGRADING) return handleUpgradeNotice();
+  const amountEl = document.getElementById("depositAmount");
+  const refEl = document.getElementById("referrer");
+  if (!amountEl || !depositContract || !web3) return;
+  const amountStr = amountEl.value.trim();
+  const amount = parseFloat(amountStr);
+  if (!amountStr || isNaN(amount) || amount < 0.05) {
+    toast("请输入存款数量");
+    return;
+  }
+  const btn = document.getElementById("depositBtn");
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading("depositBtn");
+  try {
+    const weiAmount = web3.utils.toWei(amountStr, "ether");
+    const referrer = refEl ? refEl.value.trim() : "";
+    await depositContract.methods
+      .depositBTL(weiAmount, referrer)
+      .send({ from: userAccount });
+    if (typeof updateUserInfo === "function") updateUserInfo();
+    toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
+  } catch (e) {
+    console.error(e);
+    const msg = e && e.message ? e.message : currentLanguage === "en" ? "Deposit failed" : "存款失败";
+    toast(msg);
+  } finally {
+    hideLoading("depositBtn");
+  }
 }
 
 
@@ -487,7 +586,9 @@ if (typeof window !== "undefined" && window.addEventListener)
 
 // Expose functions for testing
 function __setWeb3(w) { web3 = w; }
+function __setContract(c) { depositContract = c; }
+function __setUpdateUserInfo(fn) { updateUserInfo = fn; }
 
 if (typeof module !== 'undefined') {
-  module.exports = { __setWeb3, depositBNB, withdraw, claimReferralRewards };
+  module.exports = { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo };
 }
