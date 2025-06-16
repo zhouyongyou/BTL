@@ -16,6 +16,10 @@ contract RoastPad {
     address public owner;
     uint256 public platformFees;
 
+    event Deposit(address indexed user, uint256 amount);
+    event Withdraw(address indexed user, uint256 amount);
+    event ReferralReward(address indexed referrer, uint256 amount);
+
     modifier onlyOwner() {
         require(msg.sender == owner, "Not owner");
         _;
@@ -46,9 +50,12 @@ contract RoastPad {
         if (user.referrer != address(0)) {
             uint256 reward = (msg.value * REFERRAL_RATE) / 100;
             users[user.referrer].referralRewards += reward;
+            emit ReferralReward(user.referrer, reward);
         } else {
             platformFees += (msg.value * REFERRAL_RATE) / 100;
         }
+
+        emit Deposit(msg.sender, msg.value);
     }
 
     function withdraw() external {
@@ -60,6 +67,7 @@ contract RoastPad {
         user.deposit = 0;
         totalDeposits -= amount;
         payable(msg.sender).transfer(amount);
+        emit Withdraw(msg.sender, amount);
     }
 
     function claimReferralRewards() external {
@@ -67,6 +75,7 @@ contract RoastPad {
         require(reward > 0, "No rewards");
         users[msg.sender].referralRewards = 0;
         payable(msg.sender).transfer(reward);
+        emit ReferralReward(msg.sender, reward);
     }
 
     function _claimYield(address _user) internal {
