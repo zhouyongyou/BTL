@@ -47,3 +47,20 @@ Install project dependencies with npm:
 ```bash
 npm install
 ```
+
+## Listening for RoastPad Deposits
+A Node.js script `listenDeposits.js` captures `Deposit` events from the RoastPad contract and stores them in MongoDB.
+
+### Setup
+1. Define these environment variables:
+   - `RPC_URL` – RPC endpoint for the chain.
+   - `CONTRACT_ADDRESS` – RoastPad contract address.
+   - `MONGO_URI` – MongoDB connection string.
+2. Install dependencies with `npm install`.
+3. Start the listener using:
+
+```bash
+npm run listen-deposits
+```
+
+Deposits are saved in the `deposits` collection and each referrer’s totals are kept in `leaderboard`.
