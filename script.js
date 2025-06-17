@@ -222,6 +222,11 @@ function updateLanguage() {
     claimReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+  const depositRules = document.getElementById("depositRules");
+  if (depositRules)
+    depositRules.innerText = lang
+      ? "Minimum deposit is 0.01 BNB. Deposits and withdrawals require a 24-hour cooldown."
+      : "最低存入金額為 0.01 BNB，存款與提領之間需間隔 24 小時。";
   const userDepositLabel = document.getElementById("userDepositLabel");
   if (userDepositLabel)
     userDepositLabel.innerText = lang ? "Total Deposit:" : "總存款:";
@@ -443,6 +448,14 @@ async function depositBNB() {
 
   if (!amount || parseFloat(amount) <= 0) {
     toast(currentLanguage === "en" ? "Enter deposit amount" : "請輸入存款數量");
+    return;
+  }
+  if (parseFloat(amount) < 0.01) {
+    toast(
+      currentLanguage === "en"
+        ? "Minimum deposit is 0.01 BNB"
+        : "最低存入金額為 0.01 BNB"
+    );
     return;
   }
   const referrerInput = document.getElementById("bnbReferrer");
