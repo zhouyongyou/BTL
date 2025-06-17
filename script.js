@@ -244,6 +244,11 @@ function updateLanguage() {
     claimReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+  const userDepositLabel = document.getElementById("userDepositLabel");
+  if (userDepositLabel)
+    userDepositLabel.innerText = lang ? "Deposit:" : "存款:";
+  const userYieldLabel = document.getElementById("userYieldLabel");
+  if (userYieldLabel) userYieldLabel.innerText = lang ? "Yield:" : "收益:";
   const referrerInput = document.getElementById("referrer");
   if (referrerInput)
     referrerInput.placeholder = lang
@@ -312,6 +317,7 @@ function updateLanguage() {
   }
 
   updateReferralLink();
+  updateMyReferralLink();
 }
 
 /* ===== Connect wallet ===== */
@@ -343,6 +349,7 @@ async function tryConnect() {
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     updateReferralLink();
+    updateMyReferralLink();
     resetPlaceholders();
     const connectBtn = document.getElementById("connectWalletBtn");
     if (connectBtn)
@@ -356,11 +363,15 @@ async function tryConnect() {
     if (networkInfo)
       networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
     updateReferralLink();
+    updateMyReferralLink();
+    updateUserInfo = () => getUserInfo(userAccount);
+    await getUserInfo(userAccount);
     toast("Wallet connected successfully!");
 
     provider.on("accountsChanged", (acc) => {
       userAccount = acc[0];
       updateReferralLink();
+      updateMyReferralLink();
     });
     provider.on("chainChanged", (id) => {
       if (parseInt(id, 16) !== 56) toast("Please switch back to BSC mainnet");
@@ -402,6 +413,7 @@ async function disconnectWallet() {
   userAccount = "";
   document.getElementById("userAccount").innerText = "";
   updateReferralLink();
+  updateMyReferralLink();
   resetPlaceholders();
   const connectBtn = document.getElementById("connectWalletBtn");
   if (connectBtn)
@@ -416,7 +428,20 @@ async function disconnectWallet() {
     networkInfo.innerText =
       currentLanguage === "en" ? "Not connected" : "未連接";
   updateReferralLink();
+  updateMyReferralLink();
   toast("Wallet disconnected");
+}
+
+async function getUserInfo(addr) {
+  if (!roastPadContract || !web3 || !addr) return;
+  try {
+    const info = await roastPadContract.methods.users(addr).call();
+    const yieldAmount = await roastPadContract.methods.getYield(addr).call();
+    setPlaceholder("userDeposit", fromWeiFormatted(info.deposit));
+    setPlaceholder("userYield", fromWeiFormatted(yieldAmount));
+  } catch (e) {
+    console.error(e);
+  }
 }
 
 
@@ -450,6 +475,7 @@ async function depositBNB() {
     await roastPadContract.methods
       .deposit(referrer || "0x0000000000000000000000000000000000000000")
       .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
+    if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
     console.error(e);
@@ -474,6 +500,7 @@ async function withdrawBNB() {
   showLoading(btnId);
   try {
     await roastPadContract.methods.withdraw().send({ from: userAccount });
+    if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Withdrawal successful!" : "提領成功!");
   } catch (e) {
     console.error(e);
@@ -500,6 +527,7 @@ async function claimReferralRewards() {
     await roastPadContract.methods
       .claimReferralRewards()
       .send({ from: userAccount });
+    if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
     console.error(e);
@@ -546,7 +574,7 @@ async function depositBTL() {
   }
 }
 
-function updateReferralLink() {
+function updateMyReferralLink() {
   const linkEl = document.getElementById("myReferralLink");
   if (!linkEl) return;
   if (userAccount) {
@@ -601,6 +629,7 @@ if (typeof window !== "undefined" && window)
     applyContractAddress();
     updateLanguage();
     updateReferralLink();
+    updateMyReferralLink();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
     if (web3Modal.cachedProvider) connectWallet();
@@ -618,6 +647,7 @@ if (typeof window !== "undefined" && window.addEventListener)
       if (refInput) refInput.value = refParam;
     }
     updateReferralLink();
+    updateMyReferralLink();
 
     // Side menu controls
     const menuToggle = document.getElementById("menuToggle");
@@ -653,6 +683,7 @@ if (typeof module !== 'undefined') {
     withdrawBNB,
     withdraw: withdrawBNB,
     claimReferralRewards,
+    getUserInfo,
     __setContract,
     __setWeb3,
     __setUpdateUserInfo,
