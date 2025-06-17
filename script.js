@@ -517,7 +517,7 @@ async function claimReferralRewards() {
 
 /* ===== PancakeSwap Link ===== */
 function openPancakeSwap() {
-  const url = `https://pancakeswap.finance/swap?outputCurrency=${CONTRACT_ADDRESS}&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d`;
+  const url = `https://pancakeswap.finance/swap?outputCurrency=${CONTRACT_ADDRESS}&chain=bsc`;
   window.open(url, "_blank");
 }
 
