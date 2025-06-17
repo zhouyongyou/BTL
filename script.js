@@ -117,6 +117,19 @@ function resetPlaceholders() {
   // no placeholders to reset after removing USD1 sections
 }
 
+function formatDuration(seconds) {
+  seconds = Number(seconds);
+  if (isNaN(seconds) || seconds <= 0) return "0s";
+  const h = Math.floor(seconds / 3600);
+  const m = Math.floor((seconds % 3600) / 60);
+  const s = Math.floor(seconds % 60);
+  const parts = [];
+  if (h) parts.push(`${h}h`);
+  if (m || h) parts.push(`${m}m`);
+  parts.push(`${s}s`);
+  return parts.join(" ");
+}
+
 /* ===== Toast ===== */
 function toast(msg) {
   const t = document.getElementById("toast");
@@ -237,8 +250,8 @@ function updateLanguage() {
   const depositRules = document.getElementById("depositRules");
   if (depositRules)
     depositRules.innerText = lang
-      ? "Daily yield is 8%. Deposits and withdrawals have a 24-hour cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all."
-      : "每日收益 8%。存款與提領需間隔 24 小時。每次操作都會自動結算收益，如不想一次提領全部，可每天存入至少 0.01 BNB 以結算前一日收益。";
+      ? "Daily yield is 8%. Deposits and withdrawals have a 1-hour cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all."
+      : "每日收益 8%。存款與提領需間隔 1 小時。每次操作都會自動結算收益，如不想一次提領全部，可每天存入至少 0.01 BNB 以結算前一日收益。";
   const userDepositLabel = document.getElementById("userDepositLabel");
   if (userDepositLabel)
     userDepositLabel.innerText = lang ? "Total Deposit:" : "總存款:";
@@ -257,6 +270,16 @@ function updateLanguage() {
     userReferralClaimedLabel.innerText = lang
       ? "Claimed Referral Rewards:"
       : "已領取推薦獎勵:";
+  const depositCooldownLabel = document.getElementById("depositCooldownLabel");
+  if (depositCooldownLabel)
+    depositCooldownLabel.innerText = lang
+      ? "Deposit Cooldown:" 
+      : "存款冷卻時間:";
+  const withdrawCooldownLabel = document.getElementById("withdrawCooldownLabel");
+  if (withdrawCooldownLabel)
+    withdrawCooldownLabel.innerText = lang
+      ? "Withdraw Cooldown:" 
+      : "提領冷卻時間:";
   const referrerInput = document.getElementById("referrer");
   if (referrerInput)
     referrerInput.placeholder = lang
@@ -461,10 +484,24 @@ async function getUserInfo(addr) {
     const claimed = await roastPadContract.methods
       .getTotalClaimedReferralRewards(addr)
       .call();
+    const cooldowns = await roastPadContract.methods
+      .getCooldownRemaining(addr)
+      .call();
     setPlaceholder("userDeposit", fromWeiFormatted(info.deposit));
     setPlaceholder("userYield", fromWeiFormatted(yieldAmount));
     setPlaceholder("userReferral", fromWeiFormatted(info.referralRewards));
     setPlaceholder("userReferralClaimed", fromWeiFormatted(claimed));
+    if (cooldowns) {
+      const { depositCooldownRemaining, withdrawalCooldownRemaining } = cooldowns;
+      setPlaceholder(
+        "depositCooldown",
+        formatDuration(depositCooldownRemaining)
+      );
+      setPlaceholder(
+        "withdrawCooldown",
+        formatDuration(withdrawalCooldownRemaining)
+      );
+    }
   } catch (e) {
     console.error(e);
   }
