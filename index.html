@@ -70,10 +70,7 @@
 </section>
 <section id="btlInfo">
   <div class="container">
-    <h2 id="btlMiningTitle">BTL Mining</h2>
-    
-    <p id="testingNote" class="rules">下方的礦池代碼都還在測試中，請用戶不要存入，因為存入我們這邊如果有出錯是無法復原的。</p>
-    
+    <h2 id="btlMiningTitle">BTL Mining</h2>   
     <p><strong id="btlRoastLabel">BTL Pool Contract:</strong>
       <span id="btlRoastAddr" onclick="copyToClipboard('btlRoastAddr')"></span>
       <a id="btlRoastScanLink" href="#" target="_blank" rel="noopener noreferrer">
@@ -110,7 +107,7 @@
       <button id="withdrawBnbBtn" onclick="withdrawBNB()">Withdraw All</button>
       <button id="claimReferralBtn" onclick="claimReferralRewards()">Claim Referral Rewards</button>
 
-      <p id="depositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 1-hour cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all.</p>
+      <p id="depositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 3-minutes cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all.</p>
       <p><strong id="userDepositLabel">Total Deposit:</strong> <span id="userDeposit">-</span> BNB</p>
       <p><strong id="userYieldLabel">Total Yield:</strong> <span id="userYield">-</span> BNB</p>
       <p><strong id="userReferralLabel">Referral Rewards:</strong> <span id="userReferral">-</span> BNB</p>
