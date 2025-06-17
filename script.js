@@ -498,7 +498,6 @@ async function claimReferralRewards() {
     return;
   }
   const btnId = "claimReferralBtn";
-  const btnId = "claimRewardsBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
