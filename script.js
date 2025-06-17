@@ -252,7 +252,7 @@ function updateLanguage() {
   const referralContainer = document.getElementById("referralContainer");
   if (referralContainer) {
     const firstNode = referralContainer.childNodes[0];
-    if (firstNode) firstNode.nodeValue = lang ? "Your Link: " : "你的連結：";
+    if (firstNode) firstNode.nodeValue = lang ? "Your Referral Link: " : "你的推薦連結：";
   }
   const copyReferralBtn = document.getElementById("copyReferralBtn");
   if (copyReferralBtn) copyReferralBtn.innerText = lang ? "Copy" : "複製";
