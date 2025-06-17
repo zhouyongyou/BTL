@@ -556,13 +556,19 @@ function updateMyReferralLink() {
   const myLink = document.getElementById("myReferralLink");
   const refLink = document.getElementById("referralLink");
   if (userAccount) {
+    const url = new URL(window.location.href);
+    url.searchParams.set("ref", userAccount);
+    const link = url.toString();
     if (myLink) {
-      myLink.innerText = currentLanguage === "en" ? `Your referral link: ${url}` : `你的推薦連結: ${url}`;
-      myLink.dataset.full = url;
+      myLink.innerText =
+        currentLanguage === "en"
+          ? `Your referral link: ${link}`
+          : `你的推薦連結: ${link}`;
+      myLink.dataset.full = link;
     }
     if (refLink) {
-      refLink.innerText = url;
-      refLink.dataset.full = url;
+      refLink.innerText = link;
+      refLink.dataset.full = link;
     }
   } else {
     if (myLink) myLink.innerText = "";
