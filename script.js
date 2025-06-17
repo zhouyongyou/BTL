@@ -125,7 +125,7 @@ function formatAddress(addr) {
 
 function applyContractAddress() {
   const addr = CONTRACT_ADDRESS;
-  const link = `https://pancakeswap.finance/swap?outputCurrency=${addr}&chain=bsc&inputCurrency=0x8d0D000Ee44948FC98c9B98A4FA4921476f08B0d`;
+  const link = `https://pancakeswap.finance/swap?outputCurrency=${addr}&chain=bsc`;
   const menuBuyBtn = document.getElementById("menuBuyBtn");
   if (menuBuyBtn) menuBuyBtn.onclick = () => window.open(link, "_blank");
   const buyBtlBtn = document.getElementById("buyBtlBtn");
