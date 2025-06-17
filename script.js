@@ -37,6 +37,8 @@ let timeUnits = [];
 const BTL_DECIMALS = 9; // Number of decimals for BTL token
 const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
 const ROASTPAD_ADDRESS = "0x0000000000000000000000000000000000000000";
+// Toggle to enable/disable RoastPad (BNB deposit) interactions
+const ROASTPAD_LIVE = true;
 const ROASTPAD_ABI = [
   {
     inputs: [{ internalType: "address", name: "_referrer", type: "address" }],
@@ -340,6 +342,7 @@ async function tryConnect() {
     const networkInfo = document.getElementById("networkInfo");
     if (networkInfo)
       networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
+    updateReferralLink();
     toast("Wallet connected successfully!");
 
     provider.on("accountsChanged", (acc) => {
@@ -397,12 +400,17 @@ async function disconnectWallet() {
   if (networkInfo)
     networkInfo.innerText =
       currentLanguage === "en" ? "Not connected" : "未連接";
+  updateReferralLink();
   toast("Wallet disconnected");
 }
 
 
 /* ===== RoastPad ===== */
 async function depositBNB() {
+  if (!ROASTPAD_LIVE) {
+    toast(currentLanguage === "en" ? "BNB deposit not available" : "BNB\u5b58\u6b3e\u672a\u555f\u7528");
+    return;
+  }
   if (!web3 || !userAccount) {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
@@ -432,6 +440,10 @@ async function depositBNB() {
 }
 
 async function withdrawBNB() {
+  if (!ROASTPAD_LIVE) {
+    toast(currentLanguage === "en" ? "BNB deposit not available" : "BNB\u5b58\u6b3e\u672a\u555f\u7528");
+    return;
+  }
   if (!web3 || !userAccount) {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
@@ -521,6 +533,29 @@ function copyToClipboard(id) {
   navigator.clipboard.writeText(text).then(() => toast("Copied!"));
 }
 
+function updateReferralLink() {
+  const el = document.getElementById("referralLink");
+  if (!el) return;
+  if (!userAccount) {
+    el.innerText = "";
+    el.dataset.full = "";
+    return;
+  }
+  const url = new URL(window.location.href);
+  url.searchParams.set("ref", userAccount);
+  el.innerText = url.toString();
+  el.dataset.full = url.toString();
+}
+
+function applyReferrerFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get("ref");
+  if (ref) {
+    const input = document.getElementById("referrer");
+    if (input && !input.value) input.value = ref;
+  }
+}
+
 /* ===== Dark mode ===== */
 if (typeof window !== "undefined" && window)
   window.onload = async () => {
@@ -537,6 +572,8 @@ if (typeof window !== "undefined" && window)
 if (typeof window !== "undefined" && window.addEventListener)
   window.addEventListener("DOMContentLoaded", (event) => {
     applyContractAddress();
+    applyReferrerFromUrl();
+    updateReferralLink();
 
     // Side menu controls
     const menuToggle = document.getElementById("menuToggle");
