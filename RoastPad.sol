@@ -7,12 +7,16 @@ contract RoastPad {
         uint256 lastAction;
         uint256 referralRewards;
         address referrer;
+        uint256 lastDepositTime;
     }
 
     mapping(address => User) public users;
+    mapping(address => uint256) public totalEarned;
     uint256 public totalDeposits;
     uint256 public constant DAILY_RATE = 8; // 8% daily
     uint256 public constant REFERRAL_RATE = 10; // 10% of referred deposit
+    uint256 public constant MAX_SINGLE_DEPOSIT = 100 ether;
+    uint256 public constant DEPOSIT_COOLDOWN = 1 days;
     address public owner;
     uint256 public platformFees;
 
@@ -35,7 +39,12 @@ contract RoastPad {
 
     function deposit(address _referrer) public payable {
         require(msg.value > 0, "Deposit must be > 0");
+        require(msg.value <= MAX_SINGLE_DEPOSIT, "Deposit exceeds limit");
         User storage user = users[msg.sender];
+        require(
+            block.timestamp - user.lastDepositTime >= DEPOSIT_COOLDOWN,
+            "Deposit cooldown active"
+        );
 
         if (user.deposit == 0 && _referrer != address(0) && _referrer != msg.sender) {
             user.referrer = _referrer;
@@ -45,6 +54,7 @@ contract RoastPad {
 
         user.deposit += msg.value;
         user.lastAction = block.timestamp;
+        user.lastDepositTime = block.timestamp;
         totalDeposits += msg.value;
 
         if (user.referrer != address(0)) {
@@ -61,6 +71,10 @@ contract RoastPad {
     function withdraw() external {
         _claimYield(msg.sender);
         User storage user = users[msg.sender];
+        require(
+            block.timestamp - user.lastDepositTime >= DEPOSIT_COOLDOWN,
+            "Cannot withdraw within 24h"
+        );
         uint256 amount = user.deposit;
         require(amount > 0, "Nothing to withdraw");
 
@@ -83,7 +97,9 @@ contract RoastPad {
         if (user.deposit > 0) {
             uint256 timeElapsed = block.timestamp - user.lastAction;
             uint256 yield = (user.deposit * DAILY_RATE * timeElapsed) / (100 * 1 days);
+            require(totalEarned[_user] + yield <= user.deposit * 3, "Max ROI cap reached");
             user.lastAction = block.timestamp;
+            totalEarned[_user] += yield;
             payable(_user).transfer(yield);
         }
     }

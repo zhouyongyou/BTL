@@ -59,7 +59,18 @@
         <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
         <button id="buyBtlLink" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button>
       </p>
-  
+
+  <section id="roastPad">
+    <div class="container">
+      <input id="depositAmount" type="number" step="0.01" placeholder="Amount (BNB)">
+      <input id="referrer" type="text" placeholder="Referrer (optional)">
+      <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
+      <button id="withdrawBnbBtn" onclick="withdrawBNB()">Withdraw</button>
+      <p id="referralContainer">Your Link: <span id="referralLink"></span>
+        <button id="copyReferralBtn" onclick="copyToClipboard('referralLink')">Copy</button>
+      </p>
+    </div>
+  </section>
         
   <section id="hero">
     <div class="container">

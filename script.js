@@ -38,7 +38,7 @@ const BTL_DECIMALS = 9; // Number of decimals for BTL token
 const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
 const ROASTPAD_ADDRESS = "0x0000000000000000000000000000000000000000";
 // Toggle to enable/disable RoastPad (BNB deposit) interactions
-const ROASTPAD_LIVE = false;
+const ROASTPAD_LIVE = true;
 const ROASTPAD_ABI = [
   {
     inputs: [{ internalType: "address", name: "_referrer", type: "address" }],
@@ -360,6 +360,7 @@ async function tryConnect() {
     const networkInfo = document.getElementById("networkInfo");
     if (networkInfo)
       networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
+    updateReferralLink();
     toast("Wallet connected successfully!");
 
     provider.on("accountsChanged", (acc) => {
@@ -419,6 +420,7 @@ async function disconnectWallet() {
   if (networkInfo)
     networkInfo.innerText =
       currentLanguage === "en" ? "Not connected" : "未連接";
+  updateReferralLink();
   toast("Wallet disconnected");
 }
 
@@ -435,10 +437,13 @@ async function depositBNB() {
   }
   const amount = document.getElementById("depositAmount").value;
   const ref = document.getElementById("referrer")?.value.trim() || "";
+
   if (!amount || parseFloat(amount) <= 0) {
     toast(currentLanguage === "en" ? "Enter deposit amount" : "請輸入存款數量");
     return;
   }
+  const referrerInput = document.getElementById("bnbReferrer");
+  const referrer = referrerInput ? referrerInput.value.trim() : "";
   const btnId = "depositBnbBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -448,7 +453,7 @@ async function depositBNB() {
       ? ref
       : "0x0000000000000000000000000000000000000000";
     await roastPadContract.methods
-      .deposit(refAddr)
+      .deposit(referrer || "0x0000000000000000000000000000000000000000")
       .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -493,6 +498,7 @@ async function claimReferralRewards() {
     return;
   }
   const btnId = "claimReferralBtn";
+  const btnId = "claimRewardsBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
@@ -500,7 +506,7 @@ async function claimReferralRewards() {
     await roastPadContract.methods
       .claimReferralRewards()
       .send({ from: userAccount });
-    toast(currentLanguage === "en" ? "Rewards claimed!" : "領取成功!");
+    toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
     console.error(e);
     toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
@@ -572,6 +578,29 @@ function copyToClipboard(id) {
   navigator.clipboard.writeText(text).then(() => toast("Copied!"));
 }
 
+function updateReferralLink() {
+  const el = document.getElementById("referralLink");
+  if (!el) return;
+  if (!userAccount) {
+    el.innerText = "";
+    el.dataset.full = "";
+    return;
+  }
+  const url = new URL(window.location.href);
+  url.searchParams.set("ref", userAccount);
+  el.innerText = url.toString();
+  el.dataset.full = url.toString();
+}
+
+function applyReferrerFromUrl() {
+  const params = new URLSearchParams(window.location.search);
+  const ref = params.get("ref");
+  if (ref) {
+    const input = document.getElementById("referrer");
+    if (input && !input.value) input.value = ref;
+  }
+}
+
 /* ===== Dark mode ===== */
 if (typeof window !== "undefined" && window)
   window.onload = async () => {
@@ -627,6 +656,9 @@ function __setUpdateUserInfo(fn) { updateUserInfo = fn; }
 if (typeof module !== 'undefined') {
   module.exports = {
     depositBTL,
+    depositBNB,
+    withdrawBNB,
+    withdraw: withdrawBNB,
     claimReferralRewards,
     __setContract,
     __setWeb3,
