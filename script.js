@@ -504,9 +504,7 @@ async function tryConnect() {
     updateReferralLink();
     updateMyReferralLink();
     updateUserInfo = () => getUserInfo(userAccount);
-    await getUserInfo(userAccount);
     updateBtlUserInfo = () => getBtlUserInfo(userAccount);
-    await getBtlUserInfo(userAccount);
     toast("Wallet connected successfully!");
     startAutoRefresh();
 
