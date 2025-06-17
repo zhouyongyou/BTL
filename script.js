@@ -224,9 +224,10 @@ function updateLanguage() {
       : "領取推薦獎勵";
   const userDepositLabel = document.getElementById("userDepositLabel");
   if (userDepositLabel)
-    userDepositLabel.innerText = lang ? "Deposit:" : "存款:";
+    userDepositLabel.innerText = lang ? "Total Deposit:" : "總存款:";
   const userYieldLabel = document.getElementById("userYieldLabel");
-  if (userYieldLabel) userYieldLabel.innerText = lang ? "Yield:" : "收益:";
+  if (userYieldLabel)
+    userYieldLabel.innerText = lang ? "Total Yield:" : "總收益:";
   const referrerInput = document.getElementById("referrer");
   if (referrerInput)
     referrerInput.placeholder = lang
