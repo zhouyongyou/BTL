@@ -79,6 +79,16 @@
     </div>
   </section>
 
+  <section id="roastPad">
+    <div class="container">
+      <input id="depositAmount" type="number" step="0.01" placeholder="Amount (BNB)">
+      <input id="referrer" type="text" placeholder="Referrer (optional)">
+      <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
+      <button id="withdrawBnbBtn" onclick="withdrawBNB()">Withdraw</button>
+      <button id="claimReferralBtn" onclick="claimReferralRewards()">Claim Referral Rewards</button>
+      <p id="myReferralLink"></p>
+    </div>
+  </section>
   <nav id="sideMenu" class="side-menu">
     <ul>
       <li><button id="menuConnectBtn" onclick="connectWallet()">Connect Wallet</button></li>

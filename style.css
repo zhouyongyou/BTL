@@ -363,14 +363,16 @@ footer p {
 
 /* 讓長地址和文字自動換行 */
 #contractAddr,
-#userAccount /* 用戶地址 */ {
+#userAccount /* 用戶地址 */,
+#referralLink {
   word-wrap: break-word; /* 讓超長文字換行 */
   color: #f0b90b;
   overflow-wrap: break-word; /* 兼容舊版本的瀏覽器 */
 }
 
 #contractAddr,
-#userAccount {
+#userAccount,
+#referralLink {
   word-break: break-all; /* 在需要的地方強制換行 */
 }
 
@@ -394,4 +396,20 @@ footer p {
 }
 #aveaiLink:hover {
   color: #c8a500;
+}
+
+/* Leaderboard */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 8px;
+  border-bottom: 1px solid #333;
+  text-align: left;
+}
+.leaderboard-table th {
+  background: #333;
 }
