@@ -225,8 +225,8 @@ function updateLanguage() {
   const depositRules = document.getElementById("depositRules");
   if (depositRules)
     depositRules.innerText = lang
-      ? "Minimum deposit is 0.01 BNB. Deposits and withdrawals require a 24-hour cooldown."
-      : "最低存入金額為 0.01 BNB，存款與提領之間需間隔 24 小時。";
+      ? "Daily yield is 8%. Deposits and withdrawals have a 24-hour cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all."
+      : "每日收益 8%。存款與提領需間隔 24 小時。每次操作都會自動結算收益，如不想一次提領全部，可每天存入至少 0.01 BNB 以結算前一日收益。";
   const userDepositLabel = document.getElementById("userDepositLabel");
   if (userDepositLabel)
     userDepositLabel.innerText = lang ? "Total Deposit:" : "總存款:";
@@ -273,6 +273,13 @@ function updateLanguage() {
   if (copyAddressBtn)
     copyAddressBtn.innerText = lang ? "Copy Address" : "複製地址";
 
+  const copyPoolBtn = document.getElementById("copyPoolBtn");
+  if (copyPoolBtn) copyPoolBtn.innerText = lang ? "Copy" : "複製";
+
+  const poolAddressLabel = document.getElementById("poolAddressLabel");
+  if (poolAddressLabel)
+    poolAddressLabel.innerText = lang ? "Pool Contract:" : "礦池合約:";
+
   const footerText = document.getElementById("footerText");
   if (footerText)
     footerText.innerText = lang
@@ -284,6 +291,12 @@ function updateLanguage() {
   const bscScanLink = document.getElementById("bscScanLink");
   if (bscScanLink)
     bscScanLink.href = `https://bscscan.com/token/${CONTRACT_ADDRESS}`;
+
+  const poolAddrEl = document.getElementById("poolAddr");
+  if (poolAddrEl) poolAddrEl.innerText = ROASTPAD_ADDRESS;
+  const poolBscScanLink = document.getElementById("poolBscScanLink");
+  if (poolBscScanLink)
+    poolBscScanLink.href = `https://bscscan.com/address/${ROASTPAD_ADDRESS}`;
 
   // Footer
   const networkInfoFooter = document.getElementById("networkInfoFooter");
