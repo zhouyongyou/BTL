@@ -14,7 +14,7 @@ global.localStorage = {
 global.window.localStorage = global.localStorage;
 
 const script = require('../script');
-const { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo } = script;
+const { depositBTL, __setContract, __setUpdateUserInfo, __setProvider } = script;
 
 describe('depositBTL', () => {
   beforeEach(() => {
@@ -30,11 +30,7 @@ describe('depositBTL', () => {
     global.updateUserInfo = jest.fn();
     __setUpdateUserInfo(global.updateUserInfo);
     global.depositContract = {
-      methods: {
-        depositBTL: jest.fn(() => ({
-          send: jest.fn().mockResolvedValue()
-        }))
-      }
+      depositBTL: jest.fn().mockResolvedValue()
     };
     global.web3 = {
       utils: {
@@ -43,7 +39,11 @@ describe('depositBTL', () => {
       }
     };
     __setContract(global.depositContract);
-    __setWeb3(global.web3);
+    global.ethers = {
+      parseEther: jest.fn(() => '1'),
+      isAddress: jest.fn(() => true)
+    };
+    __setProvider({});
     global.userAccount = '0xabc';
   });
 
@@ -52,14 +52,14 @@ describe('depositBTL', () => {
     document.getElementById('referrer').value = '';
     await depositBTL();
     expect(document.getElementById('toast').innerText).toBe('请输入存款数量');
-    expect(global.depositContract.methods.depositBTL).not.toHaveBeenCalled();
+    expect(global.depositContract.depositBTL).not.toHaveBeenCalled();
   });
 
     test('allows valid deposits and updates user info', async () => {
     document.getElementById('depositAmount').value = '0.05';
     document.getElementById('referrer').value = '';
     await depositBTL();
-    expect(global.depositContract.methods.depositBTL).toHaveBeenCalled();
+    expect(global.depositContract.depositBTL).toHaveBeenCalled();
     expect(global.updateUserInfo).toHaveBeenCalled();
   });
 });
