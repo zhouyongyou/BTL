@@ -263,6 +263,18 @@ button:hover {
   box-shadow: 0 0 8px rgba(240, 185, 11, 0.6);
   transform: scale(1.05);
 }
+
+/* Specific styles for deposit buttons */
+#depositBtlBtn,
+#depositBnbBtn {
+  background: #28a745; /* green */
+  color: #fff;
+}
+
+#depositBtlBtn:hover,
+#depositBnbBtn:hover {
+  background: #218838; /* darker green */
+}
 button.loading {
   pointer-events: none;
   opacity: 0.6;
