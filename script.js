@@ -521,12 +521,12 @@ if (netId !== 56) {
       networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
     updateReferralLink();
     updateMyReferralLink();
-    updateUserInfo = () => getUserInfo(userAccount);
-    updateBtlUserInfo = () => getBtlUserInfo(userAccount);
+    // updateUserInfo = () => getUserInfo(userAccount);
+    // updateBtlUserInfo = () => getBtlUserInfo(userAccount);
     toast(
       currentLanguage === "en"
-        ? 'Wallet connected. Click "Refresh Pool Info" to update.'
-        : '錢包已連接，請手動點「刷新礦池資訊」來更新狀態'
+        ? "Wallet connected. Please manually refresh your pool info."
+        : "錢包已連接，請手動刷新礦池資訊"
     );
 
     provider.on("accountsChanged", (acc) => {
@@ -723,12 +723,16 @@ async function depositBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    const refAddr = web3.utils.isAddress(referrer)
-      ? referrer
-      : "0x0000000000000000000000000000000000000000";
+    const refAddr =
+      web3 &&
+      web3.utils &&
+      typeof web3.utils.isAddress === "function" &&
+      web3.utils.isAddress(referrer)
+        ? referrer
+        : "0x0000000000000000000000000000000000000000";
     await roastPadContract.methods
       .deposit(refAddr)
-      .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
+      .send({ from: userAccount, value: web3.utils.toWei(amount, "ether"), gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -753,7 +757,7 @@ async function withdrawBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await roastPadContract.methods.withdraw().send({ from: userAccount });
+    await roastPadContract.methods.withdraw().send({ from: userAccount, gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
@@ -812,12 +816,16 @@ async function depositBTLRoast() {
     await token.methods
       .approve(BTL_ROASTPAD_ADDRESS, weiAmount)
       .send({ from: userAccount });
-    const refAddr = web3.utils.isAddress(ref)
-      ? ref
-      : "0x0000000000000000000000000000000000000000";
+    const refAddr =
+      web3 &&
+      web3.utils &&
+      typeof web3.utils.isAddress === "function" &&
+      web3.utils.isAddress(ref)
+        ? ref
+        : "0x0000000000000000000000000000000000000000";
     await btlRoastPadContract.methods
       .deposit(refAddr, weiAmount)
-      .send({ from: userAccount });
+      .send({ from: userAccount, gas: 300000 });
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -863,7 +871,7 @@ async function claimBtlReferralRewards() {
   try {
     await btlRoastPadContract.methods
       .claimReferralRewards()
-      .send({ from: userAccount });
+      .send({ from: userAccount, gas: 300000 });
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
@@ -964,12 +972,16 @@ async function depositBTL() {
   try {
     const weiAmount = web3.utils.toWei(amountStr, "ether");
     const referrer = refEl ? refEl.value.trim() : "";
-    const refAddr = web3.utils.isAddress(referrer)
-      ? referrer
-      : "0x0000000000000000000000000000000000000000";
+    const refAddr =
+      web3 &&
+      web3.utils &&
+      typeof web3.utils.isAddress === "function" &&
+      web3.utils.isAddress(referrer)
+        ? referrer
+        : "0x0000000000000000000000000000000000000000";
     await depositContract.methods
       .depositBTL(weiAmount, refAddr)
-      .send({ from: userAccount });
+      .send({ from: userAccount, gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
   } catch (e) {
