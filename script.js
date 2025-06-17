@@ -456,9 +456,16 @@ async function connectWallet() {
   if (userAccount) {
     return disconnectWallet();
   }
+
   const btn = document.getElementById("connectWalletBtn");
   if (btn.dataset.loading === "true") return;
+
+  if (web3Modal && web3Modal.cachedProvider) {
+    await web3Modal.clearCachedProvider();
+  }
+
   showLoading("connectWalletBtn");
+
   try {
     await tryConnect();
   } finally {
@@ -516,6 +523,9 @@ async function tryConnect() {
     console.error(e);
     if (e && e.message && e.message.includes("502") && currentRpcIndex < RPC_ENDPOINTS.length - 1) {
       currentRpcIndex++;
+      if (web3Modal && web3Modal.cachedProvider) {
+        await web3Modal.clearCachedProvider();
+      }
       web3Modal = initWeb3Modal();
       return tryConnect();
     }
