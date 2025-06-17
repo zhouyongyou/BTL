@@ -47,6 +47,28 @@
     </div>
   </section>
   <!-- ===== Main Info ===== -->
+<section id="btlInfo">
+  <div class="container">
+    <h2 id="btlMiningTitle">BTL Mining</h2>
+    <p><strong id="btlRoastLabel">BTL Pool Contract:</strong>
+      <span id="btlRoastAddr" onclick="copyToClipboard('btlRoastAddr')"></span>
+      <a id="btlRoastScanLink" href="#" target="_blank" rel="noopener noreferrer">
+        <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
+      </a>
+    </p>
+    <input id="btlDepositAmount" type="number" step="0.01" min="0.01" placeholder="Amount (BTL)">
+    <input id="btlReferrer" type="text" placeholder="Referrer (optional)">
+    <button id="depositBtlBtn" onclick="depositBTLRoast()">Deposit BTL</button>
+    <button id="withdrawBtlBtn" onclick="withdrawBTLRoast()">Withdraw All</button>
+    <button id="claimBtlReferralBtn" onclick="claimBtlReferralRewards()">Claim Referral Rewards</button>
+    <p><strong id="btlUserDepositLabel">Total Deposit:</strong> <span id="btlUserDeposit">-</span> BTL</p>
+    <p><strong id="btlUserYieldLabel">Total Yield:</strong> <span id="btlUserYield">-</span> BTL</p>
+    <p><strong id="btlUserReferralLabel">Referral Rewards:</strong> <span id="btlUserReferral">-</span> BTL</p>
+    <p><strong id="btlUserReferralClaimedLabel">Claimed Referral Rewards:</strong> <span id="btlUserReferralClaimed">-</span> BTL</p>
+    <p><strong id="btlDepositCooldownLabel">Deposit Cooldown:</strong> <span id="btlDepositCooldown">-</span></p>
+    <p><strong id="btlWithdrawCooldownLabel">Withdraw Cooldown:</strong> <span id="btlWithdrawCooldown">-</span></p>
+  </div>
+</section>
   <section id="mainInfo">
     <div class="container">
       <h2 id="contractInfoTitle">Contract Information</h2>
