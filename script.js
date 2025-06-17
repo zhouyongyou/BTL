@@ -54,6 +54,13 @@ const ROASTPAD_ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [],
+    name: "claimReferralRewards",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];
 
 function handleUpgradeNotice() {
@@ -233,6 +240,21 @@ function updateLanguage() {
   const menuInvite = document.getElementById("menuInvite");
   if (menuInvite) menuInvite.innerText = lang ? "Invite" : "邀請";
 
+  const depositBnbBtn = document.getElementById("depositBnbBtn");
+  if (depositBnbBtn) depositBnbBtn.innerText = lang ? "Deposit BNB" : "存入 BNB";
+  const withdrawBnbBtn = document.getElementById("withdrawBnbBtn");
+  if (withdrawBnbBtn) withdrawBnbBtn.innerText = lang ? "Withdraw" : "提領";
+  const claimReferralBtn = document.getElementById("claimReferralBtn");
+  if (claimReferralBtn)
+    claimReferralBtn.innerText = lang
+      ? "Claim Referral Rewards"
+      : "領取推薦獎勵";
+  const referrerInput = document.getElementById("referrer");
+  if (referrerInput)
+    referrerInput.placeholder = lang
+      ? "Referrer (optional)"
+      : "推薦地址 (選填)";
+
 
   const menuDocs = document.getElementById("menuDocs");
   if (menuDocs) {
@@ -293,6 +315,8 @@ function updateLanguage() {
   if (twitterText) {
     twitterText.innerText = lang ? "Twitter" : "推特";
   }
+
+  updateReferralLink();
 }
 
 /* ===== Connect wallet ===== */
@@ -323,6 +347,7 @@ async function tryConnect() {
     roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
+    updateReferralLink();
     resetPlaceholders();
     const connectBtn = document.getElementById("connectWalletBtn");
     if (connectBtn)
@@ -339,6 +364,7 @@ async function tryConnect() {
 
     provider.on("accountsChanged", (acc) => {
       userAccount = acc[0];
+      updateReferralLink();
     });
     provider.on("chainChanged", (id) => {
       if (parseInt(id, 16) !== 56) toast("Please switch back to BSC mainnet");
@@ -379,6 +405,7 @@ async function disconnectWallet() {
   contract = null;
   userAccount = "";
   document.getElementById("userAccount").innerText = "";
+  updateReferralLink();
   resetPlaceholders();
   const connectBtn = document.getElementById("connectWalletBtn");
   if (connectBtn)
@@ -407,6 +434,7 @@ async function depositBNB() {
     return;
   }
   const amount = document.getElementById("depositAmount").value;
+  const ref = document.getElementById("referrer")?.value.trim() || "";
   if (!amount || parseFloat(amount) <= 0) {
     toast(currentLanguage === "en" ? "Enter deposit amount" : "請輸入存款數量");
     return;
@@ -416,8 +444,11 @@ async function depositBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
+    const refAddr = web3.utils.isAddress(ref)
+      ? ref
+      : "0x0000000000000000000000000000000000000000";
     await roastPadContract.methods
-      .deposit("0x0000000000000000000000000000000000000000")
+      .deposit(refAddr)
       .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -444,6 +475,32 @@ async function withdrawBNB() {
   try {
     await roastPadContract.methods.withdraw().send({ from: userAccount });
     toast(currentLanguage === "en" ? "Withdrawal successful!" : "提領成功!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
+}
+
+async function claimReferralRewards() {
+  if (!ROASTPAD_LIVE) {
+    toast(currentLanguage === "en" ? "BNB deposit not available" : "BNB\u5b58\u6b3e\u672a\u555f\u7528");
+    return;
+  }
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const btnId = "claimReferralBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    await roastPadContract.methods
+      .claimReferralRewards()
+      .send({ from: userAccount });
+    toast(currentLanguage === "en" ? "Rewards claimed!" : "領取成功!");
   } catch (e) {
     console.error(e);
     toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
@@ -490,6 +547,21 @@ async function depositBTL() {
   }
 }
 
+function updateReferralLink() {
+  const linkEl = document.getElementById("myReferralLink");
+  if (!linkEl) return;
+  if (userAccount) {
+    const url = `${window.location.origin}${window.location.pathname}?ref=${userAccount}`;
+    linkEl.innerText =
+      currentLanguage === "en"
+        ? `Your referral link: ${url}`
+        : `你的推薦連結: ${url}`;
+    linkEl.dataset.full = url;
+  } else {
+    linkEl.innerText = "";
+  }
+}
+
 
 
 /* ===== Copy helper ===== */
@@ -506,6 +578,7 @@ if (typeof window !== "undefined" && window)
     document.body.classList.add("dark-mode"); // 預設啟用深色模式
     applyContractAddress();
     updateLanguage();
+    updateReferralLink();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
     if (web3Modal.cachedProvider) connectWallet();
@@ -516,6 +589,13 @@ if (typeof window !== "undefined" && window)
 if (typeof window !== "undefined" && window.addEventListener)
   window.addEventListener("DOMContentLoaded", (event) => {
     applyContractAddress();
+    const params = new URLSearchParams(window.location.search);
+    const refParam = params.get("ref");
+    if (refParam) {
+      const refInput = document.getElementById("referrer");
+      if (refInput) refInput.value = refParam;
+    }
+    updateReferralLink();
 
     // Side menu controls
     const menuToggle = document.getElementById("menuToggle");
@@ -545,5 +625,11 @@ function __setContract(c) { depositContract = c; }
 function __setUpdateUserInfo(fn) { updateUserInfo = fn; }
 
 if (typeof module !== 'undefined') {
-  module.exports = { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo };
+  module.exports = {
+    depositBTL,
+    claimReferralRewards,
+    __setContract,
+    __setWeb3,
+    __setUpdateUserInfo,
+  };
 }
