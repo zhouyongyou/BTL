@@ -493,22 +493,8 @@ async function tryConnect() {
     web3 = new Web3(provider);
 const netId = await web3.eth.net.getId();
 if (netId !== 56) {
-  try {
-    await provider.request({
-      method: "wallet_addEthereumChain",
-      params: [{
-        chainId: "0x38",
-        chainName: "Binance Smart Chain",
-        rpcUrls: [RPC_ENDPOINTS[0]],
-        nativeCurrency: {
-          name: "BNB",
-          symbol: "BNB",
-          decimals: 18
-        },
-        blockExplorerUrls: ["https://bscscan.com"]
-      }]
-    });
-  } catch (err) {
+  const switched = await switchToBSC();
+  if (!switched) {
     toast("Please switch to BSC mainnet in your wallet");
     return;
   }
@@ -534,8 +520,8 @@ if (netId !== 56) {
       networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
     updateReferralLink();
     updateMyReferralLink();
-    updateUserInfo = () => getUserInfo(userAccount);
-    updateBtlUserInfo = () => getBtlUserInfo(userAccount);
+    // updateUserInfo = () => getUserInfo(userAccount);
+    // updateBtlUserInfo = () => getBtlUserInfo(userAccount);
     toast(
       currentLanguage === "en"
         ? 'Wallet connected. Click "Refresh Pool Info" to update.'
@@ -729,18 +715,16 @@ async function depositBNB() {
     );
     return;
   }
-  const referrerInput = document.getElementById("bnbReferrer");
-  const referrer = referrerInput ? referrerInput.value.trim() : "";
   const btnId = "depositBnbBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    const refAddr = web3.utils.isAddress(ref)
-      ? ref
+    const refAddr = web3.utils.isAddress(referrer)
+      ? referrer
       : "0x0000000000000000000000000000000000000000";
     await roastPadContract.methods
-      .deposit(referrer || "0x0000000000000000000000000000000000000000")
+      .deposit(refAddr)
       .send({ from: userAccount, value: web3.utils.toWei(amount, "ether"), gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
@@ -977,8 +961,11 @@ async function depositBTL() {
   try {
     const weiAmount = web3.utils.toWei(amountStr, "ether");
     const referrer = refEl ? refEl.value.trim() : "";
+    const refAddr = web3.utils.isAddress(referrer)
+      ? referrer
+      : "0x0000000000000000000000000000000000000000";
     await depositContract.methods
-      .depositBTL(weiAmount, referrer)
+      .depositBTL(weiAmount, refAddr)
       .send({ from: userAccount, gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
