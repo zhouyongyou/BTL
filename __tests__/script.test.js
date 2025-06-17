@@ -30,17 +30,12 @@ describe('depositBTL', () => {
     global.updateUserInfo = jest.fn();
     __setUpdateUserInfo(global.updateUserInfo);
     global.depositContract = {
-      methods: {
-        depositBTL: jest.fn(() => ({
-          send: jest.fn().mockResolvedValue()
-        }))
-      }
+      depositBTL: jest.fn(() => Promise.resolve({ wait: jest.fn().mockResolvedValue() }))
     };
-    global.web3 = {
-      utils: {
-        toWei: jest.fn(),
-        isAddress: jest.fn(() => true)
-      }
+    global.web3 = {}; // minimal object to satisfy checks
+    global.ethers = {
+      parseEther: jest.fn(() => 'wei'),
+      isAddress: jest.fn(() => true)
     };
     __setContract(global.depositContract);
     __setWeb3(global.web3);
@@ -52,14 +47,14 @@ describe('depositBTL', () => {
     document.getElementById('referrer').value = '';
     await depositBTL();
     expect(document.getElementById('toast').innerText).toBe('请输入存款数量');
-    expect(global.depositContract.methods.depositBTL).not.toHaveBeenCalled();
+    expect(global.depositContract.depositBTL).not.toHaveBeenCalled();
   });
 
     test('allows valid deposits and updates user info', async () => {
     document.getElementById('depositAmount').value = '0.05';
     document.getElementById('referrer').value = '';
     await depositBTL();
-    expect(global.depositContract.methods.depositBTL).toHaveBeenCalled();
+    expect(global.depositContract.depositBTL).toHaveBeenCalled();
     expect(global.updateUserInfo).toHaveBeenCalled();
   });
 });

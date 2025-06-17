@@ -37,7 +37,7 @@ function initWeb3Modal() {
 
 let web3Modal = initWeb3Modal();
 /* ===== State ===== */
-let provider, web3, contract, roastPadContract;
+let provider, web3, signer, contract, roastPadContract;
 let userAccount = "";
 let depositContract;
 let updateUserInfo = () => {};
@@ -77,7 +77,7 @@ function formatNumber(value, decimals = 11) {
 }
 
 function fromWeiFormatted(value, decimals = 11) {
-  return formatNumber(web3.utils.fromWei(value, "ether"), decimals);
+  return formatNumber(ethers.formatEther(value), decimals);
 }
 
 const ERC20_ABI = [
@@ -113,8 +113,8 @@ const ERC20_ABI = [
 // Backwards compatibility wrapper for older method names
 function getAccumulatedUsd1(addr) {
   if (!contract || !addr) return Promise.resolve("0");
-  const m = contract.methods.getAccumulatedUsd1 || contract.methods.accumulatedUsd1;
-  return m ? m(addr).call() : Promise.resolve("0");
+  const m = contract.getAccumulatedUsd1 || contract.accumulatedUsd1;
+  return m ? m(addr) : Promise.resolve("0");
 }
 
 function formatAddress(addr) {
@@ -506,8 +506,9 @@ async function connectWallet() {
 async function tryConnect() {
   try {
     provider = await web3Modal.connect();
-    web3 = new Web3(provider);
-const netId = await web3.eth.net.getId();
+    web3 = new ethers.BrowserProvider(provider);
+    signer = await web3.getSigner();
+const netId = (await web3.getNetwork()).chainId;
 if (netId !== 56) {
   const switched = await switchToBSC();
   if (!switched) {
@@ -515,10 +516,10 @@ if (netId !== 56) {
     return;
   }
 }
-    contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-    roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
-    btlRoastPadContract = new web3.eth.Contract(BTL_ROASTPAD_ABI, BTL_ROASTPAD_ADDRESS);
-    userAccount = (await web3.eth.getAccounts())[0];
+    contract = new ethers.Contract(CONTRACT_ADDRESS, ABI, signer);
+    roastPadContract = new ethers.Contract(ROASTPAD_ADDRESS, ROASTPAD_ABI, signer);
+    btlRoastPadContract = new ethers.Contract(BTL_ROASTPAD_ADDRESS, BTL_ROASTPAD_ABI, signer);
+    userAccount = await signer.getAddress();
     document.getElementById("userAccount").innerText = userAccount;
     updateReferralLink();
     updateMyReferralLink();
@@ -643,7 +644,7 @@ async function getUserInfo(addr) {
   let info, yieldAmount, claimed, cooldowns;
 
   try {
-    info = await roastPadContract.methods.users(addr).call();
+    info = await roastPadContract.users(addr);
   } catch (e) {
     console.error("Failed to get user data", e);
     toast(
@@ -655,7 +656,7 @@ async function getUserInfo(addr) {
   }
 
   try {
-    yieldAmount = await roastPadContract.methods.getYield(addr).call();
+    yieldAmount = await roastPadContract.getYield(addr);
   } catch (e) {
     console.error("Failed to get yield", e);
     toast(
@@ -664,9 +665,7 @@ async function getUserInfo(addr) {
   }
 
   try {
-    claimed = await roastPadContract.methods
-      .getTotalClaimedReferralRewards(addr)
-      .call();
+    claimed = await roastPadContract.getTotalClaimedReferralRewards(addr);
   } catch (e) {
     console.error("Failed to get claimed rewards", e);
     toast(
@@ -677,7 +676,7 @@ async function getUserInfo(addr) {
   }
 
   try {
-    cooldowns = await roastPadContract.methods.getCooldownRemaining(addr).call();
+    cooldowns = await roastPadContract.getCooldownRemaining(addr);
   } catch (e) {
     console.error("Failed to get cooldowns", e);
     toast(
@@ -739,16 +738,14 @@ async function depositBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    const refAddr =
-      web3 &&
-      web3.utils &&
-      typeof web3.utils.isAddress === "function" &&
-      web3.utils.isAddress(referrer)
-        ? referrer
-        : "0x0000000000000000000000000000000000000000";
-    await roastPadContract.methods
-      .deposit(refAddr)
-      .send({ from: userAccount, value: web3.utils.toWei(amount, "ether"), gas: 300000 });
+    const refAddr = ethers.isAddress(referrer)
+      ? referrer
+      : "0x0000000000000000000000000000000000000000";
+    const tx = await roastPadContract.deposit(refAddr, {
+      value: ethers.parseEther(amount),
+      gasLimit: 300000,
+    });
+    await tx.wait();
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -774,7 +771,8 @@ async function withdrawBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await roastPadContract.methods.withdraw().send({ from: userAccount, gas: 300000 });
+    const tx = await roastPadContract.withdraw({ gasLimit: 300000 });
+    await tx.wait();
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
@@ -800,9 +798,8 @@ async function claimReferralRewards() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await roastPadContract.methods
-      .claimReferralRewards()
-      .send({ from: userAccount, gas: 300000 });
+    const tx = await roastPadContract.claimReferralRewards({ gasLimit: 300000 });
+    await tx.wait();
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
@@ -830,21 +827,16 @@ async function depositBTLRoast() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    const weiAmount = web3.utils.toWei(amount, "ether");
-    const token = new web3.eth.Contract(ERC20_ABI, CONTRACT_ADDRESS);
-    await token.methods
-      .approve(BTL_ROASTPAD_ADDRESS, weiAmount)
-      .send({ from: userAccount });
-    const refAddr =
-      web3 &&
-      web3.utils &&
-      typeof web3.utils.isAddress === "function" &&
-      web3.utils.isAddress(ref)
-        ? ref
-        : "0x0000000000000000000000000000000000000000";
-    await btlRoastPadContract.methods
-      .deposit(refAddr, weiAmount)
-      .send({ from: userAccount, gas: 300000 });
+    const weiAmount = ethers.parseEther(amount);
+    const token = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, signer);
+    await (await token.approve(BTL_ROASTPAD_ADDRESS, weiAmount)).wait();
+    const refAddr = ethers.isAddress(ref)
+      ? ref
+      : "0x0000000000000000000000000000000000000000";
+    const tx = await btlRoastPadContract.deposit(refAddr, weiAmount, {
+      gasLimit: 300000,
+    });
+    await tx.wait();
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -866,9 +858,8 @@ async function withdrawBTLRoast() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await btlRoastPadContract.methods
-      .withdraw()
-      .send({ from: userAccount, gas: 300000 });
+    const tx = await btlRoastPadContract.withdraw({ gasLimit: 300000 });
+    await tx.wait();
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
@@ -890,9 +881,8 @@ async function claimBtlReferralRewards() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await btlRoastPadContract.methods
-      .claimReferralRewards()
-      .send({ from: userAccount, gas: 300000 });
+    const tx = await btlRoastPadContract.claimReferralRewards({ gasLimit: 300000 });
+    await tx.wait();
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
@@ -908,7 +898,7 @@ async function getBtlUserInfo(addr) {
   let info, yieldAmount, claimed, cooldowns;
 
   try {
-    info = await btlRoastPadContract.methods.users(addr).call();
+    info = await btlRoastPadContract.users(addr);
   } catch (e) {
     console.error("Failed to get BTL user data", e);
     toast(
@@ -920,7 +910,7 @@ async function getBtlUserInfo(addr) {
   }
 
   try {
-    yieldAmount = await btlRoastPadContract.methods.getYield(addr).call();
+    yieldAmount = await btlRoastPadContract.getYield(addr);
   } catch (e) {
     console.error("Failed to get BTL yield", e);
     toast(
@@ -929,9 +919,7 @@ async function getBtlUserInfo(addr) {
   }
 
   try {
-    claimed = await btlRoastPadContract.methods
-      .getTotalClaimedReferralRewards(addr)
-      .call();
+    claimed = await btlRoastPadContract.getTotalClaimedReferralRewards(addr);
   } catch (e) {
     console.error("Failed to get claimed BTL rewards", e);
     toast(
@@ -942,7 +930,7 @@ async function getBtlUserInfo(addr) {
   }
 
   try {
-    cooldowns = await btlRoastPadContract.methods.getCooldownRemaining(addr).call();
+    cooldowns = await btlRoastPadContract.getCooldownRemaining(addr);
   } catch (e) {
     console.error("Failed to get BTL cooldowns", e);
     toast(
@@ -1012,18 +1000,15 @@ async function depositBTL() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading("depositBtn");
   try {
-    const weiAmount = web3.utils.toWei(amountStr, "ether");
+    const weiAmount = ethers.parseEther(amountStr);
     const referrer = refEl ? refEl.value.trim() : "";
-    const refAddr =
-      web3 &&
-      web3.utils &&
-      typeof web3.utils.isAddress === "function" &&
-      web3.utils.isAddress(referrer)
-        ? referrer
-        : "0x0000000000000000000000000000000000000000";
-    await depositContract.methods
-      .depositBTL(weiAmount, refAddr)
-      .send({ from: userAccount, gas: 300000 });
+    const refAddr = ethers.isAddress(referrer)
+      ? referrer
+      : "0x0000000000000000000000000000000000000000";
+    const tx = await depositContract.depositBTL(weiAmount, refAddr, {
+      gasLimit: 300000,
+    });
+    await tx.wait();
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
   } catch (e) {
