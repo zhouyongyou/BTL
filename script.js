@@ -216,7 +216,7 @@ function updateLanguage() {
   const depositBnbBtn = document.getElementById("depositBnbBtn");
   if (depositBnbBtn) depositBnbBtn.innerText = lang ? "Deposit BNB" : "存入 BNB";
   const withdrawBnbBtn = document.getElementById("withdrawBnbBtn");
-  if (withdrawBnbBtn) withdrawBnbBtn.innerText = lang ? "Withdraw" : "提領";
+  if (withdrawBnbBtn) withdrawBnbBtn.innerText = lang ? "Withdraw All" : "提取全部";
   const claimReferralBtn = document.getElementById("claimReferralBtn");
   if (claimReferralBtn)
     claimReferralBtn.innerText = lang
@@ -480,7 +480,7 @@ async function withdrawBNB() {
   try {
     await roastPadContract.methods.withdraw().send({ from: userAccount });
     if (typeof updateUserInfo === "function") updateUserInfo();
-    toast(currentLanguage === "en" ? "Withdrawal successful!" : "提領成功!");
+    toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
     console.error(e);
     toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
