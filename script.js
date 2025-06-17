@@ -52,14 +52,14 @@ function formatBTLBalance(balance) {
   }
 }
 
-function formatNumber(value, decimals = 4) {
+function formatNumber(value, decimals = 11) {
   const num = parseFloat(value);
   if (isNaN(num)) return value;
   const fixed = num.toFixed(decimals);
   return fixed.replace(/0+$/, "").replace(/\.$/, "");
 }
 
-function fromWeiFormatted(value, decimals = 4) {
+function fromWeiFormatted(value, decimals = 11) {
   return formatNumber(web3.utils.fromWei(value, "ether"), decimals);
 }
 
