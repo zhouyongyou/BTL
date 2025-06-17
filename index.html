@@ -59,6 +59,13 @@
         <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
         <button id="buyBtlLink" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button>
       </p>
+      <p id="poolInfo"><strong id="poolAddressLabel">Pool Contract:</strong>
+        <span id="poolAddr" onclick="copyToClipboard('poolAddr')"></span>
+        <a id="poolBscScanLink" href="#" target="_blank" rel="noopener noreferrer">
+          <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
+        </a>
+        <button id="copyPoolBtn" onclick="copyToClipboard('poolAddr')">Copy</button>
+      </p>
       <input id="depositAmount" type="number" step="0.01" min="0.01" placeholder="Amount (BNB)">
       <input id="referrer" type="text" placeholder="Referrer (optional)">
       <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
@@ -67,7 +74,7 @@
       <p id="referralContainer">Your Link: <span id="referralLink" onclick="copyToClipboard('referralLink')"></span>
         <button id="copyReferralBtn" onclick="copyToClipboard('referralLink')">Copy</button>
       </p>
-      <p id="depositRules" class="rules">Minimum deposit is 0.01 BNB. Deposits and withdrawals require a 24-hour cooldown.</p>
+      <p id="depositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 24-hour cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all.</p>
       <p><strong id="userDepositLabel">Total Deposit:</strong> <span id="userDeposit">-</span> BNB</p>
       <p><strong id="userYieldLabel">Total Yield:</strong> <span id="userYield">-</span> BNB</p>
       <p><strong id="userReferralLabel">Referral Rewards:</strong> <span id="userReferral">-</span> BNB</p>
