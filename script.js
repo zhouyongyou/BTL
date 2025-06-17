@@ -228,6 +228,9 @@ function updateLanguage() {
   const userYieldLabel = document.getElementById("userYieldLabel");
   if (userYieldLabel)
     userYieldLabel.innerText = lang ? "Total Yield:" : "總收益:";
+  const userReferralLabel = document.getElementById("userReferralLabel");
+  if (userReferralLabel)
+    userReferralLabel.innerText = lang ? "Referral Rewards:" : "推薦獎勵:";
   const referrerInput = document.getElementById("referrer");
   if (referrerInput)
     referrerInput.placeholder = lang
@@ -418,6 +421,7 @@ async function getUserInfo(addr) {
     const yieldAmount = await roastPadContract.methods.getYield(addr).call();
     setPlaceholder("userDeposit", fromWeiFormatted(info.deposit));
     setPlaceholder("userYield", fromWeiFormatted(yieldAmount));
+    setPlaceholder("userReferral", fromWeiFormatted(info.referralRewards));
   } catch (e) {
     console.error(e);
   }
