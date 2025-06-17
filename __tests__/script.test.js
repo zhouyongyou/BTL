@@ -14,7 +14,7 @@ global.localStorage = {
 global.window.localStorage = global.localStorage;
 
 const script = require('../script');
-const { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo } = script;
+const { depositBTL, __setContract, __setUpdateUserInfo, __setProvider } = script;
 
 describe('depositBTL', () => {
   beforeEach(() => {
@@ -38,7 +38,11 @@ describe('depositBTL', () => {
       isAddress: jest.fn(() => true)
     };
     __setContract(global.depositContract);
-    __setWeb3(global.web3);
+    global.ethers = {
+      parseEther: jest.fn(() => '1'),
+      isAddress: jest.fn(() => true)
+    };
+    __setProvider({});
     global.userAccount = '0xabc';
   });
 
