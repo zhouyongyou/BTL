@@ -38,6 +38,7 @@ Visit [http://localhost:8000/index.html](http://localhost:8000/index.html) in yo
 ## Wallet Setup
 - Click **Connect Wallet** in the DApp and select MetaMask or Rabby.
 - Deposit BTL tokens to start earning rewards.
+- On your first deposit the DApp will request approval to spend your BTL tokens.
 
 ## Deposit & Withdrawal Rules
 - The minimum amount you can deposit is **0.01 BNB**.

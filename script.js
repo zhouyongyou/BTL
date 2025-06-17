@@ -78,6 +78,17 @@ const ERC20_ABI = [
     stateMutability: "view",
     type: "function",
   },
+  {
+    constant: false,
+    inputs: [
+      { name: "spender", type: "address" },
+      { name: "value", type: "uint256" },
+    ],
+    name: "approve",
+    outputs: [{ name: "", type: "bool" }],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];
 
 // Backwards compatibility wrapper for older method names
@@ -684,11 +695,16 @@ async function depositBTLRoast() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
+    const weiAmount = web3.utils.toWei(amount, "ether");
+    const token = new web3.eth.Contract(ERC20_ABI, CONTRACT_ADDRESS);
+    await token.methods
+      .approve(BTL_ROASTPAD_ADDRESS, weiAmount)
+      .send({ from: userAccount });
     const refAddr = web3.utils.isAddress(ref)
       ? ref
       : "0x0000000000000000000000000000000000000000";
     await btlRoastPadContract.methods
-      .deposit(refAddr, web3.utils.toWei(amount, "ether"))
+      .deposit(refAddr, weiAmount)
       .send({ from: userAccount });
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
