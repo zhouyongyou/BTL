@@ -82,7 +82,7 @@
     <button id="depositBtlBtn" onclick="depositBTLRoast()">Deposit BTL</button>
     <button id="withdrawBtlBtn" onclick="withdrawBTLRoast()">Withdraw All</button>
     <button id="claimBtlReferralBtn" onclick="claimBtlReferralRewards()">Claim Referral Rewards</button>
-    <button onclick="getBtlUserInfo(userAccount)">Refresh BTL Pool</button>
+    <button id="refreshBtlBtn" onclick="getBtlUserInfo(userAccount)">Refresh BTL Pool</button>
 
     <p id="BtlDepositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 15-seconds cooldown. Each action settles your rewards. Deposit at least 1000000000 $BTL (0.01%) daily to settle without withdrawing all.</p>
     
@@ -107,7 +107,7 @@
       <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
       <button id="withdrawBnbBtn" onclick="withdrawBNB()">Withdraw All</button>
       <button id="claimReferralBtn" onclick="claimReferralRewards()">Claim Referral Rewards</button>
-      <button onclick="getUserInfo(userAccount)">Refresh BNB Pool</button>
+      <button id="refreshBnbBtn" onclick="getUserInfo(userAccount)">Refresh BNB Pool</button>
 
       <p id="depositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 3-minutes cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all.</p>
       <p><strong id="userDepositLabel">Total Deposit:</strong> <span id="userDeposit">-</span> BNB</p>

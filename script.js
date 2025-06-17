@@ -283,6 +283,9 @@ function updateLanguage() {
     claimReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+  const refreshBnbBtn = document.getElementById("refreshBnbBtn");
+  if (refreshBnbBtn)
+    refreshBnbBtn.innerText = lang ? "Refresh BNB Pool" : "刷新 BNB 礦池";
   const depositBtlBtn = document.getElementById("depositBtlBtn");
   if (depositBtlBtn) depositBtlBtn.innerText = lang ? "Deposit BTL" : "存入 BTL";
   const withdrawBtlBtn = document.getElementById("withdrawBtlBtn");
@@ -292,6 +295,9 @@ function updateLanguage() {
     claimBtlReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+  const refreshBtlBtn = document.getElementById("refreshBtlBtn");
+  if (refreshBtlBtn)
+    refreshBtlBtn.innerText = lang ? "Refresh BTL Pool" : "刷新 BTL 礦池";
   const depositAmountInput = document.getElementById("depositAmount");
   if (depositAmountInput)
     depositAmountInput.placeholder = lang
