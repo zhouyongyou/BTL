@@ -589,32 +589,70 @@ async function disconnectWallet() {
 
 async function getUserInfo(addr) {
   if (!roastPadContract || !web3 || !addr) return;
+  let info, yieldAmount, claimed, cooldowns;
+
   try {
-    const info = await roastPadContract.methods.users(addr).call();
-    const yieldAmount = await roastPadContract.methods.getYield(addr).call();
-    const claimed = await roastPadContract.methods
+    info = await roastPadContract.methods.users(addr).call();
+  } catch (e) {
+    console.error("Failed to get user data", e);
+    toast(
+      currentLanguage === "en"
+        ? `Failed to get user info: ${e.message}`
+        : `獲取用戶資訊失敗: ${e.message}`
+    );
+    return;
+  }
+
+  try {
+    yieldAmount = await roastPadContract.methods.getYield(addr).call();
+  } catch (e) {
+    console.error("Failed to get yield", e);
+    toast(
+      currentLanguage === "en" ? `Failed to get yield: ${e.message}` : `獲取收益失敗: ${e.message}`
+    );
+  }
+
+  try {
+    claimed = await roastPadContract.methods
       .getTotalClaimedReferralRewards(addr)
       .call();
-    const cooldowns = await roastPadContract.methods
-      .getCooldownRemaining(addr)
-      .call();
-    setPlaceholder("userDeposit", fromWeiFormatted(info.deposit));
-    setPlaceholder("userYield", fromWeiFormatted(yieldAmount));
-    setPlaceholder("userReferral", fromWeiFormatted(info.referralRewards));
-    setPlaceholder("userReferralClaimed", fromWeiFormatted(claimed));
-    if (cooldowns) {
-      const { depositCooldownRemaining, withdrawalCooldownRemaining } = cooldowns;
-      setPlaceholder(
-        "depositCooldown",
-        formatDuration(depositCooldownRemaining)
-      );
-      setPlaceholder(
-        "withdrawCooldown",
-        formatDuration(withdrawalCooldownRemaining)
-      );
-    }
   } catch (e) {
-    console.error(e);
+    console.error("Failed to get claimed rewards", e);
+    toast(
+      currentLanguage === "en"
+        ? `Failed to get claimed rewards: ${e.message}`
+        : `獲取已領取獎勵失敗: ${e.message}`
+    );
+  }
+
+  try {
+    cooldowns = await roastPadContract.methods.getCooldownRemaining(addr).call();
+  } catch (e) {
+    console.error("Failed to get cooldowns", e);
+    toast(
+      currentLanguage === "en"
+        ? `Failed to get cooldown info: ${e.message}`
+        : `獲取冷卻時間失敗: ${e.message}`
+    );
+  }
+
+  if (info) {
+    setPlaceholder("userDeposit", fromWeiFormatted(info.deposit));
+    setPlaceholder("userReferral", fromWeiFormatted(info.referralRewards));
+  }
+  if (yieldAmount) {
+    setPlaceholder("userYield", fromWeiFormatted(yieldAmount));
+  }
+  if (claimed) {
+    setPlaceholder("userReferralClaimed", fromWeiFormatted(claimed));
+  }
+  if (cooldowns) {
+    const { depositCooldownRemaining, withdrawalCooldownRemaining } = cooldowns;
+    setPlaceholder("depositCooldown", formatDuration(depositCooldownRemaining));
+    setPlaceholder(
+      "withdrawCooldown",
+      formatDuration(withdrawalCooldownRemaining)
+    );
   }
 }
 
@@ -804,32 +842,70 @@ async function claimBtlReferralRewards() {
 
 async function getBtlUserInfo(addr) {
   if (!btlRoastPadContract || !web3 || !addr) return;
+  let info, yieldAmount, claimed, cooldowns;
+
   try {
-    const info = await btlRoastPadContract.methods.users(addr).call();
-    const yieldAmount = await btlRoastPadContract.methods.getYield(addr).call();
-    const claimed = await btlRoastPadContract.methods
+    info = await btlRoastPadContract.methods.users(addr).call();
+  } catch (e) {
+    console.error("Failed to get BTL user data", e);
+    toast(
+      currentLanguage === "en"
+        ? `Failed to get user info: ${e.message}`
+        : `獲取用戶資訊失敗: ${e.message}`
+    );
+    return;
+  }
+
+  try {
+    yieldAmount = await btlRoastPadContract.methods.getYield(addr).call();
+  } catch (e) {
+    console.error("Failed to get BTL yield", e);
+    toast(
+      currentLanguage === "en" ? `Failed to get yield: ${e.message}` : `獲取收益失敗: ${e.message}`
+    );
+  }
+
+  try {
+    claimed = await btlRoastPadContract.methods
       .getTotalClaimedReferralRewards(addr)
       .call();
-    const cooldowns = await btlRoastPadContract.methods
-      .getCooldownRemaining(addr)
-      .call();
-    setPlaceholder("btlUserDeposit", fromWeiFormatted(info.deposit));
-    setPlaceholder("btlUserYield", fromWeiFormatted(yieldAmount));
-    setPlaceholder("btlUserReferral", fromWeiFormatted(info.referralRewards));
-    setPlaceholder("btlUserReferralClaimed", fromWeiFormatted(claimed));
-    if (cooldowns) {
-      const { depositCooldownRemaining, withdrawalCooldownRemaining } = cooldowns;
-      setPlaceholder(
-        "btlDepositCooldown",
-        formatDuration(depositCooldownRemaining)
-      );
-      setPlaceholder(
-        "btlWithdrawCooldown",
-        formatDuration(withdrawalCooldownRemaining)
-      );
-    }
   } catch (e) {
-    console.error(e);
+    console.error("Failed to get claimed BTL rewards", e);
+    toast(
+      currentLanguage === "en"
+        ? `Failed to get claimed rewards: ${e.message}`
+        : `獲取已領取獎勵失敗: ${e.message}`
+    );
+  }
+
+  try {
+    cooldowns = await btlRoastPadContract.methods.getCooldownRemaining(addr).call();
+  } catch (e) {
+    console.error("Failed to get BTL cooldowns", e);
+    toast(
+      currentLanguage === "en"
+        ? `Failed to get cooldown info: ${e.message}`
+        : `獲取冷卻時間失敗: ${e.message}`
+    );
+  }
+
+  if (info) {
+    setPlaceholder("btlUserDeposit", fromWeiFormatted(info.deposit));
+    setPlaceholder("btlUserReferral", fromWeiFormatted(info.referralRewards));
+  }
+  if (yieldAmount) {
+    setPlaceholder("btlUserYield", fromWeiFormatted(yieldAmount));
+  }
+  if (claimed) {
+    setPlaceholder("btlUserReferralClaimed", fromWeiFormatted(claimed));
+  }
+  if (cooldowns) {
+    const { depositCooldownRemaining, withdrawalCooldownRemaining } = cooldowns;
+    setPlaceholder("btlDepositCooldown", formatDuration(depositCooldownRemaining));
+    setPlaceholder(
+      "btlWithdrawCooldown",
+      formatDuration(withdrawalCooldownRemaining)
+    );
   }
 }
 /* ===== PancakeSwap Link ===== */
