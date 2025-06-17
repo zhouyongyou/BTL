@@ -11,6 +11,7 @@ contract RoastPad {
     }
 
     mapping(address => User) public users;
+    mapping(address => uint256) public totalEarned;
     uint256 public totalDeposits;
     uint256 public constant DAILY_RATE = 8; // 8% daily
     uint256 public constant REFERRAL_RATE = 10; // 10% of referred deposit
@@ -96,7 +97,9 @@ contract RoastPad {
         if (user.deposit > 0) {
             uint256 timeElapsed = block.timestamp - user.lastAction;
             uint256 yield = (user.deposit * DAILY_RATE * timeElapsed) / (100 * 1 days);
+            require(totalEarned[_user] + yield <= user.deposit * 3, "Max ROI cap reached");
             user.lastAction = block.timestamp;
+            totalEarned[_user] += yield;
             payable(_user).transfer(yield);
         }
     }
