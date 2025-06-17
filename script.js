@@ -614,8 +614,6 @@ if (typeof window !== "undefined" && window)
     updateMyReferralLink();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
-    if (web3Modal.cachedProvider) connectWallet();
-    // Removed countdown and pool info updates
   };
 
 // 放在 script.js 的結尾
