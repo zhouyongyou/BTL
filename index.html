@@ -70,9 +70,11 @@
 
   <section id="roastPad">
     <div class="container">
-      <input id="depositAmount" type="number" step="0.01" placeholder="Amount (BNB)">
+      <input id="bnbAmount" type="number" step="0.01" placeholder="Amount (BNB)">
+      <input id="bnbReferrer" type="text" placeholder="Referrer address (optional)">
       <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
       <button id="withdrawBnbBtn" onclick="withdrawBNB()">Withdraw</button>
+      <button id="claimRewardsBtn" onclick="claimReferralRewards()">Claim Rewards</button>
     </div>
   </section>
   <nav id="sideMenu" class="side-menu">
