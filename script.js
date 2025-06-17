@@ -715,8 +715,6 @@ async function depositBNB() {
     );
     return;
   }
-  const referrerInput = document.getElementById("bnbReferrer");
-  const referrer = referrerInput ? referrerInput.value.trim() : "";
   const btnId = "depositBnbBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
