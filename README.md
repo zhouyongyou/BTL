@@ -48,6 +48,9 @@ Install project dependencies with npm:
 npm install
 ```
 
+## Additional Documentation
+- [Top Referrer Leaderboard Design](docs/top_referrer_design.md)
+
 ## Listening for RoastPad Deposits
 A Node.js script `listenDeposits.js` captures `Deposit` events from the RoastPad contract and stores them in MongoDB.
 
