@@ -52,6 +52,8 @@ const ROASTPAD_ADDRESS = "0xdb3ED962B99Cb8934Ba14Bc55447419578a5b299";
 const ROASTPAD_LIVE = true;
 const AUTO_REFRESH_INTERVAL = 5000;
 let refreshIntervalId = null;
+const COOLDOWN_MS = 1500;
+let cooldownActive = false;
 const ROASTPAD_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralReward","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"inputs":[],"name":"COOLDOWN_PERIOD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DAILY_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_SINGLE_DEPOSIT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_DEPOSIT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimReferralRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_referrer","type":"address"}],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getCooldownRemaining","outputs":[{"internalType":"uint256","name":"depositCooldownRemaining","type":"uint256"},{"internalType":"uint256","name":"withdrawalCooldownRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getLastDepositTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getLastWithdrawalTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalClaimedReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getYield","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastDepositTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastWithdrawalTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"launchTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"platformFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"recoverAssets","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"totalClaimedReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalDeposits","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint256","name":"deposit","type":"uint256"},{"internalType":"uint256","name":"lastAction","type":"uint256"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 
 const BTL_ROASTPAD_ADDRESS = "0xFAFFaD91E2bA05F16A43b09E94430dd0c4417686";
@@ -180,10 +182,16 @@ function toast(msg) {
 }
 
 /* ===== Loading helpers ===== */
+function activateCooldown() {
+  cooldownActive = true;
+  setTimeout(() => (cooldownActive = false), COOLDOWN_MS);
+}
+
 function showLoading(btnId) {
   const b = document.getElementById(btnId);
   b.classList.add("loading");
   b.dataset.loading = "true";
+  activateCooldown();
 }
 function hideLoading(btnId) {
   const b = document.getElementById(btnId);
@@ -471,6 +479,8 @@ async function connectWallet() {
     return disconnectWallet();
   }
 
+  if (cooldownActive) return;
+
   const btn = document.getElementById("connectWalletBtn");
   if (btn.dataset.loading === "true") return;
 
@@ -703,6 +713,7 @@ async function depositBNB() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const amount = document.getElementById("depositAmount").value;
   const ref = document.getElementById("referrer")?.value.trim() || "";
 
@@ -752,6 +763,7 @@ async function withdrawBNB() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const btnId = "withdrawBnbBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -777,6 +789,7 @@ async function claimReferralRewards() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const btnId = "claimReferralBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -800,6 +813,7 @@ async function depositBTLRoast() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const amount = document.getElementById("btlDepositAmount").value;
   const ref = document.getElementById("btlReferrer")?.value.trim() || "";
   if (!amount || parseFloat(amount) <= 0) {
@@ -841,6 +855,7 @@ async function withdrawBTLRoast() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const btnId = "withdrawBtlBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -864,6 +879,7 @@ async function claimBtlReferralRewards() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const btnId = "claimBtlReferralBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -966,6 +982,7 @@ async function depositBTL() {
     toast("请输入存款数量");
     return;
   }
+  if (cooldownActive) return;
   const btn = document.getElementById("depositBtn");
   if (btn && btn.dataset.loading === "true") return;
   showLoading("depositBtn");
