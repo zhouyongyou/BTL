@@ -620,6 +620,11 @@ if (typeof window !== "undefined" && window)
     updateMyReferralLink();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
+
+    // Automatically reconnect if provider was cached
+    if (web3Modal && web3Modal.cachedProvider) {
+      tryConnect().catch(console.error);
+    }
   };
 
 // 放在 script.js 的結尾
