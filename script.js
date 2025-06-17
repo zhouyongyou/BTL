@@ -1133,9 +1133,13 @@ if (typeof window !== "undefined" && window)
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
 
     // Automatically reconnect if provider was cached
-    if (web3Modal && web3Modal.cachedProvider) {
-      tryConnect().catch(console.error);
-    }
+if (web3Modal && web3Modal.cachedProvider) {
+  const connectBtn = document.getElementById("connectWalletBtn");
+  if (connectBtn) {
+    connectBtn.innerText = currentLanguage === "en" ? "Reconnect Wallet" : "重新連線";
+  }
+}
+
   };
 
 // 放在 script.js 的結尾
