@@ -256,6 +256,13 @@ function updateLanguage() {
   }
   const copyReferralBtn = document.getElementById("copyReferralBtn");
   if (copyReferralBtn) copyReferralBtn.innerText = lang ? "Copy" : "複製";
+
+  const BtlDepositRules = document.getElementById("BtlDepositRules");
+  if (BtlDepositRules)
+    BtlDepositRules.innerText = lang
+      ? "Daily yield is 8%. Deposits and withdrawals have a 15-seconds cooldown. Each action settles your rewards. Deposit at least 100000000 $BTL (0.01%) daily to settle without withdrawing all."
+      : "每日收益率為 8%。存款和提款有 15 秒的冷卻時間。每次操作會結算您的獎勳。每日至少存入 100000000 $BTL（0.01%）以便結算，而無需全部提領。";
+  
   const depositRules = document.getElementById("depositRules");
   if (depositRules)
     depositRules.innerText = lang
