@@ -520,8 +520,8 @@ if (netId !== 56) {
       networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
     updateReferralLink();
     updateMyReferralLink();
-    updateUserInfo = () => getUserInfo(userAccount);
-    updateBtlUserInfo = () => getBtlUserInfo(userAccount);
+    // updateUserInfo = () => getUserInfo(userAccount);
+    // updateBtlUserInfo = () => getBtlUserInfo(userAccount);
     toast(
       currentLanguage === "en"
         ? 'Wallet connected. Click "Refresh Pool Info" to update.'
@@ -720,9 +720,13 @@ async function depositBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    const refAddr = web3.utils.isAddress(referrer)
-      ? referrer
-      : "0x0000000000000000000000000000000000000000";
+    const refAddr =
+      web3 &&
+      web3.utils &&
+      typeof web3.utils.isAddress === "function" &&
+      web3.utils.isAddress(referrer)
+        ? referrer
+        : "0x0000000000000000000000000000000000000000";
     await roastPadContract.methods
       .deposit(refAddr)
       .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
@@ -809,9 +813,13 @@ async function depositBTLRoast() {
     await token.methods
       .approve(BTL_ROASTPAD_ADDRESS, weiAmount)
       .send({ from: userAccount });
-    const refAddr = web3.utils.isAddress(ref)
-      ? ref
-      : "0x0000000000000000000000000000000000000000";
+    const refAddr =
+      web3 &&
+      web3.utils &&
+      typeof web3.utils.isAddress === "function" &&
+      web3.utils.isAddress(ref)
+        ? ref
+        : "0x0000000000000000000000000000000000000000";
     await btlRoastPadContract.methods
       .deposit(refAddr, weiAmount)
       .send({ from: userAccount });
@@ -961,9 +969,13 @@ async function depositBTL() {
   try {
     const weiAmount = web3.utils.toWei(amountStr, "ether");
     const referrer = refEl ? refEl.value.trim() : "";
-    const refAddr = web3.utils.isAddress(referrer)
-      ? referrer
-      : "0x0000000000000000000000000000000000000000";
+    const refAddr =
+      web3 &&
+      web3.utils &&
+      typeof web3.utils.isAddress === "function" &&
+      web3.utils.isAddress(referrer)
+        ? referrer
+        : "0x0000000000000000000000000000000000000000";
     await depositContract.methods
       .depositBTL(weiAmount, refAddr)
       .send({ from: userAccount });
