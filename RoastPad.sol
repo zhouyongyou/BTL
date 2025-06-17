@@ -1,7 +1,25 @@
 // SPDX-License-Identifier: MIT
 pragma solidity ^0.8.19;
 
-contract RoastPad {
+// Lightweight OpenZeppelin-style reentrancy guard
+abstract contract ReentrancyGuard {
+    uint256 private constant _NOT_ENTERED = 1;
+    uint256 private constant _ENTERED = 2;
+    uint256 private _status;
+
+    constructor() {
+        _status = _NOT_ENTERED;
+    }
+
+    modifier nonReentrant() {
+        require(_status != _ENTERED, "ReentrancyGuard: reentrant call");
+        _status = _ENTERED;
+        _;
+        _status = _NOT_ENTERED;
+    }
+}
+
+contract RoastPad is ReentrancyGuard {
     struct User {
         uint256 deposit;
         uint256 lastAction;
@@ -15,6 +33,8 @@ contract RoastPad {
     uint256 public constant REFERRAL_RATE = 10; // 10% of referred deposit
     address public owner;
     uint256 public platformFees;
+    bool public paused;
+    mapping(address => bool) public withdrawWhitelist;
 
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
@@ -25,8 +45,14 @@ contract RoastPad {
         _;
     }
 
+    modifier onlyWhitelisted() {
+        require(withdrawWhitelist[msg.sender], "Not whitelisted");
+        _;
+    }
+
     constructor() {
         owner = msg.sender;
+        withdrawWhitelist[msg.sender] = true;
     }
 
     receive() external payable {
@@ -58,7 +84,8 @@ contract RoastPad {
         emit Deposit(msg.sender, msg.value);
     }
 
-    function withdraw() external {
+    function withdraw() external nonReentrant onlyWhitelisted {
+        require(!paused, "Contract paused");
         _claimYield(msg.sender);
         User storage user = users[msg.sender];
         uint256 amount = user.deposit;
@@ -70,7 +97,8 @@ contract RoastPad {
         emit Withdraw(msg.sender, amount);
     }
 
-    function claimReferralRewards() external {
+    function claimReferralRewards() external nonReentrant onlyWhitelisted {
+        require(!paused, "Contract paused");
         uint256 reward = users[msg.sender].referralRewards;
         require(reward > 0, "No rewards");
         users[msg.sender].referralRewards = 0;
@@ -88,10 +116,27 @@ contract RoastPad {
         }
     }
 
-    function withdrawPlatformFees() external onlyOwner {
+    function withdrawPlatformFees() external onlyOwner nonReentrant {
         uint256 amount = platformFees;
         platformFees = 0;
         payable(owner).transfer(amount);
+    }
+
+    function addToWhitelist(address user) external onlyOwner {
+        withdrawWhitelist[user] = true;
+    }
+
+    function removeFromWhitelist(address user) external onlyOwner {
+        withdrawWhitelist[user] = false;
+    }
+
+    function setPaused(bool state) external onlyOwner {
+        paused = state;
+    }
+
+    function restartContract() external onlyOwner {
+        require(paused, "Pause first");
+        paused = false;
     }
 
     function getYield(address _user) external view returns (uint256) {
