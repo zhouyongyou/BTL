@@ -520,8 +520,8 @@ if (netId !== 56) {
       networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
     updateReferralLink();
     updateMyReferralLink();
-    updateUserInfo = () => getUserInfo(userAccount);
-    updateBtlUserInfo = () => getBtlUserInfo(userAccount);
+    // updateUserInfo = () => getUserInfo(userAccount);
+    // updateBtlUserInfo = () => getBtlUserInfo(userAccount);
     toast(
       currentLanguage === "en"
         ? 'Wallet connected. Click "Refresh Pool Info" to update.'
