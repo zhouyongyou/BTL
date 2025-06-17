@@ -292,6 +292,8 @@ function updateLanguage() {
     claimBtlReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+  const refreshInfoBtn = document.getElementById("refreshInfoBtn");
+  if (refreshInfoBtn) refreshInfoBtn.innerText = lang ? "Refresh Pools" : "刷新礦池資訊";
   const depositAmountInput = document.getElementById("depositAmount");
   if (depositAmountInput)
     depositAmountInput.placeholder = lang
@@ -966,6 +968,26 @@ async function getBtlUserInfo(addr) {
     );
   }
 }
+
+async function refreshInfo() {
+  const btnId = "refreshInfoBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    if (typeof updateUserInfo === "function") await updateUserInfo();
+    if (typeof updateBtlUserInfo === "function") await updateBtlUserInfo();
+  } catch (e) {
+    console.error("Failed to refresh info", e);
+    toast(
+      currentLanguage === "en"
+        ? `Failed to refresh: ${e.message}`
+        : `刷新失敗: ${e.message}`
+    );
+  } finally {
+    hideLoading(btnId);
+  }
+}
 /* ===== PancakeSwap Link ===== */
 function openPancakeSwap() {
   const url = `https://pancakeswap.finance/swap?outputCurrency=${CONTRACT_ADDRESS}&chain=bsc`;
@@ -1138,6 +1160,7 @@ if (typeof module !== 'undefined') {
     withdraw: withdrawBNB,
     claimReferralRewards,
     claimBtlReferralRewards,
+    refreshInfo,
     getUserInfo,
     getBtlUserInfo,
     __setContract,
