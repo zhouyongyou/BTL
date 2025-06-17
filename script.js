@@ -698,7 +698,7 @@ async function claimReferralRewards() {
   try {
     await roastPadContract.methods
       .claimReferralRewards()
-      .send({ from: userAccount });
+      .send({ from: userAccount, gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
@@ -756,7 +756,9 @@ async function withdrawBTLRoast() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await btlRoastPadContract.methods.withdraw().send({ from: userAccount });
+    await btlRoastPadContract.methods
+      .withdraw()
+      .send({ from: userAccount, gas: 300000 });
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
