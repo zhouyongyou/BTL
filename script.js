@@ -9,6 +9,16 @@ function buildProviderOptions() {
       chainId: 56
     },
   };
+    injected: {
+      package: null,
+      options: {
+        display: {
+          name: "MetaMask",
+          description: "Connect with MetaMask browser extension",
+        },
+      },
+    },
+  };
 }
 
 function initWeb3Modal() {
