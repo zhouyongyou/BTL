@@ -581,19 +581,19 @@ function copyToClipboard(id) {
   navigator.clipboard.writeText(text).then(() => toast("Copied!"));
 }
 
-// function updateReferralLink() {
-//   const el = document.getElementById("referralLink");
-//   if (!el) return;
-//   if (!userAccount) {
-//     el.innerText = "";
-//     el.dataset.full = "";
-//     return;
-//   }
-//   const url = new URL(window.location.href);
-//   url.searchParams.set("ref", userAccount);
-//   el.innerText = url.toString();
-//   el.dataset.full = url.toString();
-// }
+function updateReferralLink() {
+  const el = document.getElementById("referralLink");
+  if (!el) return;
+  if (!userAccount) {
+    el.innerText = "";
+    el.dataset.full = "";
+    return;
+  }
+  const url = new URL(window.location.href);
+  url.searchParams.set("ref", userAccount);
+  el.innerText = url.toString();
+  el.dataset.full = url.toString();
+}
 
 function applyReferrerFromUrl() {
   const params = new URLSearchParams(window.location.search);
