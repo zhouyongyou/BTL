@@ -546,9 +546,14 @@ if (netId !== 56) {
     // updateBtlUserInfo = () => getBtlUserInfo(userAccount);
     toast(
       currentLanguage === "en"
-        ? "Wallet connected. Please manually refresh your pool info."
-        : "錢包已連接，請手動刷新礦池資訊"
+        ? "Wallet connected. Pool info will auto refresh shortly."
+        : "錢包已連接，礦池資訊將自動刷新"
     );
+    setTimeout(() => {
+      if (typeof updateUserInfo === "function") updateUserInfo();
+      if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
+      startAutoRefresh();
+    }, AUTO_REFRESH_INTERVAL);
 
     provider.on("accountsChanged", (acc) => {
       userAccount = acc[0];
