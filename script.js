@@ -4,8 +4,9 @@ function buildProviderOptions() {
     walletconnect: {
       package: window.WalletConnectProvider?.default,
       options: {
-        rpc: { 56: "https://bsc-dataseed1.binance.org:443" },
+        rpc: { 56: "https://bsc-rpc.publicnode.com" },
       },
+      chainId: 56
     },
   };
 }
