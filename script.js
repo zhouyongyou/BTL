@@ -882,6 +882,7 @@ if (typeof window !== "undefined" && window)
     updateLanguage();
     updateReferralLink();
     updateMyReferralLink();
+    applyReferrerFromUrl();
     // 動態加載 ABI
     ABI = (await fetch("contract.json").then((r) => r.json())).abi;
 
@@ -895,12 +896,7 @@ if (typeof window !== "undefined" && window)
 if (typeof window !== "undefined" && window.addEventListener)
   window.addEventListener("DOMContentLoaded", (event) => {
     applyContractAddress();
-    const params = new URLSearchParams(window.location.search);
-    const refParam = params.get("ref");
-    if (refParam) {
-      const refInput = document.getElementById("referrer");
-      if (refInput) refInput.value = refParam;
-    }
+    applyReferrerFromUrl();
     updateReferralLink();
     updateMyReferralLink();
 
