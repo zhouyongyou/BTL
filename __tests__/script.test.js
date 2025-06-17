@@ -32,6 +32,12 @@ describe('depositBTL', () => {
     global.depositContract = {
       depositBTL: jest.fn().mockResolvedValue()
     };
+    global.web3 = {
+      utils: {
+        toWei: jest.fn(),
+        isAddress: jest.fn(() => true)
+      }
+    };
     __setContract(global.depositContract);
     global.ethers = {
       parseEther: jest.fn(() => '1'),

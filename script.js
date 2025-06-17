@@ -52,6 +52,8 @@ const ROASTPAD_ADDRESS = "0xdb3ED962B99Cb8934Ba14Bc55447419578a5b299";
 const ROASTPAD_LIVE = true;
 const AUTO_REFRESH_INTERVAL = 5000;
 let refreshIntervalId = null;
+const COOLDOWN_MS = 1500;
+let cooldownActive = false;
 const ROASTPAD_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralReward","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"inputs":[],"name":"COOLDOWN_PERIOD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DAILY_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_SINGLE_DEPOSIT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_DEPOSIT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimReferralRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_referrer","type":"address"}],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getCooldownRemaining","outputs":[{"internalType":"uint256","name":"depositCooldownRemaining","type":"uint256"},{"internalType":"uint256","name":"withdrawalCooldownRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getLastDepositTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getLastWithdrawalTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalClaimedReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getYield","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastDepositTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastWithdrawalTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"launchTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"platformFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"token","type":"address"},{"internalType":"uint256","name":"amount","type":"uint256"}],"name":"recoverAssets","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"totalClaimedReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalDeposits","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint256","name":"deposit","type":"uint256"},{"internalType":"uint256","name":"lastAction","type":"uint256"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 
 const BTL_ROASTPAD_ADDRESS = "0xFAFFaD91E2bA05F16A43b09E94430dd0c4417686";
@@ -195,10 +197,16 @@ function toast(msg) {
 }
 
 /* ===== Loading helpers ===== */
+function activateCooldown() {
+  cooldownActive = true;
+  setTimeout(() => (cooldownActive = false), COOLDOWN_MS);
+}
+
 function showLoading(btnId) {
   const b = document.getElementById(btnId);
   b.classList.add("loading");
   b.dataset.loading = "true";
+  activateCooldown();
 }
 function hideLoading(btnId) {
   const b = document.getElementById(btnId);
@@ -290,6 +298,9 @@ function updateLanguage() {
     claimReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+  const refreshBnbBtn = document.getElementById("refreshBnbBtn");
+  if (refreshBnbBtn)
+    refreshBnbBtn.innerText = lang ? "Refresh BNB Pool" : "刷新 BNB 礦池";
   const depositBtlBtn = document.getElementById("depositBtlBtn");
   if (depositBtlBtn) depositBtlBtn.innerText = lang ? "Deposit BTL" : "存入 BTL";
   const withdrawBtlBtn = document.getElementById("withdrawBtlBtn");
@@ -299,6 +310,14 @@ function updateLanguage() {
     claimBtlReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+
+  const refreshBtlBtn = document.getElementById("refreshBtlBtn");
+  if (refreshBtlBtn)
+    refreshBtlBtn.innerText = lang ? "Refresh BTL Pool" : "刷新 BTL 礦池";
+
+  const refreshInfoBtn = document.getElementById("refreshInfoBtn");
+  if (refreshInfoBtn) refreshInfoBtn.innerText = lang ? "Refresh Pools" : "刷新礦池資訊";
+
   const depositAmountInput = document.getElementById("depositAmount");
   if (depositAmountInput)
     depositAmountInput.placeholder = lang
@@ -486,11 +505,14 @@ async function connectWallet() {
     return disconnectWallet();
   }
 
+  if (cooldownActive) return;
+
   const btn = document.getElementById("connectWalletBtn");
   if (btn.dataset.loading === "true") return;
 
   if (web3Modal && web3Modal.cachedProvider) {
     await web3Modal.clearCachedProvider();
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
 
   showLoading("connectWalletBtn");
@@ -534,12 +556,12 @@ async function tryConnect() {
       networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
     updateReferralLink();
     updateMyReferralLink();
-    updateUserInfo = () => getUserInfo(userAccount);
-    updateBtlUserInfo = () => getBtlUserInfo(userAccount);
+    // updateUserInfo = () => getUserInfo(userAccount);
+    // updateBtlUserInfo = () => getBtlUserInfo(userAccount);
     toast(
       currentLanguage === "en"
-        ? 'Wallet connected. Click "Refresh Pool Info" to update.'
-        : '錢包已連接，請手動點「刷新礦池資訊」來更新狀態'
+        ? "Wallet connected. Please manually refresh your pool info."
+        : "錢包已連接，請手動刷新礦池資訊"
     );
 
     provider.on("accountsChanged", async (acc) => {
@@ -560,6 +582,7 @@ async function tryConnect() {
       currentRpcIndex++;
       if (web3Modal && web3Modal.cachedProvider) {
         await web3Modal.clearCachedProvider();
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
       web3Modal = initWeb3Modal();
       return tryConnect();
@@ -610,6 +633,7 @@ async function disconnectWallet() {
     }
   }
   await web3Modal.clearCachedProvider();
+  await new Promise(resolve => setTimeout(resolve, 500));
   provider = null;
   ethersProvider = null;
   signer = null;
@@ -716,6 +740,7 @@ async function depositBNB() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const amount = document.getElementById("depositAmount").value;
   const ref = document.getElementById("referrer")?.value.trim() || "";
 
@@ -761,6 +786,7 @@ async function withdrawBNB() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const btnId = "withdrawBnbBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -786,6 +812,7 @@ async function claimReferralRewards() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const btnId = "claimReferralBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -807,6 +834,7 @@ async function depositBTLRoast() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const amount = document.getElementById("btlDepositAmount").value;
   const ref = document.getElementById("btlReferrer")?.value.trim() || "";
   if (!amount || parseFloat(amount) <= 0) {
@@ -840,6 +868,7 @@ async function withdrawBTLRoast() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const btnId = "withdrawBtlBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -861,6 +890,7 @@ async function claimBtlReferralRewards() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
+  if (cooldownActive) return;
   const btnId = "claimBtlReferralBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -943,6 +973,26 @@ async function getBtlUserInfo(addr) {
     );
   }
 }
+
+async function refreshInfo() {
+  const btnId = "refreshInfoBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    if (typeof updateUserInfo === "function") await updateUserInfo();
+    if (typeof updateBtlUserInfo === "function") await updateBtlUserInfo();
+  } catch (e) {
+    console.error("Failed to refresh info", e);
+    toast(
+      currentLanguage === "en"
+        ? `Failed to refresh: ${e.message}`
+        : `刷新失敗: ${e.message}`
+    );
+  } finally {
+    hideLoading(btnId);
+  }
+}
 /* ===== PancakeSwap Link ===== */
 function openPancakeSwap() {
   const url = `https://pancakeswap.finance/swap?outputCurrency=${CONTRACT_ADDRESS}&chain=bsc`;
@@ -959,6 +1009,7 @@ async function depositBTL() {
     toast("请输入存款数量");
     return;
   }
+  if (cooldownActive) return;
   const btn = document.getElementById("depositBtn");
   if (btn && btn.dataset.loading === "true") return;
   showLoading("depositBtn");
@@ -1108,6 +1159,7 @@ if (typeof module !== 'undefined') {
     withdraw: withdrawBNB,
     claimReferralRewards,
     claimBtlReferralRewards,
+    refreshInfo,
     getUserInfo,
     getBtlUserInfo,
     __setContract,
