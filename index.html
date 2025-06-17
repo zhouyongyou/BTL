@@ -65,7 +65,12 @@
 <section id="btlInfo">
   <div class="container">
     <h2 id="btlMiningTitle">BTL Mining</h2>
-      <p id="testingNote" class="rules">下方的礦池代碼都還在測試中，請用戶不要存入，因為存入我們這邊如果有出錯是無法復原的。</p>
+
+      <p id="referralContainer">Your Link: <span id="referralLink" onclick="copyToClipboard('referralLink')"></span>
+        <button id="copyReferralBtn" onclick="copyToClipboard('referralLink')">Copy</button>
+      </p>
+    
+    <p id="testingNote" class="rules">下方的礦池代碼都還在測試中，請用戶不要存入，因為存入我們這邊如果有出錯是無法復原的。</p>
     
     <p><strong id="btlRoastLabel">BTL Pool Contract:</strong>
       <span id="btlRoastAddr" onclick="copyToClipboard('btlRoastAddr')"></span>
@@ -90,9 +95,6 @@
   </div>
 
   <div class="container">
-      <p id="referralContainer">Your Link: <span id="referralLink" onclick="copyToClipboard('referralLink')"></span>
-        <button id="copyReferralBtn" onclick="copyToClipboard('referralLink')">Copy</button>
-      </p>
       <p id="poolInfo"><strong id="poolAddressLabel">BNB Pool Contract:</strong>
         <span id="poolAddr" onclick="copyToClipboard('poolAddr')"></span>
         <a id="poolBscScanLink" href="#" target="_blank" rel="noopener noreferrer">
