@@ -317,12 +317,11 @@ function updateLanguage() {
   if (copyAddressBtn)
     copyAddressBtn.innerText = lang ? "Copy Address" : "複製地址";
 
-  const copyPoolBtn = document.getElementById("copyPoolBtn");
-  if (copyPoolBtn) copyPoolBtn.innerText = lang ? "Copy" : "複製";
-
   const poolAddressLabel = document.getElementById("poolAddressLabel");
   if (poolAddressLabel)
-    poolAddressLabel.innerText = lang ? "Pool Contract:" : "礦池合約:";
+    poolAddressLabel.innerText = lang
+      ? "BNB Pool Contract:"
+      : "BNB 礦池合約:";
 
   const footerText = document.getElementById("footerText");
   if (footerText)

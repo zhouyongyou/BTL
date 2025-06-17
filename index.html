@@ -59,12 +59,11 @@
         <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
         <button id="buyBtlLink" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button>
       </p>
-      <p id="poolInfo"><strong id="poolAddressLabel">Pool Contract:</strong>
+      <p id="poolInfo"><strong id="poolAddressLabel">BNB Pool Contract:</strong>
         <span id="poolAddr" onclick="copyToClipboard('poolAddr')"></span>
         <a id="poolBscScanLink" href="#" target="_blank" rel="noopener noreferrer">
           <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
         </a>
-        <button id="copyPoolBtn" onclick="copyToClipboard('poolAddr')">Copy</button>
       </p>
       <input id="depositAmount" type="number" step="0.01" min="0.01" placeholder="Amount (BNB)">
       <input id="referrer" type="text" placeholder="Referrer (optional)">
