@@ -1,10 +1,17 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
+const RPC_ENDPOINTS = [
+  "https://bsc-rpc.publicnode.com",
+  "https://bsc-dataseed.binance.org",
+  "https://bscrpc.com"
+];
+let currentRpcIndex = 0;
+
 function buildProviderOptions() {
   return {
     walletconnect: {
       package: window.WalletConnectProvider?.default,
       options: {
-        rpc: { 56: "https://bsc-rpc.publicnode.com" },
+        rpc: { 56: RPC_ENDPOINTS[currentRpcIndex] },
       },
       chainId: 56
     },
@@ -505,8 +512,11 @@ async function tryConnect() {
     updateMyReferralLink();
     updateUserInfo = () => getUserInfo(userAccount);
     updateBtlUserInfo = () => getBtlUserInfo(userAccount);
-    toast("Wallet connected successfully!");
-    startAutoRefresh();
+    toast(
+      currentLanguage === "en"
+        ? 'Wallet connected. Click "Refresh Pool Info" to update.'
+        : '錢包已連接，請手動點「刷新礦池資訊」來更新狀態'
+    );
 
     provider.on("accountsChanged", (acc) => {
       userAccount = acc[0];
