@@ -1,15 +1,10 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
-const RPC_ENDPOINTS = [
-  "https://bsc-dataseed1.binance.org:443"
-];
-let currentRpcIndex = 0;
-
 function buildProviderOptions() {
   return {
     walletconnect: {
       package: window.WalletConnectProvider?.default,
       options: {
-        rpc: { 56: RPC_ENDPOINTS[currentRpcIndex] },
+        rpc: { 56: "https://bsc-dataseed1.binance.org:443" },
       },
     },
   };
@@ -513,7 +508,6 @@ async function claimReferralRewards() {
     hideLoading(btnId);
   }
 }
-
 
 /* ===== PancakeSwap Link ===== */
 function openPancakeSwap() {
