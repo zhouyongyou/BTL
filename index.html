@@ -78,13 +78,13 @@
         <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
       </a>
     </p>
-    <input id="btlDepositAmount" type="number" step="0.01" min="0.01" placeholder="Amount (BTL)">
+    <input id="btlDepositAmount" type="number" step="1000000000" min="1000000000" placeholder="Amount (BTL)">
     <input id="btlReferrer" type="text" placeholder="Referrer (optional)">
     <button id="depositBtlBtn" onclick="depositBTLRoast()">Deposit BTL</button>
     <button id="withdrawBtlBtn" onclick="withdrawBTLRoast()">Withdraw All</button>
     <button id="claimBtlReferralBtn" onclick="claimBtlReferralRewards()">Claim Referral Rewards</button>
 
-    <p id="BtlDepositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 15-seconds cooldown. Each action settles your rewards. Deposit at least 100000000 $BTL (0.01%) daily to settle without withdrawing all.</p>
+    <p id="BtlDepositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 15-seconds cooldown. Each action settles your rewards. Deposit at least 1000000000 $BTL (0.01%) daily to settle without withdrawing all.</p>
     
     <p><strong id="btlUserDepositLabel">Total Deposit:</strong> <span id="btlUserDeposit">-</span> BTL</p>
     <p><strong id="btlUserYieldLabel">Total Yield:</strong> <span id="btlUserYield">-</span> BTL</p>
