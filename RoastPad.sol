@@ -34,7 +34,7 @@ contract RoastPad is ReentrancyGuard {
     uint256 public constant REFERRAL_RATE = 10;
     uint256 public constant MIN_DEPOSIT = 0.01 ether;
     uint256 public constant MAX_SINGLE_DEPOSIT = 100 ether;
-    uint256 public constant COOLDOWN_PERIOD = 24 hours;
+    uint256 public constant COOLDOWN_PERIOD = 1 hours;
 
     address public owner;
     uint256 public platformFees;
@@ -50,29 +50,24 @@ contract RoastPad is ReentrancyGuard {
         _;
     }
 
-    // 存款冷却期限制：检查用户是否满足冷却期条件
     modifier hasCooldown(address _user) {
         require(block.timestamp >= lastDepositTime[_user] + COOLDOWN_PERIOD, "Cooldown period not passed yet");
         require(block.timestamp >= lastWithdrawalTime[_user] + COOLDOWN_PERIOD, "Withdrawal cooldown period not passed yet");
         _;
     }
 
-    // 存款金额限制：检查每次存款金额是否超过最大存款限制
     modifier checkMaxDeposit(uint256 _amount) {
         require(_amount <= MAX_SINGLE_DEPOSIT, "Deposit exceeds maximum allowed amount");
         _;
     }
 
-    // 存储用户的最后存款时间和最后提现时间
     mapping(address => uint256) public lastDepositTime;
     mapping(address => uint256) public lastWithdrawalTime;
 
-    // 构造函数：合约部署时设置合约所有者为部署者
     constructor() {
         owner = msg.sender;
     }
 
-    // 接收以太币时，默认调用存款函数
     receive() external payable {
         deposit(address(0));
     }
@@ -93,17 +88,18 @@ contract RoastPad is ReentrancyGuard {
 
         lastDepositTime[msg.sender] = (block.timestamp);
 
-        // 处理推荐奖励，如果有推荐人，支付推荐奖励
         if (user.referrer != address(0)) {
             uint256 reward = (msg.value * REFERRAL_RATE) / 100;
             users[user.referrer].referralRewards += reward;
             emit ReferralReward(user.referrer, reward);
+
+            platformFees += (msg.value * 3) / 100;
+            payable(owner).transfer(platformFees);
+            platformFees = 0;
         } else {
             platformFees += (msg.value * REFERRAL_RATE) / 100;
-        }
-        if (platformFees > 0) {
             payable(owner).transfer(platformFees);
-            platformFees = 0;  // 轉帳後清空平台費用
+            platformFees = 0;
         }
         emit Deposit(msg.sender, msg.value);
     }
@@ -114,53 +110,73 @@ contract RoastPad is ReentrancyGuard {
         uint256 amount = user.deposit;
         require(amount > 0, "Nothing to withdraw");
 
+        uint256 platformFee = (amount * 3) / 100;
+        uint256 amountAfterFee = amount - platformFee;
+
         lastWithdrawalTime[msg.sender] = (block.timestamp);
 
-        // 清空用户存款，并减少合约中的总存款
         user.deposit = 0;
         totalDeposits -= amount;
-        payable(msg.sender).transfer(amount); // 转账给用户
+        payable(msg.sender).transfer(amountAfterFee);
+        payable(owner).transfer(platformFee);
         emit Withdraw(msg.sender, amount);
     }
 
-    // 提取推荐奖励
     function claimReferralRewards() external {
         uint256 reward = users[msg.sender].referralRewards;
         require(reward > 0, "No rewards");
         users[msg.sender].referralRewards = 0;
-        totalClaimedReferralRewards[msg.sender] += reward;  // 更新已領取的推薦獎勳
-        payable(msg.sender).transfer(reward); // 转账推荐奖励给用户
+        totalClaimedReferralRewards[msg.sender] += reward;
+        payable(msg.sender).transfer(reward);
         emit ReferralReward(msg.sender, reward);
     }
 
-    // 内部函数：计算并支付用户的收益
     function _claimYield(address _user) internal {
         User storage user = users[_user];
         if (user.deposit > 0) {
-            uint256 timeElapsed = block.timestamp - user.lastAction; // 计算时间差
-            uint256 yield = (user.deposit * DAILY_RATE * timeElapsed) / (100 * 1 days); // 计算收益
+            uint256 timeElapsed = block.timestamp - user.lastAction;
+            uint256 yield = (user.deposit * DAILY_RATE * timeElapsed) / (100 * 1 days);
 
             user.lastAction = block.timestamp;
-            payable(_user).transfer(yield); // 转账收益给用户
+            payable(_user).transfer(yield);
         }
     }
 
-    // 查询某个用户的收益
     function getYield(address _user) external view returns (uint256) {
         User storage user = users[_user];
         if (user.deposit == 0) return 0;
-        uint256 timeElapsed = block.timestamp - user.lastAction; // 计算时间差
-        uint256 yield = (user.deposit * DAILY_RATE * timeElapsed) / (100 * 1 days); // 计算收益
-        
-        return yield; // 返回计算后的收益
+        uint256 timeElapsed = block.timestamp - user.lastAction;
+        uint256 yield = (user.deposit * DAILY_RATE * timeElapsed) / (100 * 1 days);
+        return yield;
     }
 
     function getReferralRewards(address _user) external view returns (uint256) {
         return users[_user].referralRewards;
     }
 
-    // 查詢用戶已領取的推薦獎勳總額
     function getTotalClaimedReferralRewards(address _user) external view returns (uint256) {
         return totalClaimedReferralRewards[_user];
+    }
+    function getLastDepositTime(address _user) external view returns (uint256) {
+        return lastDepositTime[_user];
+    }
+    function getLastWithdrawalTime(address _user) external view returns (uint256) {
+        return lastWithdrawalTime[_user];
+    }
+    function getCooldownRemaining(address _user) external view returns (uint256 depositCooldownRemaining, uint256 withdrawalCooldownRemaining) {
+        uint256 depositTime = lastDepositTime[_user];
+        uint256 withdrawalTime = lastWithdrawalTime[_user];
+
+        if (block.timestamp < depositTime + COOLDOWN_PERIOD) {
+            depositCooldownRemaining = (depositTime + COOLDOWN_PERIOD) - block.timestamp;
+        } else {
+            depositCooldownRemaining = 0;
+        }
+        if (block.timestamp < withdrawalTime + COOLDOWN_PERIOD) {
+            withdrawalCooldownRemaining = (withdrawalTime + COOLDOWN_PERIOD) - block.timestamp;
+        } else {
+            withdrawalCooldownRemaining = 0;
+        }
+        return (depositCooldownRemaining, withdrawalCooldownRemaining);
     }
 }
