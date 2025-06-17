@@ -118,8 +118,8 @@ const ERC20_ABI = [
 // Backwards compatibility wrapper for older method names
 function getAccumulatedUsd1(addr) {
   if (!contract || !addr) return Promise.resolve("0");
-  const m = contract.methods.getAccumulatedUsd1 || contract.methods.accumulatedUsd1;
-  return m ? m(addr).call() : Promise.resolve("0");
+  const m = contract.getAccumulatedUsd1 || contract.accumulatedUsd1;
+  return m ? m(addr) : Promise.resolve("0");
 }
 
 function formatAddress(addr) {
@@ -768,12 +768,14 @@ async function depositBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    const refAddr = ethers.isAddress(ref)
-      ? ref
+    const refAddr = ethers.isAddress(referrer)
+      ? referrer
       : "0x0000000000000000000000000000000000000000";
-    await roastPadContract.deposit(refAddr, {
-      value: ethers.parseEther(amount)
+    const tx = await roastPadContract.deposit(refAddr, {
+      value: ethers.parseEther(amount),
+      gasLimit: 300000,
     });
+    await tx.wait();
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -799,7 +801,8 @@ async function withdrawBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await roastPadContract.withdraw();
+    const tx = await roastPadContract.withdraw({ gasLimit: 300000 });
+    await tx.wait();
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
@@ -825,7 +828,8 @@ async function claimReferralRewards() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await roastPadContract.claimReferralRewards();
+    const tx = await roastPadContract.claimReferralRewards({ gasLimit: 300000 });
+    await tx.wait();
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
@@ -855,11 +859,14 @@ async function depositBTLRoast() {
   try {
     const weiAmount = ethers.parseEther(amount);
     const token = new ethers.Contract(CONTRACT_ADDRESS, ERC20_ABI, signer);
-    await token.approve(BTL_ROASTPAD_ADDRESS, weiAmount);
+    await (await token.approve(BTL_ROASTPAD_ADDRESS, weiAmount)).wait();
     const refAddr = ethers.isAddress(ref)
       ? ref
       : "0x0000000000000000000000000000000000000000";
-    await btlRoastPadContract.deposit(refAddr, weiAmount);
+    const tx = await btlRoastPadContract.deposit(refAddr, weiAmount, {
+      gasLimit: 300000,
+    });
+    await tx.wait();
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -881,7 +888,8 @@ async function withdrawBTLRoast() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await btlRoastPadContract.withdraw();
+    const tx = await btlRoastPadContract.withdraw({ gasLimit: 300000 });
+    await tx.wait();
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
@@ -903,7 +911,8 @@ async function claimBtlReferralRewards() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await btlRoastPadContract.claimReferralRewards();
+    const tx = await btlRoastPadContract.claimReferralRewards({ gasLimit: 300000 });
+    await tx.wait();
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
@@ -1026,7 +1035,10 @@ async function depositBTL() {
     const refAddr = ethers.isAddress(referrer)
       ? referrer
       : "0x0000000000000000000000000000000000000000";
-    await depositContract.depositBTL(weiAmount, refAddr);
+    const tx = await depositContract.depositBTL(weiAmount, refAddr, {
+      gasLimit: 300000,
+    });
+    await tx.wait();
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
   } catch (e) {

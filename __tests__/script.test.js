@@ -30,13 +30,12 @@ describe('depositBTL', () => {
     global.updateUserInfo = jest.fn();
     __setUpdateUserInfo(global.updateUserInfo);
     global.depositContract = {
-      depositBTL: jest.fn().mockResolvedValue()
+      depositBTL: jest.fn(() => Promise.resolve({ wait: jest.fn().mockResolvedValue() }))
     };
-    global.web3 = {
-      utils: {
-        toWei: jest.fn(),
-        isAddress: jest.fn(() => true)
-      }
+    global.web3 = {}; // minimal object to satisfy checks
+    global.ethers = {
+      parseEther: jest.fn(() => 'wei'),
+      isAddress: jest.fn(() => true)
     };
     __setContract(global.depositContract);
     global.ethers = {
