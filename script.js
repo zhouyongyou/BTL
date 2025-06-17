@@ -478,6 +478,13 @@ function updateLanguage() {
   updateMyReferralLink();
 }
 
+async function initContracts() {
+  if (!web3) return;
+  contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+  roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
+  btlRoastPadContract = new web3.eth.Contract(BTL_ROASTPAD_ABI, BTL_ROASTPAD_ADDRESS);
+}
+
 /* ===== Connect wallet ===== */
 async function connectWallet() {
   if (userAccount) {
@@ -515,10 +522,8 @@ if (netId !== 56) {
     return;
   }
 }
-    contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
-    roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
-    btlRoastPadContract = new web3.eth.Contract(BTL_ROASTPAD_ABI, BTL_ROASTPAD_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
+    await initContracts();
     document.getElementById("userAccount").innerText = userAccount;
     updateReferralLink();
     updateMyReferralLink();
