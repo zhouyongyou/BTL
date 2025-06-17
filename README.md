@@ -9,7 +9,7 @@ BitLuck is a decentralized application (DApp) that enables users to participate 
 - **BSC Network**: This DApp is compatible with the BSC network only.
 - **Pool Statistics**: View the current BNB pool and the latest winner with a link to the full history on BscScan.
 - **BscScan Link**: Access the contract on BscScan using the new icon next to the contract address.
-- **Chart Links**: Quick access to price charts on **Ave.ai**.
+- **Leaderboard**: View top referrers on `leaderboard.html`.
 
 
 ## How to Use
@@ -50,3 +50,20 @@ npm install
 
 ## Additional Documentation
 - [Top Referrer Leaderboard Design](docs/top_referrer_design.md)
+
+## Listening for RoastPad Deposits
+A Node.js script `listenDeposits.js` captures `Deposit` events from the RoastPad contract and stores them in MongoDB.
+
+### Setup
+1. Define these environment variables:
+   - `RPC_URL` – RPC endpoint for the chain.
+   - `CONTRACT_ADDRESS` – RoastPad contract address.
+   - `MONGO_URI` – MongoDB connection string.
+2. Install dependencies with `npm install`.
+3. Start the listener using:
+
+```bash
+npm run listen-deposits
+```
+
+Deposits are saved in the `deposits` collection and each referrer’s totals are kept in `leaderboard`.

@@ -395,3 +395,19 @@ footer p {
 #aveaiLink:hover {
   color: #c8a500;
 }
+
+/* Leaderboard */
+.leaderboard-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 20px;
+}
+.leaderboard-table th,
+.leaderboard-table td {
+  padding: 8px;
+  border-bottom: 1px solid #333;
+  text-align: left;
+}
+.leaderboard-table th {
+  background: #333;
+}
