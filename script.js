@@ -729,8 +729,6 @@ async function depositBNB() {
     );
     return;
   }
-  const referrerInput = document.getElementById("bnbReferrer");
-  const referrer = referrerInput ? referrerInput.value.trim() : "";
   const btnId = "depositBnbBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
@@ -740,7 +738,7 @@ async function depositBNB() {
       ? ref
       : "0x0000000000000000000000000000000000000000";
     await roastPadContract.methods
-      .deposit(referrer || "0x0000000000000000000000000000000000000000")
+      .deposit(refAddr)
       .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
