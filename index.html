@@ -59,9 +59,6 @@
         <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
         <button id="buyBtlLink" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button>
       </p>
-
-  <section id="roastPad">
-    <div class="container">
       <input id="depositAmount" type="number" step="0.01" min="0.01" placeholder="Amount (BNB)">
       <input id="referrer" type="text" placeholder="Referrer (optional)">
       <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
@@ -71,11 +68,6 @@
         <button id="copyReferralBtn" onclick="copyToClipboard('referralLink')">Copy</button>
       </p>
       <p id="depositRules" class="rules">Minimum deposit is 0.01 BNB. Deposits and withdrawals require a 24-hour cooldown.</p>
-    </div>
-  </section>
-
-  <section id="userStats">
-    <div class="container">
       <p><strong id="userDepositLabel">Total Deposit:</strong> <span id="userDeposit">-</span> BNB</p>
       <p><strong id="userYieldLabel">Total Yield:</strong> <span id="userYield">-</span> BNB</p>
       <p><strong id="userReferralLabel">Referral Rewards:</strong> <span id="userReferral">-</span> BNB</p>
