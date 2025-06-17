@@ -531,6 +531,14 @@ if (netId !== 56) {
     updateReferralLink();
     updateMyReferralLink();
     resetPlaceholders();
+
+setTimeout(() => {
+  if (typeof updateUserInfo === "function") updateUserInfo();
+}, 300);
+setTimeout(() => {
+  if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
+}, 600);
+    
     const connectBtn = document.getElementById("connectWalletBtn");
     if (connectBtn)
       connectBtn.innerText =
@@ -551,11 +559,11 @@ if (netId !== 56) {
         ? "Wallet connected. Pool info will auto refresh shortly."
         : "錢包已連接，礦池資訊將自動刷新"
     );
-    setTimeout(() => {
-      if (typeof updateUserInfo === "function") updateUserInfo();
-      if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
-      startAutoRefresh();
-    }, AUTO_REFRESH_INTERVAL);
+
+// ✅ 僅延遲啟動 autoRefresh
+setTimeout(() => {
+  startAutoRefresh();
+}, AUTO_REFRESH_INTERVAL);
 
     provider.on("accountsChanged", (acc) => {
       userAccount = acc[0];
