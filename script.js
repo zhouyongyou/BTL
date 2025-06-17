@@ -247,7 +247,16 @@ function updateLanguage() {
     userYieldLabel.innerText = lang ? "Total Yield:" : "總收益:";
   const userReferralLabel = document.getElementById("userReferralLabel");
   if (userReferralLabel)
-    userReferralLabel.innerText = lang ? "Referral Rewards:" : "推薦獎勵:";
+    userReferralLabel.innerText = lang
+      ? "Claimable Referral Rewards:"
+      : "可領推薦獎勵:";
+  const userReferralClaimedLabel = document.getElementById(
+    "userReferralClaimedLabel"
+  );
+  if (userReferralClaimedLabel)
+    userReferralClaimedLabel.innerText = lang
+      ? "Claimed Referral Rewards:"
+      : "已領取推薦獎勵:";
   const referrerInput = document.getElementById("referrer");
   if (referrerInput)
     referrerInput.placeholder = lang
@@ -436,9 +445,13 @@ async function getUserInfo(addr) {
   try {
     const info = await roastPadContract.methods.users(addr).call();
     const yieldAmount = await roastPadContract.methods.getYield(addr).call();
+    const claimed = await roastPadContract.methods
+      .getTotalClaimedReferralRewards(addr)
+      .call();
     setPlaceholder("userDeposit", fromWeiFormatted(info.deposit));
     setPlaceholder("userYield", fromWeiFormatted(yieldAmount));
     setPlaceholder("userReferral", fromWeiFormatted(info.referralRewards));
+    setPlaceholder("userReferralClaimed", fromWeiFormatted(claimed));
   } catch (e) {
     console.error(e);
   }
