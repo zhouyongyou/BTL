@@ -54,6 +54,13 @@ const ROASTPAD_ABI = [
     stateMutability: "nonpayable",
     type: "function",
   },
+  {
+    inputs: [],
+    name: "claimReferralRewards",
+    outputs: [],
+    stateMutability: "nonpayable",
+    type: "function",
+  },
 ];
 
 function handleUpgradeNotice() {
@@ -408,18 +415,20 @@ async function depositBNB() {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
   }
-  const amount = document.getElementById("depositAmount").value;
+  const amount = document.getElementById("bnbAmount").value;
   if (!amount || parseFloat(amount) <= 0) {
     toast(currentLanguage === "en" ? "Enter deposit amount" : "請輸入存款數量");
     return;
   }
+  const referrerInput = document.getElementById("bnbReferrer");
+  const referrer = referrerInput ? referrerInput.value.trim() : "";
   const btnId = "depositBnbBtn";
   const btn = document.getElementById(btnId);
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
     await roastPadContract.methods
-      .deposit("0x0000000000000000000000000000000000000000")
+      .deposit(referrer || "0x0000000000000000000000000000000000000000")
       .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -446,6 +455,28 @@ async function withdrawBNB() {
   try {
     await roastPadContract.methods.withdraw().send({ from: userAccount });
     toast(currentLanguage === "en" ? "Withdrawal successful!" : "提領成功!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
+}
+
+async function claimReferralRewards() {
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const btnId = "claimRewardsBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    await roastPadContract.methods
+      .claimReferralRewards()
+      .send({ from: userAccount });
+    toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
     console.error(e);
     toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
@@ -572,5 +603,14 @@ function __setContract(c) { depositContract = c; }
 function __setUpdateUserInfo(fn) { updateUserInfo = fn; }
 
 if (typeof module !== 'undefined') {
-  module.exports = { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo };
+  module.exports = {
+    depositBTL,
+    depositBNB,
+    withdrawBNB,
+    withdraw: withdrawBNB,
+    claimReferralRewards,
+    __setContract,
+    __setWeb3,
+    __setUpdateUserInfo,
+  };
 }
