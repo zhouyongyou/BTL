@@ -736,11 +736,11 @@ async function depositBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    const refAddr = web3.utils.isAddress(ref)
-      ? ref
+    const refAddr = web3.utils.isAddress(referrer)
+      ? referrer
       : "0x0000000000000000000000000000000000000000";
     await roastPadContract.methods
-      .deposit(referrer || "0x0000000000000000000000000000000000000000")
+      .deposit(refAddr)
       .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
@@ -977,8 +977,11 @@ async function depositBTL() {
   try {
     const weiAmount = web3.utils.toWei(amountStr, "ether");
     const referrer = refEl ? refEl.value.trim() : "";
+    const refAddr = web3.utils.isAddress(referrer)
+      ? referrer
+      : "0x0000000000000000000000000000000000000000";
     await depositContract.methods
-      .depositBTL(weiAmount, referrer)
+      .depositBTL(weiAmount, refAddr)
       .send({ from: userAccount });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
