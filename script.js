@@ -725,7 +725,7 @@ async function depositBNB() {
       : "0x0000000000000000000000000000000000000000";
     await roastPadContract.methods
       .deposit(refAddr)
-      .send({ from: userAccount, value: web3.utils.toWei(amount, "ether") });
+      .send({ from: userAccount, value: web3.utils.toWei(amount, "ether"), gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -750,7 +750,7 @@ async function withdrawBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await roastPadContract.methods.withdraw().send({ from: userAccount });
+    await roastPadContract.methods.withdraw().send({ from: userAccount, gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
@@ -814,7 +814,7 @@ async function depositBTLRoast() {
       : "0x0000000000000000000000000000000000000000";
     await btlRoastPadContract.methods
       .deposit(refAddr, weiAmount)
-      .send({ from: userAccount });
+      .send({ from: userAccount, gas: 300000 });
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
   } catch (e) {
@@ -860,7 +860,7 @@ async function claimBtlReferralRewards() {
   try {
     await btlRoastPadContract.methods
       .claimReferralRewards()
-      .send({ from: userAccount });
+      .send({ from: userAccount, gas: 300000 });
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
   } catch (e) {
@@ -966,7 +966,7 @@ async function depositBTL() {
       : "0x0000000000000000000000000000000000000000";
     await depositContract.methods
       .depositBTL(weiAmount, refAddr)
-      .send({ from: userAccount });
+      .send({ from: userAccount, gas: 300000 });
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
   } catch (e) {
