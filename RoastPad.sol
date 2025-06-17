@@ -1,7 +1,7 @@
 // SPDX-License-Identifier: MIT
+
 pragma solidity ^0.8.19;
 
-// Lightweight OpenZeppelin-style reentrancy guard
 abstract contract ReentrancyGuard {
     uint256 private constant _NOT_ENTERED = 1;
     uint256 private constant _ENTERED = 2;
@@ -21,24 +21,25 @@ abstract contract ReentrancyGuard {
 
 contract RoastPad is ReentrancyGuard {
     struct User {
-        uint256 deposit;           // 用户的存款金额
-        uint256 lastAction;        // 用户最后一次操作时间
-        uint256 referralRewards;   // 用户的推荐奖励
-        address referrer;          // 用户的推荐人地址
+        uint256 deposit;
+        uint256 lastAction;
+        uint256 referralRewards;
+        address referrer;
     }
 
     mapping(address => User) public users;
 
     uint256 public totalDeposits;
-    uint256 public constant DAILY_RATE = 8; // 每日收益率为 8%
-    uint256 public constant REFERRAL_RATE = 10; // 推荐奖励为存款的 10%
+    uint256 public constant DAILY_RATE = 8;
+    uint256 public constant REFERRAL_RATE = 10;
     uint256 public constant MIN_DEPOSIT = 0.01 ether;
-    uint256 public constant MAX_SINGLE_DEPOSIT = 100 ether; // 每次存款的最大金额（100 ETH）
-    uint256 public constant DEPOSIT_COOLDOWN = 1 days;  // 存款冷却期（24小时）
-    uint256 public constant COOLDOWN_PERIOD = 24 hours;  // 存款和提现的冷却期（24小时）
+    uint256 public constant MAX_SINGLE_DEPOSIT = 100 ether;
+    uint256 public constant COOLDOWN_PERIOD = 24 hours;
 
-    address public owner;             // 合约所有者地址
-    uint256 public platformFees;      // 平台费用，用于存储平台收取的费用
+    address public owner;
+    uint256 public platformFees;
+
+    mapping(address => uint256) public totalClaimedReferralRewards;
 
     event Deposit(address indexed user, uint256 amount);
     event Withdraw(address indexed user, uint256 amount);
@@ -52,11 +53,6 @@ contract RoastPad is ReentrancyGuard {
     // 存款冷却期限制：检查用户是否满足冷却期条件
     modifier hasCooldown(address _user) {
         require(block.timestamp >= lastDepositTime[_user] + COOLDOWN_PERIOD, "Cooldown period not passed yet");
-        _;
-    }
-
-    // 提现冷却期限制：检查用户是否满足提现冷却期条件
-    modifier hasWithdrawalCooldown(address _user) {
         require(block.timestamp >= lastWithdrawalTime[_user] + COOLDOWN_PERIOD, "Withdrawal cooldown period not passed yet");
         _;
     }
@@ -81,7 +77,6 @@ contract RoastPad is ReentrancyGuard {
         deposit(address(0));
     }
 
-    // 存款函数：用户可以存款并指定推荐人
     function deposit(address _referrer) public payable hasCooldown(msg.sender) checkMaxDeposit(msg.value) {
         require(msg.value >= MIN_DEPOSIT, "Minimum deposit not met");
         User storage user = users[msg.sender];
@@ -96,6 +91,8 @@ contract RoastPad is ReentrancyGuard {
         user.lastAction = block.timestamp;
         totalDeposits += msg.value;
 
+        lastDepositTime[msg.sender] = (block.timestamp);
+
         // 处理推荐奖励，如果有推荐人，支付推荐奖励
         if (user.referrer != address(0)) {
             uint256 reward = (msg.value * REFERRAL_RATE) / 100;
@@ -104,15 +101,20 @@ contract RoastPad is ReentrancyGuard {
         } else {
             platformFees += (msg.value * REFERRAL_RATE) / 100;
         }
-
+        if (platformFees > 0) {
+            payable(owner).transfer(platformFees);
+            platformFees = 0;  // 轉帳後清空平台費用
+        }
         emit Deposit(msg.sender, msg.value);
     }
 
-    function withdraw() external hasWithdrawalCooldown(msg.sender) {
+    function withdraw() external hasCooldown(msg.sender) {
         _claimYield(msg.sender);
         User storage user = users[msg.sender];
         uint256 amount = user.deposit;
         require(amount > 0, "Nothing to withdraw");
+
+        lastWithdrawalTime[msg.sender] = (block.timestamp);
 
         // 清空用户存款，并减少合约中的总存款
         user.deposit = 0;
@@ -126,6 +128,7 @@ contract RoastPad is ReentrancyGuard {
         uint256 reward = users[msg.sender].referralRewards;
         require(reward > 0, "No rewards");
         users[msg.sender].referralRewards = 0;
+        totalClaimedReferralRewards[msg.sender] += reward;  // 更新已領取的推薦獎勳
         payable(msg.sender).transfer(reward); // 转账推荐奖励给用户
         emit ReferralReward(msg.sender, reward);
     }
@@ -142,13 +145,6 @@ contract RoastPad is ReentrancyGuard {
         }
     }
 
-    // 提取平台费用：仅合约所有者可以调用
-    function withdrawPlatformFees() external onlyOwner {
-        uint256 amount = platformFees;
-        platformFees = 0;
-        payable(owner).transfer(amount); // 提取平台费用
-    }
-
     // 查询某个用户的收益
     function getYield(address _user) external view returns (uint256) {
         User storage user = users[_user];
@@ -157,5 +153,14 @@ contract RoastPad is ReentrancyGuard {
         uint256 yield = (user.deposit * DAILY_RATE * timeElapsed) / (100 * 1 days); // 计算收益
         
         return yield; // 返回计算后的收益
+    }
+
+    function getReferralRewards(address _user) external view returns (uint256) {
+        return users[_user].referralRewards;
+    }
+
+    // 查詢用戶已領取的推薦獎勳總額
+    function getTotalClaimedReferralRewards(address _user) external view returns (uint256) {
+        return totalClaimedReferralRewards[_user];
     }
 }
