@@ -41,6 +41,18 @@ Visit [http://localhost:8000/index.html](http://localhost:8000/index.html) in yo
 
 The **Pool Statistics** section on the page shows the amount of BNB currently in the reward pool and the address of the most recent winner. A **Full History** link opens BscScan with an advanced filter so you can verify every payout.
 
+## Referral Program Details
+
+BitLuck offers a multi-level referral system. When you invite others, you receive a percentage of their deposits based on your level in the hierarchy:
+
+| Level | Reward | Notes |
+|-------|-------|------|
+| **1** | **10%** | Direct referral bonus |
+| **2** | **5%** | Indirect bonus (optional) |
+| **3** | **2%** | If you want to incentivize additional invites |
+
+Rewards can be withdrawn immediately after they are credited, or they can be locked for a period to encourage long-term participation.
+
 ## Development
 Install project dependencies with npm:
 
