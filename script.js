@@ -26,6 +26,8 @@ let provider, web3, contract, roastPadContract;
 let userAccount = "";
 let depositContract;
 let updateUserInfo = () => {};
+let btlRoastPadContract;
+let updateBtlUserInfo = () => {};
 const CONTRACT_ADDRESS = "0xb1b8ea6e684603f328ed401426c465f55d064444";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
@@ -37,6 +39,17 @@ const ROASTPAD_LIVE = true;
 const ROASTPAD_ABI = [{"inputs":[],"stateMutability":"nonpayable","type":"constructor"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Deposit","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"referrer","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"ReferralReward","type":"event"},{"anonymous":false,"inputs":[{"indexed":true,"internalType":"address","name":"user","type":"address"},{"indexed":false,"internalType":"uint256","name":"amount","type":"uint256"}],"name":"Withdraw","type":"event"},{"inputs":[],"name":"COOLDOWN_PERIOD","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"DAILY_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MAX_SINGLE_DEPOSIT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"MIN_DEPOSIT","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"REFERRAL_RATE","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"claimReferralRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},{"inputs":[{"internalType":"address","name":"_referrer","type":"address"}],"name":"deposit","outputs":[],"stateMutability":"payable","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getCooldownRemaining","outputs":[{"internalType":"uint256","name":"depositCooldownRemaining","type":"uint256"},{"internalType":"uint256","name":"withdrawalCooldownRemaining","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getLastDepositTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getLastWithdrawalTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalClaimedReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getYield","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastDepositTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"lastWithdrawalTime","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"owner","outputs":[{"internalType":"address","name":"","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"platformFees","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"totalClaimedReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"totalDeposits","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},{"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint256","name":"deposit","type":"uint256"},{"internalType":"uint256","name":"lastAction","type":"uint256"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"}],"stateMutability":"view","type":"function"},{"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},{"stateMutability":"payable","type":"receive"}];
 
 function handleUpgradeNotice() {
+const BTL_ROASTPAD_ADDRESS = "0x0000000000000000000000000000000000000000";
+const BTL_ROASTPAD_ABI = [
+  {"inputs":[{"internalType":"address","name":"_referrer","type":"address"},{"internalType":"uint256","name":"_amount","type":"uint256"}],"name":"deposit","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"withdraw","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[],"name":"claimReferralRewards","outputs":[],"stateMutability":"nonpayable","type":"function"},
+  {"inputs":[{"internalType":"address","name":"","type":"address"}],"name":"users","outputs":[{"internalType":"uint256","name":"deposit","type":"uint256"},{"internalType":"uint256","name":"lastAction","type":"uint256"},{"internalType":"uint256","name":"referralRewards","type":"uint256"},{"internalType":"address","name":"referrer","type":"address"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getYield","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getTotalClaimedReferralRewards","outputs":[{"internalType":"uint256","name":"","type":"uint256"}],"stateMutability":"view","type":"function"},
+  {"inputs":[{"internalType":"address","name":"_user","type":"address"}],"name":"getCooldownRemaining","outputs":[{"internalType":"uint256","name":"depositCooldownRemaining","type":"uint256"},{"internalType":"uint256","name":"withdrawalCooldownRemaining","type":"uint256"}],"stateMutability":"view","type":"function"}
+];
   if (!IS_UPGRADING) return;
   const msg =
     currentLanguage === "en"
@@ -235,11 +248,25 @@ function updateLanguage() {
     claimReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+  const depositBtlBtn = document.getElementById("depositBtlBtn");
+  if (depositBtlBtn) depositBtlBtn.innerText = lang ? "Deposit BTL" : "存入 BTL";
+  const withdrawBtlBtn = document.getElementById("withdrawBtlBtn");
+  if (withdrawBtlBtn) withdrawBtlBtn.innerText = lang ? "Withdraw All" : "提取全部";
+  const claimBtlReferralBtn = document.getElementById("claimBtlReferralBtn");
+  if (claimBtlReferralBtn)
+    claimBtlReferralBtn.innerText = lang
+      ? "Claim Referral Rewards"
+      : "領取推薦獎勵";
   const depositAmountInput = document.getElementById("depositAmount");
   if (depositAmountInput)
     depositAmountInput.placeholder = lang
       ? "Amount (BNB)"
       : "金額 (BNB)";
+  const btlDepositAmountInput = document.getElementById("btlDepositAmount");
+  if (btlDepositAmountInput)
+    btlDepositAmountInput.placeholder = lang
+      ? "Amount (BTL)"
+      : "金額 (BTL)";
   const referralContainer = document.getElementById("referralContainer");
   if (referralContainer) {
     const firstNode = referralContainer.childNodes[0];
@@ -273,16 +300,47 @@ function updateLanguage() {
   const depositCooldownLabel = document.getElementById("depositCooldownLabel");
   if (depositCooldownLabel)
     depositCooldownLabel.innerText = lang
-      ? "Deposit Cooldown:" 
+      ? "Deposit Cooldown:"
       : "存款冷卻時間:";
   const withdrawCooldownLabel = document.getElementById("withdrawCooldownLabel");
   if (withdrawCooldownLabel)
     withdrawCooldownLabel.innerText = lang
-      ? "Withdraw Cooldown:" 
+      ? "Withdraw Cooldown:"
+      : "提領冷卻時間:";
+  const btlUserDepositLabel = document.getElementById("btlUserDepositLabel");
+  if (btlUserDepositLabel)
+    btlUserDepositLabel.innerText = lang ? "Total Deposit:" : "總存款:";
+  const btlUserYieldLabel = document.getElementById("btlUserYieldLabel");
+  if (btlUserYieldLabel)
+    btlUserYieldLabel.innerText = lang ? "Total Yield:" : "總收益:";
+  const btlUserReferralLabel = document.getElementById("btlUserReferralLabel");
+  if (btlUserReferralLabel)
+    btlUserReferralLabel.innerText = lang ? "Referral Rewards:" : "可領推薦獎勵:";
+  const btlUserReferralClaimedLabel = document.getElementById(
+    "btlUserReferralClaimedLabel"
+  );
+  if (btlUserReferralClaimedLabel)
+    btlUserReferralClaimedLabel.innerText = lang
+      ? "Claimed Referral Rewards:"
+      : "已領取推薦獎勵:";
+  const btlDepositCooldownLabel = document.getElementById("btlDepositCooldownLabel");
+  if (btlDepositCooldownLabel)
+    btlDepositCooldownLabel.innerText = lang
+      ? "Deposit Cooldown:"
+      : "存款冷卻時間:";
+  const btlWithdrawCooldownLabel = document.getElementById("btlWithdrawCooldownLabel");
+  if (btlWithdrawCooldownLabel)
+    btlWithdrawCooldownLabel.innerText = lang
+      ? "Withdraw Cooldown:"
       : "提領冷卻時間:";
   const referrerInput = document.getElementById("referrer");
   if (referrerInput)
     referrerInput.placeholder = lang
+      ? "Referrer (optional)"
+      : "推薦地址 (選填)";
+  const btlReferrerInput = document.getElementById("btlReferrer");
+  if (btlReferrerInput)
+    btlReferrerInput.placeholder = lang
       ? "Referrer (optional)"
       : "推薦地址 (選填)";
 
@@ -340,6 +398,11 @@ function updateLanguage() {
   const poolBscScanLink = document.getElementById("poolBscScanLink");
   if (poolBscScanLink)
     poolBscScanLink.href = `https://bscscan.com/address/${ROASTPAD_ADDRESS}`;
+  const btlRoastAddrEl = document.getElementById("btlRoastAddr");
+  if (btlRoastAddrEl) btlRoastAddrEl.innerText = BTL_ROASTPAD_ADDRESS;
+  const btlRoastScanLink = document.getElementById("btlRoastScanLink");
+  if (btlRoastScanLink)
+    btlRoastScanLink.href = `https://bscscan.com/address/${BTL_ROASTPAD_ADDRESS}`;
 
   // Footer
   const networkInfoFooter = document.getElementById("networkInfoFooter");
@@ -389,6 +452,7 @@ async function tryConnect() {
     }
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
     roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
+    btlRoastPadContract = new web3.eth.Contract(BTL_ROASTPAD_ABI, BTL_ROASTPAD_ADDRESS);
     userAccount = (await web3.eth.getAccounts())[0];
     document.getElementById("userAccount").innerText = userAccount;
     updateReferralLink();
@@ -409,6 +473,8 @@ async function tryConnect() {
     updateMyReferralLink();
     updateUserInfo = () => getUserInfo(userAccount);
     await getUserInfo(userAccount);
+    updateBtlUserInfo = () => getBtlUserInfo(userAccount);
+    await getBtlUserInfo(userAccount);
     toast("Wallet connected successfully!");
 
     provider.on("accountsChanged", (acc) => {
@@ -452,6 +518,7 @@ async function disconnectWallet() {
   await web3Modal.clearCachedProvider();
   provider = null;
   web3 = null;
+  btlRoastPadContract = null;
   contract = null;
   userAccount = "";
   document.getElementById("userAccount").innerText = "";
@@ -607,6 +674,112 @@ async function claimReferralRewards() {
   }
 }
 
+async function depositBTLRoast() {
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const amount = document.getElementById("btlDepositAmount").value;
+  const ref = document.getElementById("btlReferrer")?.value.trim() || "";
+  if (!amount || parseFloat(amount) <= 0) {
+    toast(currentLanguage === "en" ? "Enter deposit amount" : "請輸入存款數量");
+    return;
+  }
+  const btnId = "depositBtlBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    const refAddr = web3.utils.isAddress(ref)
+      ? ref
+      : "0x0000000000000000000000000000000000000000";
+    await btlRoastPadContract.methods
+      .deposit(refAddr, web3.utils.toWei(amount, "ether"))
+      .send({ from: userAccount });
+    if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
+    toast(currentLanguage === "en" ? "Deposit successful!" : "存款成功!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
+}
+
+async function withdrawBTLRoast() {
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const btnId = "withdrawBtlBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    await btlRoastPadContract.methods.withdraw().send({ from: userAccount });
+    if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
+    toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
+}
+
+async function claimBtlReferralRewards() {
+  if (!web3 || !userAccount) {
+    toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
+    return;
+  }
+  const btnId = "claimBtlReferralBtn";
+  const btn = document.getElementById(btnId);
+  if (btn && btn.dataset.loading === "true") return;
+  showLoading(btnId);
+  try {
+    await btlRoastPadContract.methods
+      .claimReferralRewards()
+      .send({ from: userAccount });
+    if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
+    toast(currentLanguage === "en" ? "Rewards claimed!" : "獎勵已領取!");
+  } catch (e) {
+    console.error(e);
+    toast(currentLanguage === "en" ? "Transaction failed" : "交易失敗");
+  } finally {
+    hideLoading(btnId);
+  }
+}
+
+async function getBtlUserInfo(addr) {
+  if (!btlRoastPadContract || !web3 || !addr) return;
+  try {
+    const info = await btlRoastPadContract.methods.users(addr).call();
+    const yieldAmount = await btlRoastPadContract.methods.getYield(addr).call();
+    const claimed = await btlRoastPadContract.methods
+      .getTotalClaimedReferralRewards(addr)
+      .call();
+    const cooldowns = await btlRoastPadContract.methods
+      .getCooldownRemaining(addr)
+      .call();
+    setPlaceholder("btlUserDeposit", fromWeiFormatted(info.deposit));
+    setPlaceholder("btlUserYield", fromWeiFormatted(yieldAmount));
+    setPlaceholder("btlUserReferral", fromWeiFormatted(info.referralRewards));
+    setPlaceholder("btlUserReferralClaimed", fromWeiFormatted(claimed));
+    if (cooldowns) {
+      const { depositCooldownRemaining, withdrawalCooldownRemaining } = cooldowns;
+      setPlaceholder(
+        "btlDepositCooldown",
+        formatDuration(depositCooldownRemaining)
+      );
+      setPlaceholder(
+        "btlWithdrawCooldown",
+        formatDuration(withdrawalCooldownRemaining)
+      );
+    }
+  } catch (e) {
+    console.error(e);
+  }
+}
 /* ===== PancakeSwap Link ===== */
 function openPancakeSwap() {
   const url = `https://pancakeswap.finance/swap?outputCurrency=${CONTRACT_ADDRESS}&chain=bsc`;
@@ -703,6 +876,8 @@ function applyReferrerFromUrl() {
   if (ref) {
     const input = document.getElementById("referrer");
     if (input && !input.value) input.value = ref;
+    const btlInput = document.getElementById("btlReferrer");
+    if (btlInput && !btlInput.value) btlInput.value = ref;
   }
 }
 
@@ -762,17 +937,23 @@ if (typeof window !== "undefined" && window.addEventListener)
 function __setWeb3(w) { web3 = w; }
 function __setContract(c) { depositContract = c; }
 function __setUpdateUserInfo(fn) { updateUserInfo = fn; }
+function __setUpdateBtlUserInfo(fn) { updateBtlUserInfo = fn; }
 
 if (typeof module !== 'undefined') {
   module.exports = {
     depositBTL,
     depositBNB,
+    depositBTLRoast,
     withdrawBNB,
+    withdrawBTLRoast,
     withdraw: withdrawBNB,
     claimReferralRewards,
+    claimBtlReferralRewards,
     getUserInfo,
+    getBtlUserInfo,
     __setContract,
     __setWeb3,
     __setUpdateUserInfo,
+    __setUpdateBtlUserInfo,
   };
 }
