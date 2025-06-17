@@ -222,6 +222,18 @@ function updateLanguage() {
     claimReferralBtn.innerText = lang
       ? "Claim Referral Rewards"
       : "領取推薦獎勵";
+  const depositAmountInput = document.getElementById("depositAmount");
+  if (depositAmountInput)
+    depositAmountInput.placeholder = lang
+      ? "Amount (BNB)"
+      : "金額 (BNB)";
+  const referralContainer = document.getElementById("referralContainer");
+  if (referralContainer) {
+    const firstNode = referralContainer.childNodes[0];
+    if (firstNode) firstNode.nodeValue = lang ? "Your Link: " : "你的連結：";
+  }
+  const copyReferralBtn = document.getElementById("copyReferralBtn");
+  if (copyReferralBtn) copyReferralBtn.innerText = lang ? "Copy" : "複製";
   const depositRules = document.getElementById("depositRules");
   if (depositRules)
     depositRules.innerText = lang
@@ -602,7 +614,11 @@ function copyToClipboard(id) {
   const el = document.getElementById(id);
   if (!el) return;
   const text = el.dataset.full || el.innerText;
-  navigator.clipboard.writeText(text).then(() => toast("Copied!"));
+  navigator.clipboard
+    .writeText(text)
+    .then(() =>
+      toast(currentLanguage === "en" ? "Copied!" : "已複製！")
+    );
 }
 
 function updateReferralLink() {
