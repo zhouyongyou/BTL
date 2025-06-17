@@ -493,22 +493,8 @@ async function tryConnect() {
     web3 = new Web3(provider);
 const netId = await web3.eth.net.getId();
 if (netId !== 56) {
-  try {
-    await provider.request({
-      method: "wallet_addEthereumChain",
-      params: [{
-        chainId: "0x38",
-        chainName: "Binance Smart Chain",
-        rpcUrls: [RPC_ENDPOINTS[0]],
-        nativeCurrency: {
-          name: "BNB",
-          symbol: "BNB",
-          decimals: 18
-        },
-        blockExplorerUrls: ["https://bscscan.com"]
-      }]
-    });
-  } catch (err) {
+  const switched = await switchToBSC();
+  if (!switched) {
     toast("Please switch to BSC mainnet in your wallet");
     return;
   }
