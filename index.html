@@ -62,7 +62,7 @@
 
   <section id="roastPad">
     <div class="container">
-      <input id="depositAmount" type="number" step="0.01" placeholder="Amount (BNB)">
+      <input id="depositAmount" type="number" step="0.01" min="0.01" placeholder="Amount (BNB)">
       <input id="referrer" type="text" placeholder="Referrer (optional)">
       <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
       <button id="withdrawBnbBtn" onclick="withdrawBNB()">Withdraw</button>
@@ -71,6 +71,7 @@
       <p id="referralContainer">Your Link: <span id="referralLink" onclick="copyToClipboard('referralLink')"></span>
         <button id="copyReferralBtn" onclick="copyToClipboard('referralLink')">Copy</button>
       </p>
+      <p id="depositRules" class="rules">Minimum deposit is 0.01 BNB. Deposits and withdrawals require a 24-hour cooldown.</p>
     </div>
   </section>
 

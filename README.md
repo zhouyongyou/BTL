@@ -39,6 +39,11 @@ Visit [http://localhost:8000/index.html](http://localhost:8000/index.html) in yo
 - Click **Connect Wallet** in the DApp and select MetaMask or Rabby.
 - Deposit BTL tokens to start earning rewards.
 
+## Deposit & Withdrawal Rules
+- The minimum amount you can deposit is **0.01 BNB**.
+- Both deposits and withdrawals have a **24‑hour cooldown**. You must wait at
+  least one day between each action.
+
 The **Pool Statistics** section on the page shows the amount of BNB currently in the reward pool and the address of the most recent winner. A **Full History** link opens BscScan with an advanced filter so you can verify every payout.
 
 ## Development

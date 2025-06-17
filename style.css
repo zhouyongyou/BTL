@@ -417,3 +417,9 @@ footer p {
 .leaderboard-table th {
   background: #333;
 }
+
+.rules {
+  font-size: 0.9rem;
+  margin-top: 10px;
+  color: #f0b90b;
+}
