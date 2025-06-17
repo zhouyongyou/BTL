@@ -499,6 +499,13 @@ function updateLanguage() {
   updateMyReferralLink();
 }
 
+async function initContracts() {
+  if (!web3) return;
+  contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+  roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
+  btlRoastPadContract = new web3.eth.Contract(BTL_ROASTPAD_ABI, BTL_ROASTPAD_ADDRESS);
+}
+
 /* ===== Connect wallet ===== */
 async function connectWallet() {
   if (userAccount) {
