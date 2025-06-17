@@ -47,3 +47,6 @@ Install project dependencies with npm:
 ```bash
 npm install
 ```
+
+## Additional Documentation
+- [Top Referrer Leaderboard Design](docs/top_referrer_design.md)
