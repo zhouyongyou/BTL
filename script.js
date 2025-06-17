@@ -237,8 +237,8 @@ function updateLanguage() {
   const depositRules = document.getElementById("depositRules");
   if (depositRules)
     depositRules.innerText = lang
-      ? "Daily yield is 8%. Deposits and withdrawals have a 24-hour cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all."
-      : "每日收益 8%。存款與提領需間隔 24 小時。每次操作都會自動結算收益，如不想一次提領全部，可每天存入至少 0.01 BNB 以結算前一日收益。";
+      ? "Daily yield is 8%. Deposits and withdrawals have a 24-hour cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all. A 3% platform fee applies to each deposit and withdrawal."
+      : "每日收益 8%。存款與提領需間隔 24 小時。每次操作都會自動結算收益，如不想一次提領全部，可每天存入至少 0.01 BNB 以結算前一日收益。每次存款與提款平台會收取 3% 手續費。";
   const userDepositLabel = document.getElementById("userDepositLabel");
   if (userDepositLabel)
     userDepositLabel.innerText = lang ? "Total Deposit:" : "總存款:";
