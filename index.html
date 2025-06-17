@@ -47,9 +47,26 @@
     </div>
   </section>
   <!-- ===== Main Info ===== -->
+  <section id="mainInfo">
+    <div class="container">
+      <h2 id="contractInfoTitle">Contract Information</h2>
+      <p><strong id="btlAddressLabel">Contract Address:</strong>
+        <span id="contractAddr" onclick="copyToClipboard('contractAddr')"></span>
+        <a id="bscScanLink" href="#" target="_blank" rel="noopener noreferrer">
+          <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
+        </a>
+        <a id="aveaiLink" href="https://ave.ai/token/0xb1b8ea6e684603f328ed401426c465f55d064444-bsc?from=Home" target="_blank" rel="noopener noreferrer">Ave.ai</a>
+        <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
+        <button id="buyBtlLink" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button>
+      </p>
+    </div>
+</section>
+      
 <section id="btlInfo">
   <div class="container">
     <h2 id="btlMiningTitle">BTL Mining</h2>
+      <p id="testingNote" class="rules">下方的礦池代碼都還在測試中，請用戶不要存入，因為存入我們這邊如果有出錯是無法復原的。</p>
+    
     <p><strong id="btlRoastLabel">BTL Pool Contract:</strong>
       <span id="btlRoastAddr" onclick="copyToClipboard('btlRoastAddr')"></span>
       <a id="btlRoastScanLink" href="#" target="_blank" rel="noopener noreferrer">
@@ -67,21 +84,7 @@
     <p><strong id="btlUserReferralClaimedLabel">Claimed Referral Rewards:</strong> <span id="btlUserReferralClaimed">-</span> BTL</p>
     <p><strong id="btlDepositCooldownLabel">Deposit Cooldown:</strong> <span id="btlDepositCooldown">-</span></p>
     <p><strong id="btlWithdrawCooldownLabel">Withdraw Cooldown:</strong> <span id="btlWithdrawCooldown">-</span></p>
-  </div>
-</section>
-  <section id="mainInfo">
-    <div class="container">
-      <h2 id="contractInfoTitle">Contract Information</h2>
-      <p><strong id="btlAddressLabel">Contract Address:</strong>
-        <span id="contractAddr" onclick="copyToClipboard('contractAddr')"></span>
-        <a id="bscScanLink" href="#" target="_blank" rel="noopener noreferrer">
-          <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
-        </a>
-        <a id="aveaiLink" href="https://ave.ai/token/0xb1b8ea6e684603f328ed401426c465f55d064444-bsc?from=Home" target="_blank" rel="noopener noreferrer">Ave.ai</a>
-        <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
-        <button id="buyBtlLink" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button>
-      </p>
-      <p id="testingNote" class="rules">下方的礦池代碼都還在測試中，請用戶不要存入，因為存入我們這邊如果有出錯是無法復原的。</p>
+
       <p id="poolInfo"><strong id="poolAddressLabel">BNB Pool Contract:</strong>
         <span id="poolAddr" onclick="copyToClipboard('poolAddr')"></span>
         <a id="poolBscScanLink" href="#" target="_blank" rel="noopener noreferrer">
