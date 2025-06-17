@@ -31,8 +31,8 @@ let updateBtlUserInfo = () => {};
 const CONTRACT_ADDRESS = "0xb1b8ea6e684603f328ed401426c465f55d064444";
 let ABI = []; // 从 contract.json 动态加载
 let timeUnits = [];
-const BTL_DECIMALS = 9; // Number of decimals for BTL token
-const IS_UPGRADING = false; // Flag to disable contract interactions during upgrade
+const BTL_DECIMALS = 18; // Number of decimals for BTL token
+const IS_UPGRADING = true; // Flag to disable contract interactions during upgrade
 const ROASTPAD_ADDRESS = "0x1ed98DcaaB39226893d5833369caf969E128eEfB";
 // Toggle to enable/disable RoastPad (BNB deposit) interactions
 const ROASTPAD_LIVE = true;
