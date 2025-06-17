@@ -271,6 +271,17 @@ button:hover {
   color: #fff;
 }
 
+#refreshBtlBtn,
+#refreshBnbBtn {
+  background: #007bff; /* blue */
+  color: #fff;
+}
+
+#refreshBtlBtn:hover,
+#refreshBnbBtn:hover {
+  background: #0069d9; /* darker blue */
+}
+
 #depositBtlBtn:hover,
 #depositBnbBtn:hover {
   background: #218838; /* darker green */
