@@ -5,7 +5,8 @@
     "jest-environment-jsdom": "^30.0.0"
   },
   "scripts": {
-    "listen-deposits": "node listenDeposits.js"
+    "listen-deposits": "node listenDeposits.js",
+    "test": "jest"
   },
   "dependencies": {
     "dotenv": "^16.5.0",

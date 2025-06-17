@@ -16,7 +16,7 @@ global.window.localStorage = global.localStorage;
 const script = require('../script');
 const { depositBTL, __setContract, __setWeb3, __setUpdateUserInfo } = script;
 
-describe.skip('depositBTL', () => {
+describe('depositBTL', () => {
   beforeEach(() => {
     document.body.innerHTML = `
       <input id="depositAmount" />
