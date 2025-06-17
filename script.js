@@ -12,6 +12,7 @@ function buildProviderOptions() {
     injected: {
       package: null,
       options: {
+        rpc: { 56: "https://bsc-rpc.publicnode.com" },
         display: {
           name: "MetaMask",
           description: "Connect with MetaMask browser extension",
