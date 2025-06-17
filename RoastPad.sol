@@ -119,6 +119,7 @@ contract RoastPad is ReentrancyGuard {
         totalDeposits -= amount;
         payable(msg.sender).transfer(amountAfterFee);
         payable(owner).transfer(platformFee);
+        platformFees = 0;
         emit Withdraw(msg.sender, amount);
     }
 
