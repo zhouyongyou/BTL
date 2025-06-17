@@ -36,7 +36,12 @@ describe('depositBTL', () => {
         }))
       }
     };
-    global.web3 = { utils: { toWei: jest.fn() } };
+    global.web3 = {
+      utils: {
+        toWei: jest.fn(),
+        isAddress: jest.fn(() => true)
+      }
+    };
     __setContract(global.depositContract);
     __setWeb3(global.web3);
     global.userAccount = '0xabc';

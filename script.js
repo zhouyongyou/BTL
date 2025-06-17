@@ -476,6 +476,7 @@ async function connectWallet() {
 
   if (web3Modal && web3Modal.cachedProvider) {
     await web3Modal.clearCachedProvider();
+    await new Promise(resolve => setTimeout(resolve, 500));
   }
 
   showLoading("connectWalletBtn");
@@ -543,6 +544,7 @@ if (netId !== 56) {
       currentRpcIndex++;
       if (web3Modal && web3Modal.cachedProvider) {
         await web3Modal.clearCachedProvider();
+        await new Promise(resolve => setTimeout(resolve, 500));
       }
       web3Modal = initWeb3Modal();
       return tryConnect();
@@ -593,6 +595,7 @@ async function disconnectWallet() {
     }
   }
   await web3Modal.clearCachedProvider();
+  await new Promise(resolve => setTimeout(resolve, 500));
   provider = null;
   web3 = null;
   btlRoastPadContract = null;
