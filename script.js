@@ -491,11 +491,28 @@ async function tryConnect() {
   try {
     provider = await web3Modal.connect();
     web3 = new Web3(provider);
-    const netId = await web3.eth.net.getId();
-    if (netId !== 56) {
-      toast("Please switch to BSC mainnet");
-      return;
-    }
+const netId = await web3.eth.net.getId();
+if (netId !== 56) {
+  try {
+    await provider.request({
+      method: "wallet_addEthereumChain",
+      params: [{
+        chainId: "0x38",
+        chainName: "Binance Smart Chain",
+        rpcUrls: [RPC_ENDPOINTS[0]],
+        nativeCurrency: {
+          name: "BNB",
+          symbol: "BNB",
+          decimals: 18
+        },
+        blockExplorerUrls: ["https://bscscan.com"]
+      }]
+    });
+  } catch (err) {
+    toast("Please switch to BSC mainnet in your wallet");
+    return;
+  }
+}
     contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
     roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
     btlRoastPadContract = new web3.eth.Contract(BTL_ROASTPAD_ABI, BTL_ROASTPAD_ADDRESS);
@@ -548,6 +565,29 @@ async function tryConnect() {
       ? "RPC error, please try again later."
       : "Connection failed";
     toast(msg);
+  }
+}
+
+async function switchToBSC() {
+  try {
+    await provider.request({
+      method: "wallet_addEthereumChain",
+      params: [{
+        chainId: "0x38",
+        chainName: "Binance Smart Chain",
+        rpcUrls: [RPC_ENDPOINTS[0]],
+        nativeCurrency: {
+          name: "BNB",
+          symbol: "BNB",
+          decimals: 18
+        },
+        blockExplorerUrls: ["https://bscscan.com"]
+      }]
+    });
+    return true;
+  } catch (err) {
+    console.error("Failed to switch network:", err);
+    return false;
   }
 }
 
