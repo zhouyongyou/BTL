@@ -5,7 +5,7 @@ BitLuck is a decentralized application (DApp) that enables users to participate 
 ## Features
 - **Dual Reward System**: Earn rewards in **$USD1** and **BNB**.
 - **Referral Program**: Invite others to participate and earn referral bonuses.
-- **Referral Statistics**: View your total referrals and BNB earned from them.
+- **Referral Statistics**: View your total referrals, claimable BNB rewards, and the total BNB you've already claimed.
 - **BSC Network**: This DApp is compatible with the BSC network only.
 - **Pool Statistics**: View the current BNB pool and the latest winner with a link to the full history on BscScan.
 - **BscScan Link**: Access the contract on BscScan using the new icon next to the contract address.
