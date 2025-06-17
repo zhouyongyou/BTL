@@ -553,21 +553,25 @@ async function depositBTL() {
 }
 
 function updateMyReferralLink() {
-  const linkEl = document.getElementById("myReferralLink");
-  if (!linkEl) return;
+  const myLink = document.getElementById("myReferralLink");
+  const refLink = document.getElementById("referralLink");
   if (userAccount) {
-    const url = `${window.location.origin}${window.location.pathname}?ref=${userAccount}`;
-    linkEl.innerText =
-      currentLanguage === "en"
-        ? `Your referral link: ${url}`
-        : `你的推薦連結: ${url}`;
-    linkEl.dataset.full = url;
+    if (myLink) {
+      myLink.innerText = currentLanguage === "en" ? `Your referral link: ${url}` : `你的推薦連結: ${url}`;
+      myLink.dataset.full = url;
+    }
+    if (refLink) {
+      refLink.innerText = url;
+      refLink.dataset.full = url;
+    }
   } else {
-    linkEl.innerText = "";
+    if (myLink) myLink.innerText = "";
+    if (refLink) {
+      refLink.innerText = "";
+      refLink.dataset.full = "";
+    }
   }
 }
-
-
 
 /* ===== Copy helper ===== */
 function copyToClipboard(id) {
@@ -577,19 +581,19 @@ function copyToClipboard(id) {
   navigator.clipboard.writeText(text).then(() => toast("Copied!"));
 }
 
-function updateReferralLink() {
-  const el = document.getElementById("referralLink");
-  if (!el) return;
-  if (!userAccount) {
-    el.innerText = "";
-    el.dataset.full = "";
-    return;
-  }
-  const url = new URL(window.location.href);
-  url.searchParams.set("ref", userAccount);
-  el.innerText = url.toString();
-  el.dataset.full = url.toString();
-}
+// function updateReferralLink() {
+//   const el = document.getElementById("referralLink");
+//   if (!el) return;
+//   if (!userAccount) {
+//     el.innerText = "";
+//     el.dataset.full = "";
+//     return;
+//   }
+//   const url = new URL(window.location.href);
+//   url.searchParams.set("ref", userAccount);
+//   el.innerText = url.toString();
+//   el.dataset.full = url.toString();
+// }
 
 function applyReferrerFromUrl() {
   const params = new URLSearchParams(window.location.search);
