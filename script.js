@@ -1,10 +1,10 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
 const RPC_ENDPOINTS = [
-  "https://bsc-dataseed1.binance.org",
-  "https://bsc-dataseed.binance.org",
-  "https://bsc.publicnode.com",
-  "https://bsc-rpc.publicnode.com",
-  "https://bscrpc.com"
+  "https://bsc-dataseed1.binance.org:443",
+  "https://bsc-dataseed.binance.org:443",
+  "https://bsc.publicnode.com:443",
+  "https://bsc-rpc.publicnode.com:443",
+  "https://bscrpc.com:443"
 ];
 let currentRpcIndex = 0;
 
@@ -22,7 +22,6 @@ function buildProviderOptions() {
       options: {
         rpc: { 56: RPC_ENDPOINTS[currentRpcIndex] },
       },
-      chainId: 56
     }
   };
 }
@@ -39,10 +38,11 @@ function initWeb3Modal() {
 
 let web3Modal = initWeb3Modal();
 /* ===== State ===== */
-let provider, web3, contract, roastPadContract;
+let provider, web3, contract, roastPadContract, btlRoastPadContract;
 let userAccount = "";
 let depositContract;
 let updateUserInfo = () => {};
+let roastPadContract;
 let btlRoastPadContract;
 let updateBtlUserInfo = () => {};
 const CONTRACT_ADDRESS = "0xb1b8ea6e684603f328ed401426c465f55d064444";
