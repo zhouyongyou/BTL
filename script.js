@@ -1,4 +1,13 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
+
+// 新增：打亂陣列的函式
+function shuffleArray(array) {
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
+  }
+}
+
 const RPC_ENDPOINTS = [
   "https://bsc-dataseed1.binance.org",
   "https://bsc-dataseed.binance.org",
@@ -9,7 +18,167 @@ const RPC_ENDPOINTS = [
   "https://bsc.drpc.org",
   "https://bscrpc.com"
 ];
+
+// 在定義列表後立刻打亂它
+shuffleArray(RPC_ENDPOINTS); 
+
 let currentRpcIndex = 0;
+
+tryConnect整段改成以下這樣嗎？感覺簡化了很多呢？
+
+
+
+async function tryConnect() {
+
+  for (let i = 0; i < RPC_ENDPOINTS.length; i++) {
+
+    try {
+
+      const rpcUrl = RPC_ENDPOINTS[currentRpcIndex];
+
+      console.log(`Attempting to connect with RPC (${currentRpcIndex + 1}/${RPC_ENDPOINTS.length}): ${rpcUrl}`);
+
+      toast(`正在連接錢包 (節點 ${currentRpcIndex + 1}/${RPC_ENDPOINTS.length})`);
+
+
+
+      await web3Modal.clearCachedProvider();
+
+      web3Modal = initWeb3Modal(); 
+
+      
+
+      provider = await web3Modal.connect();
+
+      web3 = new Web3(provider);
+
+
+
+      const netId = await web3.eth.net.getId();
+
+      if (netId !== 56) {
+        toast("錢包網路非 BSC，正在請求切換...");
+        const switched = await switchToBSC();
+        if (!switched) {
+          toast("您已拒絕切換至 BSC 網路，無法繼續。");
+          await disconnectWallet(); // 切換失敗，直接斷開
+          return; // 終止連接流程
+        }
+      }
+
+      
+
+      toast("錢包連接成功！");
+
+      
+
+      await setupDApp(); // 我們將成功後的設定邏輯提取到一個新函式中
+
+      return; // 結束函式
+
+
+
+    } catch (err) {
+
+      console.error(`Connection attempt ${currentRpcIndex + 1} failed:`, err.message);
+
+
+
+      // 無論任何錯誤，只要不是用戶主動拒絕，就嘗試下一個 RPC
+
+      if (err.message && (err.message.includes("User closed modal") || err.message.includes("User rejected the request"))) {
+
+        toast("您已取消連接");
+
+        return; // 用戶主動取消，停止嘗試
+
+      }
+
+
+
+      // 移至下一個 RPC
+
+      if (currentRpcIndex < RPC_ENDPOINTS.length - 1) {
+
+        currentRpcIndex++;
+
+      } else {
+
+        // 如果所有 RPC 都已嘗試完畢
+
+        toast("所有備用節點均嘗試失敗，請檢查網路或稍後再試。");
+
+        return;
+
+      }
+
+    }
+
+  }
+
+}
+
+
+
+async function setupDApp() {
+
+  contract = new web3.eth.Contract(ABI, CONTRACT_ADDRESS);
+
+  roastPadContract = new web3.eth.Contract(ROASTPAD_ABI, ROASTPAD_ADDRESS);
+
+  btlRoastPadContract = new web3.eth.Contract(BTL_ROASTPAD_ABI, BTL_ROASTPAD_ADDRESS);
+
+  userAccount = (await web3.eth.getAccounts())[0];
+
+  
+
+  document.getElementById("userAccount").innerText = userAccount;
+
+  const connectBtn = document.getElementById("connectWalletBtn");
+
+  if (connectBtn) connectBtn.innerText = currentLanguage === "en" ? "Disconnect" : "斷開錢包";
+
+  const networkInfo = document.getElementById("networkInfo");
+
+  if (networkInfo) networkInfo.innerText = currentLanguage === "en" ? "Connected" : "已連接";
+
+  
+
+  updateReferralLink();
+
+  updateMyReferralLink();
+
+  resetPlaceholders();
+
+
+
+  if (typeof updateUserInfo === "function") await updateUserInfo();
+
+  if (typeof updateBtlUserInfo === "function") await updateBtlUserInfo();
+
+
+
+  startAutoRefresh();
+
+
+
+  provider.on("accountsChanged", (acc) => {
+
+    userAccount = acc[0];
+
+    updateReferralLink();
+
+    updateMyReferralLink();
+
+  });
+
+  provider.on("chainChanged", (id) => {
+
+    if (parseInt(id, 16) !== 56) toast("Please switch back to BSC mainnet");
+
+  });
+
+}
 
 function buildProviderOptions() {
   return {
