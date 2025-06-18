@@ -218,6 +218,7 @@ const BTL_DECIMALS = 18; // Number of decimals for BTL token
 const ROASTPAD_ADDRESS = "0xdb3ED962B99Cb8934Ba14Bc55447419578a5b299";
 // Toggle to enable/disable RoastPad (BNB deposit) interactions
 const ROASTPAD_LIVE = true;
+const DEPOSITS_ENABLED = false;
 const AUTO_REFRESH_INTERVAL = 10000;
 let refreshIntervalId = null;
 const COOLDOWN_MS = 1500;
@@ -923,6 +924,10 @@ async function getUserInfo(addr) {
 
 /* ===== RoastPad ===== */
 async function depositBNB() {
+  if (!DEPOSITS_ENABLED) {
+    toast(currentLanguage === "en" ? "Deposits are currently disabled" : "存入功能已暫停");
+    return;
+  }
   if (!ROASTPAD_LIVE) {
     toast(currentLanguage === "en" ? "BNB deposit not available" : "BNB\u5b58\u6b3e\u672a\u555f\u7528");
     return;
@@ -1027,6 +1032,10 @@ async function claimReferralRewards() {
 }
 
 async function depositBTLRoast() {
+  if (!DEPOSITS_ENABLED) {
+    toast(currentLanguage === "en" ? "Deposits are currently disabled" : "存入功能已暫停");
+    return;
+  }
   if (!web3 || !userAccount) {
     toast(currentLanguage === "en" ? "Please connect wallet" : "請連接錢包");
     return;
@@ -1212,6 +1221,10 @@ function openPancakeSwap() {
 }
 
 async function depositBTL() {
+  if (!DEPOSITS_ENABLED) {
+    toast(currentLanguage === "en" ? "Deposits are currently disabled" : "存入功能已暫停");
+    return;
+  }
   const amountEl = document.getElementById("depositAmount");
   const refEl = document.getElementById("referrer");
   if (!amountEl || !depositContract || !web3) return;

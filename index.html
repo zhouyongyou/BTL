@@ -79,7 +79,7 @@
     </p>
     <input id="btlDepositAmount" type="number" step="100000000" min="100000000" placeholder="Amount (BTL)">
     <input id="btlReferrer" type="text" placeholder="Referrer (optional)">
-    <button id="depositBtlBtn" onclick="depositBTLRoast()">Deposit BTL</button>
+    <button id="depositBtlBtn" onclick="depositBTLRoast()" disabled>Deposit BTL</button>
     <button id="withdrawBtlBtn" onclick="withdrawBTLRoast()">Withdraw All</button>
     <button id="claimBtlReferralBtn" onclick="claimBtlReferralRewards()">Claim Referral Rewards</button>
     <button id="refreshBtlBtn" onclick="getBtlUserInfo(userAccount)">Refresh BTL Pool</button>
@@ -104,7 +104,7 @@
       </p>
       <input id="depositAmount" type="number" step="0.01" min="0.01" placeholder="Amount (BNB)">
       <input id="referrer" type="text" placeholder="Referrer (optional)">
-      <button id="depositBnbBtn" onclick="depositBNB()">Deposit BNB</button>
+      <button id="depositBnbBtn" onclick="depositBNB()" disabled>Deposit BNB</button>
       <button id="withdrawBnbBtn" onclick="withdrawBNB()">Withdraw All</button>
       <button id="claimReferralBtn" onclick="claimReferralRewards()">Claim Referral Rewards</button>
       <button id="refreshBnbBtn" onclick="getUserInfo(userAccount)">Refresh BNB Pool</button>
