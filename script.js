@@ -38,12 +38,11 @@ function initWeb3Modal() {
 
 let web3Modal = initWeb3Modal();
 /* ===== State ===== */
-let provider, web3, contract, roastPadContract, btlRoastPadContract;
+let provider, web3, contract, roastPadContract;
 let userAccount = "";
 let depositContract;
 let updateUserInfo = () => {};
 let roastPadContract;
-let btlRoastPadContract;
 let updateBtlUserInfo = () => {};
 const CONTRACT_ADDRESS = "0xb1b8ea6e684603f328ed401426c465f55d064444";
 let ABI = []; // 从 contract.json 动态加载
