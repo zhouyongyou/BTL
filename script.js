@@ -51,7 +51,7 @@ const BTL_DECIMALS = 18; // Number of decimals for BTL token
 const ROASTPAD_ADDRESS = "0xdb3ED962B99Cb8934Ba14Bc55447419578a5b299";
 // Toggle to enable/disable RoastPad (BNB deposit) interactions
 const ROASTPAD_LIVE = true;
-const AUTO_REFRESH_INTERVAL = 5000;
+const AUTO_REFRESH_INTERVAL = 10000;
 let refreshIntervalId = null;
 const COOLDOWN_MS = 1500;
 let cooldownActive = false;
@@ -485,6 +485,23 @@ function updateLanguage() {
   updateMyReferralLink();
 }
 
+async function safeSend(fn, retries = 2) {
+  try {
+    return await fn();
+  } catch (err) {
+    if (
+      retries > 0 &&
+      err.message &&
+      err.message.includes("circuit breaker")
+    ) {
+      console.warn("Retrying due to circuit breaker...");
+      await new Promise((res) => setTimeout(res, 1500));
+      return safeSend(fn, retries - 1);
+    }
+    throw err;
+  }
+}
+
 /* ===== Connect wallet ===== */
 async function connectWallet() {
   if (userAccount) {
@@ -563,7 +580,7 @@ setTimeout(() => {
 setTimeout(() => {
   startAutoRefresh();
 }, AUTO_REFRESH_INTERVAL);
-
+    
     provider.on("accountsChanged", (acc) => {
       userAccount = acc[0];
       updateReferralLink();
@@ -575,15 +592,18 @@ setTimeout(() => {
 
   } catch (e) {
     console.error(e);
-    if (e && e.message && e.message.includes("502") && currentRpcIndex < RPC_ENDPOINTS.length - 1) {
-      currentRpcIndex++;
-      if (web3Modal && web3Modal.cachedProvider) {
-        await web3Modal.clearCachedProvider();
-        await new Promise(resolve => setTimeout(resolve, 500));
-      }
-      web3Modal = initWeb3Modal();
-      return tryConnect();
-    }
+if (
+  (e.message && e.message.includes("Execution prevented because the circuit breaker is open")) ||
+  (e.message && e.message.includes("502"))
+) {
+  if (currentRpcIndex < RPC_ENDPOINTS.length - 1) {
+    currentRpcIndex++;
+    await web3Modal.clearCachedProvider();
+    await new Promise(resolve => setTimeout(resolve, 500));
+    web3Modal = initWeb3Modal();
+    return tryConnect();
+  }
+}
     const msg = e && e.message && e.message.includes("502")
       ? "RPC error, please try again later."
       : "Connection failed";
@@ -615,6 +635,10 @@ async function switchToBSC() {
 }
 
 async function disconnectWallet() {
+  if (provider && provider.removeAllListeners) {
+  provider.removeAllListeners("accountsChanged");
+  provider.removeAllListeners("chainChanged");
+}
   if (provider && provider.disconnect) {
     try {
       await provider.disconnect();
@@ -628,7 +652,7 @@ async function disconnectWallet() {
     } catch (e) {
       console.error(e);
     }
-  }
+  }  
   await web3Modal.clearCachedProvider();
   await new Promise(resolve => setTimeout(resolve, 500));
   provider = null;
@@ -659,6 +683,8 @@ async function disconnectWallet() {
 }
 
 async function getUserInfo(addr) {
+  if (Date.now() - lastUserFetch < 3000) return; // 避免3秒內重複打
+  lastUserFetch = Date.now();
   if (!roastPadContract || !web3 || !addr) return;
   let info, yieldAmount, claimed, cooldowns;
 
@@ -794,7 +820,7 @@ async function withdrawBNB() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await roastPadContract.methods.withdraw().send({ from: userAccount, gas: 300000 });
+await safeSend(() => roastPadContract.methods.withdraw().send({ from: userAccount, gas: 300000 }));
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
@@ -886,9 +912,7 @@ async function withdrawBTLRoast() {
   if (btn && btn.dataset.loading === "true") return;
   showLoading(btnId);
   try {
-    await btlRoastPadContract.methods
-      .withdraw()
-      .send({ from: userAccount, gas: 300000 });
+await safeSend(() => btlRoastPadContract.methods.withdraw().send({ from: userAccount, gas: 300000 }));
     if (typeof updateBtlUserInfo === "function") updateBtlUserInfo();
     toast(currentLanguage === "en" ? "Withdraw all successful!" : "提取全部成功!");
   } catch (e) {
@@ -923,7 +947,10 @@ async function claimBtlReferralRewards() {
   }
 }
 
+let lastBtlFetch = 0;
 async function getBtlUserInfo(addr) {
+  if (Date.now() - lastBtlFetch < 3000) return;
+  lastBtlFetch = Date.now();
   if (!btlRoastPadContract || !web3 || !addr) return;
   let info, yieldAmount, claimed, cooldowns;
 
@@ -1041,9 +1068,11 @@ async function depositBTL() {
       web3.utils.isAddress(referrer)
         ? referrer
         : "0x0000000000000000000000000000000000000000";
-    await depositContract.methods
-      .depositBTL(weiAmount, refAddr)
-      .send({ from: userAccount, gas: 300000 });
+await safeSend(() =>
+  depositContract.methods
+    .depositBTL(weiAmount, refAddr)
+    .send({ from: userAccount, gas: 300000 })
+);
     if (typeof updateUserInfo === "function") updateUserInfo();
     toast(currentLanguage === "en" ? "Deposit successful" : "存款成功");
   } catch (e) {
@@ -1137,8 +1166,10 @@ if (typeof window !== "undefined" && window)
       await tryConnect();
       setTimeout(() => {
         updateUserInfo?.();
+      }, 1000);
+      setTimeout(() => {
         updateBtlUserInfo?.();
-      }, 500); // 延遲防炸掉
+      }, 2500); // 錯開 1.5 秒
     } catch (e) {
       console.warn("Auto-connect failed:", e.message);
     }
