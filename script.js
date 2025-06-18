@@ -12,10 +12,9 @@ function buildProviderOptions() {
   return {
     injected: {
       display: {
-        name: "MetaMask",
-        description: "Connect with the MetaMask browser extension"
+        name: "Browser Wallet",
+        description: "Connect with your browser extension wallet"
       },
-      package: null
     },
     walletconnect: {
       package: window.WalletConnectProvider?.default,
