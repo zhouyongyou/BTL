@@ -10,13 +10,13 @@ let currentRpcIndex = 0;
 
 function buildProviderOptions() {
   return {
-    // injected: {
-      // display: {
-      //   name: "MetaMask",
-      //   description: "Connect with the MetaMask browser extension"
-    //   },
-    //   package: null
-    // },
+    injected: {
+      display: {
+        name: "MetaMask",
+        description: "Connect with the MetaMask browser extension"
+      },
+      package: null
+    },
     walletconnect: {
       package: window.WalletConnectProvider?.default,
       options: {
