@@ -24,10 +24,6 @@ shuffleArray(RPC_ENDPOINTS);
 
 let currentRpcIndex = 0;
 
-tryConnect整段改成以下這樣嗎？感覺簡化了很多呢？
-
-
-
 async function tryConnect() {
 
   for (let i = 0; i < RPC_ENDPOINTS.length; i++) {
