@@ -216,11 +216,18 @@ section {
 #mainInfo {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
 }
-#btlInfo {
+#btlInfo1 {
   box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   margin-bottom: 20px;
 }
-
+#btlInfo2 {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
+#btlInfo3 {
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  margin-bottom: 20px;
+}
 /* Typography */
 h2 {
   font-size: 1.8rem;
