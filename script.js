@@ -92,7 +92,14 @@ async function tryConnect() {
 
       }
 
+    // 🔴 新增的邏輯：檢查是否是熔斷錯誤
+    // MetaMask 的這個錯誤物件可能包含 cause.isBrokenCircuitError 或直接在訊息中
+    const isCircuitBreakerError = (err.cause && err.cause.isBrokenCircuitError) || 
+                                  (err.message && err.message.includes("circuit breaker"));
 
+    if (isCircuitBreakerError) {
+        toast(`節點 ${currentRpcIndex + 1} 不穩定，正在切換...`);
+    }
 
       // 移至下一個 RPC
 
@@ -221,7 +228,7 @@ const ROASTPAD_ADDRESS = "0xdb3ED962B99Cb8934Ba14Bc55447419578a5b299";
 // Toggle to enable/disable RoastPad (BNB deposit) interactions
 const ROASTPAD_LIVE = true;
 const DEPOSITS_ENABLED = false;
-const AUTO_REFRESH_INTERVAL = 10000;
+const AUTO_REFRESH_INTERVAL = 20000;
 let refreshIntervalId = null;
 const COOLDOWN_MS = 1500;
 let cooldownActive = false;
