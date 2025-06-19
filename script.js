@@ -1,6 +1,4 @@
 /* ===== Web3Modal Multi-wallet setup ===== */
-
-// 新增：打亂陣列的函式
 function shuffleArray(array) {
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -288,17 +286,6 @@ function getAccumulatedUsd1(addr) {
 
 function formatAddress(addr) {
   return addr.slice(0, 6) + "..." + addr.slice(-4);
-}
-
-function applyContractAddress() {
-  const addr = CONTRACT_ADDRESS;
-  const link = `https://pancakeswap.finance/swap?outputCurrency=${addr}&chain=bsc`;
-  const menuBuyBtn = document.getElementById("menuBuyBtn");
-  if (menuBuyBtn) menuBuyBtn.onclick = () => window.open(link, "_blank");
-  const buyBtlBtn = document.getElementById("buyBtlBtn");
-  if (buyBtlBtn) buyBtlBtn.onclick = () => window.open(link, "_blank");
-  const contractAddr = document.getElementById("contractAddr");
-  if (contractAddr) contractAddr.innerText = addr;
 }
 
 /* ===== Placeholder helpers ===== */
@@ -1359,11 +1346,75 @@ if (typeof window !== "undefined" && window)
 // 放在 script.js 的結尾
 if (typeof window !== "undefined" && window.addEventListener)
   window.addEventListener("DOMContentLoaded", (event) => {
-    applyContractAddress();
+
+// Header (頁首)
+const langBtn = document.getElementById('langBtn');
+if (langBtn) langBtn.addEventListener('click', switchLanguage);
+
+// Wallet Connection (錢包連接)
+const connectWalletBtn = document.getElementById('connectWalletBtn');
+if (connectWalletBtn) connectWalletBtn.addEventListener('click', connectWallet);
+
+// Main Info (主要資訊)
+const contractAddr = document.getElementById('contractAddr');
+if (contractAddr) contractAddr.addEventListener('click', () => copyToClipboard('contractAddr'));
+
+const copyAddressBtn = document.getElementById('copyAddressBtn');
+if (copyAddressBtn) copyAddressBtn.addEventListener('click', () => copyToClipboard('contractAddr'));
+
+const buyBtlLink = document.getElementById('buyBtlLink');
+if (buyBtlLink) buyBtlLink.addEventListener('click', openPancakeSwap);
+
+// BTL Info 1 (推薦連結)
+const referralLink = document.getElementById('referralLink');
+if (referralLink) referralLink.addEventListener('click', () => copyToClipboard('referralLink'));
+
+const copyReferralBtn = document.getElementById('copyReferralBtn');
+if (copyReferralBtn) copyReferralBtn.addEventListener('click', () => copyToClipboard('referralLink'));
+
+// BTL Info 2 (BTL 礦池)
+const btlRoastAddr = document.getElementById('btlRoastAddr');
+if (btlRoastAddr) btlRoastAddr.addEventListener('click', () => copyToClipboard('btlRoastAddr'));
+
+const depositBtlBtn = document.getElementById('depositBtlBtn');
+if (depositBtlBtn) depositBtlBtn.addEventListener('click', depositBTLRoast);
+
+const withdrawBtlBtn = document.getElementById('withdrawBtlBtn');
+if (withdrawBtlBtn) withdrawBtlBtn.addEventListener('click', withdrawBTLRoast);
+
+const claimBtlReferralBtn = document.getElementById('claimBtlReferralBtn');
+if (claimBtlReferralBtn) claimBtlReferralBtn.addEventListener('click', claimBtlReferralRewards);
+
+const refreshBtlBtn = document.getElementById('refreshBtlBtn');
+if (refreshBtlBtn) refreshBtlBtn.addEventListener('click', () => getBtlUserInfo(userAccount));
+
+// BTL Info 3 (BNB 礦池)
+const poolAddr = document.getElementById('poolAddr');
+if (poolAddr) poolAddr.addEventListener('click', () => copyToClipboard('poolAddr'));
+
+const depositBnbBtn = document.getElementById('depositBnbBtn');
+if (depositBnbBtn) depositBnbBtn.addEventListener('click', depositBNB);
+
+const withdrawBnbBtn = document.getElementById('withdrawBnbBtn');
+if (withdrawBnbBtn) withdrawBnbBtn.addEventListener('click', withdrawBNB);
+
+const claimReferralBtn = document.getElementById('claimReferralBtn');
+if (claimReferralBtn) claimReferralBtn.addEventListener('click', claimReferralRewards);
+
+const refreshBnbBtn = document.getElementById('refreshBnbBtn');
+if (refreshBnbBtn) refreshBnbBtn.addEventListener('click', () => getUserInfo(userAccount));
+
+// Side Menu (側邊選單)
+const menuConnectBtn = document.getElementById('menuConnectBtn');
+if (menuConnectBtn) menuConnectBtn.addEventListener('click', connectWallet);
+
+const menuBuy = document.getElementById('menuBuy');
+if (menuBuy) menuBuy.addEventListener('click', openPancakeSwap);
+
     applyReferrerFromUrl();
     updateReferralLink();
     updateMyReferralLink();
-
+    
     // Side menu controls
     const menuToggle = document.getElementById("menuToggle");
     const sideMenu = document.getElementById("sideMenu");
