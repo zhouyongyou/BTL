@@ -32,7 +32,7 @@
 <body>
   <!-- ===== Header ===== -->
   <header>
-    <button id="langBtn" class="lang-btn" onclick="switchLanguage()">🌐 EN / 中文</button>
+    <button id="langBtn" class="lang-btn">🌐 EN / 中文</button>
     <button id="menuToggle" class="menu-btn">☰</button>
     <div class="container">
       <img src="logo-200x200.png" alt="BitLuck Logo" id="logo" />
@@ -41,7 +41,7 @@
   <!-- ===== Wallet Connection ===== -->
   <section id="walletConnection">
     <div class="container">
-      <button id="connectWalletBtn" onclick="connectWallet()">Connect Wallet</button>
+      <button id="connectWalletBtn">Connect Wallet</button>
       <span id="networkInfo">Not connected</span>
       <p id="userAccount"></p>
     </div>
@@ -51,20 +51,20 @@
     <div class="container">
       <h2 id="contractInfoTitle">Contract Information</h2>
       <p><strong id="btlAddressLabel">Contract Address:</strong>
-        <span id="contractAddr" onclick="copyToClipboard('contractAddr')"></span>
+        <span id="contractAddr"></span>
         <a id="bscScanLink" href="#" target="_blank" rel="noopener noreferrer">
           <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
         </a>
         <a id="aveaiLink" href="https://ave.ai/token/0xb1b8ea6e684603f328ed401426c465f55d064444-bsc?from=Home" target="_blank" rel="noopener noreferrer">Ave.ai</a>
-        <button id="copyAddressBtn" onclick="copyToClipboard('contractAddr')">Copy Address</button>
-        <button id="buyBtlLink" onclick="openPancakeSwap()">BUY $BTL</button>
+        <button id="copyAddressBtn">Copy Address</button>
+        <button id="buyBtlLink">BUY $BTL</button>
       </p>
     </div>
 </section>
 <section id="btlInfo1">
   <div class="container">
-    <p id="referralContainer">Your Link: <span id="referralLink" onclick="copyToClipboard('referralLink')"></span>
-      <button id="copyReferralBtn" onclick="copyToClipboard('referralLink')">Copy</button>
+    <p id="referralContainer">Your Link: <span id="referralLink"></span>
+      <button id="copyReferralBtn">Copy</button>
     </p>
   </div>
 </section>
@@ -72,17 +72,17 @@
   <div class="container">
     <h2 id="btlMiningTitle">BTL Mining</h2>   
     <p><strong id="btlRoastLabel">BTL Pool Contract:</strong>
-      <span id="btlRoastAddr" onclick="copyToClipboard('btlRoastAddr')"></span>
+      <span id="btlRoastAddr"></span>
       <a id="btlRoastScanLink" href="#" target="_blank" rel="noopener noreferrer">
         <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
       </a>
     </p>
     <input id="btlDepositAmount" type="number" step="100000000" min="100000000" placeholder="Amount (BTL)">
     <input id="btlReferrer" type="text" placeholder="Referrer (optional)">
-    <button id="depositBtlBtn" onclick="depositBTLRoast()" disabled>Deposit BTL</button>
-    <button id="withdrawBtlBtn" onclick="withdrawBTLRoast()">Withdraw All</button>
-    <button id="claimBtlReferralBtn" onclick="claimBtlReferralRewards()">Claim Referral Rewards</button>
-    <button id="refreshBtlBtn" onclick="getBtlUserInfo(userAccount)">Refresh BTL Pool</button>
+    <button id="depositBtlBtn">Deposit BTL</button>
+    <button id="withdrawBtlBtn">Withdraw All</button>
+    <button id="claimBtlReferralBtn">Claim Referral Rewards</button>
+    <button id="refreshBtlBtn">Refresh BTL Pool</button>
 
     <p id="BtlDepositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 15-seconds cooldown. Each action settles your rewards. Deposit at least 1000000000 $BTL (0.01%) daily to settle without withdrawing all.</p>
     
@@ -97,17 +97,17 @@
 <section id="btlInfo3">
   <div class="container">
       <p id="poolInfo"><strong id="poolAddressLabel">BNB Pool Contract:</strong>
-        <span id="poolAddr" onclick="copyToClipboard('poolAddr')"></span>
+        <span id="poolAddr"></span>
         <a id="poolBscScanLink" href="#" target="_blank" rel="noopener noreferrer">
           <img src="bscscan.svg" alt="BscScan" class="bscscan-icon">
         </a>
       </p>
       <input id="depositAmount" type="number" step="0.01" min="0.01" placeholder="Amount (BNB)">
       <input id="referrer" type="text" placeholder="Referrer (optional)">
-      <button id="depositBnbBtn" onclick="depositBNB()" disabled>Deposit BNB</button>
-      <button id="withdrawBnbBtn" onclick="withdrawBNB()">Withdraw All</button>
-      <button id="claimReferralBtn" onclick="claimReferralRewards()">Claim Referral Rewards</button>
-      <button id="refreshBnbBtn" onclick="getUserInfo(userAccount)">Refresh BNB Pool</button>
+      <button id="depositBnbBtn">Deposit BNB</button>
+      <button id="withdrawBnbBtn">Withdraw All</button>
+      <button id="claimReferralBtn">Claim Referral Rewards</button>
+      <button id="refreshBnbBtn">Refresh BNB Pool</button>
 
       <p id="depositRules" class="rules">Daily yield is 8%. Deposits and withdrawals have a 3-minutes cooldown. Each action settles your rewards. Deposit at least 0.01 BNB daily to settle without withdrawing all.</p>
       <p><strong id="userDepositLabel">Total Deposit:</strong> <span id="userDeposit">-</span> BNB</p>
@@ -128,8 +128,8 @@
       
   <nav id="sideMenu" class="side-menu">
     <ul>
-      <li><button id="menuConnectBtn" onclick="connectWallet()">Connect Wallet</button></li>
-      <li><button id="menuBuy" onclick="openPancakeSwap()" target="_blank">BUY $BTL</button></li>
+      <li><button id="menuConnectBtn">Connect Wallet</button></li>
+      <li><button id="menuBuy" target="_blank">BUY $BTL</button></li>
       <li><a id="menuDocs" href="https://bitluck.notion.site/" target="_blank">Docs</a></li>
       <li><a id="menuTelegram" href="https://t.me/BitLuckBSC" target="_blank"><img src="icons/telegram.svg" class="icon" alt="Telegram"> <span id="menuTelegramText">Telegram</span></a></li>
       <li><a id="menuTwitter" href="https://twitter.com/BitLuckBSC" target="_blank"><img src="icons/twitter.svg" class="icon" alt="Twitter"> <span id="menuTwitterText">Twitter</span></a></li>
