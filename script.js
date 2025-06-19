@@ -1319,7 +1319,6 @@ function applyReferrerFromUrl() {
 if (typeof window !== "undefined" && window)
   window.onload = async () => {
     document.body.classList.add("dark-mode"); // 預設啟用深色模式
-    applyContractAddress();
     updateLanguage();
     updateReferralLink();
     updateMyReferralLink();
