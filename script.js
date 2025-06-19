@@ -910,7 +910,9 @@ async function getUserInfo(addr) {
 /* ===== RoastPad ===== */
 async function depositBNB() {
   if (!DEPOSITS_ENABLED) {
-    toast(currentLanguage === "en" ? "Deposits are currently disabled" : "存入功能已暫停");
+    const msgEn = "Deposits are currently disabled due to a bug. Please wait for V2 pool.";
+    const msgZh = "目前測試有BUG 請等待後續V2礦池上線";
+    toast(currentLanguage === "en" ? msgEn : msgZh);
     return;
   }
   if (!ROASTPAD_LIVE) {
@@ -1018,7 +1020,9 @@ async function claimReferralRewards() {
 
 async function depositBTLRoast() {
   if (!DEPOSITS_ENABLED) {
-    toast(currentLanguage === "en" ? "Deposits are currently disabled" : "存入功能已暫停");
+    const msgEn = "Deposits are currently disabled due to a bug. Please wait for V2 pool.";
+    const msgZh = "目前測試有BUG 請等待後續V2礦池上線";
+    toast(currentLanguage === "en" ? msgEn : msgZh);
     return;
   }
   if (!web3 || !userAccount) {
@@ -1207,7 +1211,9 @@ function openPancakeSwap() {
 
 async function depositBTL() {
   if (!DEPOSITS_ENABLED) {
-    toast(currentLanguage === "en" ? "Deposits are currently disabled" : "存入功能已暫停");
+    const msgEn = "Deposits are currently disabled due to a bug. Please wait for V2 pool.";
+    const msgZh = "目前測試有BUG 請等待後續V2礦池上線";
+    toast(currentLanguage === "en" ? msgEn : msgZh);
     return;
   }
   const amountEl = document.getElementById("depositAmount");

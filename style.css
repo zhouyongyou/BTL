@@ -457,3 +457,13 @@ footer p {
   margin-top: 10px;
   color: #f0b90b;
 }
+
+button[disabled] {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.warning {
+  color: #ff4d4f;
+  margin-top: 10px;
+}
