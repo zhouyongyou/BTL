@@ -7,17 +7,21 @@ function shuffleArray(array) {
 }
 
 const RPC_ENDPOINTS = [
-  "https://bsc-dataseed1.binance.org",
-  "https://bsc-dataseed.binance.org",
-  "https://bsc.publicnode.com",
-  "https://bsc-rpc.publicnode.com",
-  "https://binance.llamarpc.com",
-  "https://rpc.ankr.com/bsc",
-  "https://bsc.drpc.org",
-  "https://bscrpc.com"
+  "https://bsc.publicnode.com",            // PublicNode (通常不錯)
+  "https://binance.llamarpc.com",          // LlamaNodes
+  "https://rpc.ankr.com/bsc",              // Ankr (非常推薦)
+  "https://bsc-dataseed1.defibit.io",      // Defibit
+  "https://bsc-dataseed1.ninicoin.io",     // Ninicoin
+  "https://bsc-mainnet.nodereal.io/v1/64a9df0874fb4a93b9d0a3849de012d3" // Nodereal (公開金鑰)
+  // "https://bsc-dataseed1.binance.org",
+  // "https://bsc-dataseed.binance.org",
+  // "https://bsc.publicnode.com",
+  // "https://bsc-rpc.publicnode.com",
+  // "https://binance.llamarpc.com",
+  // "https://rpc.ankr.com/bsc",
+  // "https://bsc.drpc.org",
+  // "https://bscrpc.com"
 ];
-
-// 在定義列表後立刻打亂它
 shuffleArray(RPC_ENDPOINTS); 
 
 let currentRpcIndex = 0;
