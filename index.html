@@ -1,0 +1,458 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BitLuck DApp - AI-Powered DeFi Platform</title>
+
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+
+    <!-- Google Fonts: Inter -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Web3 Libraries -->
+    <script src="https://unpkg.com/web3@1.8.2/dist/web3.min.js"></script>
+    <script src="https://unpkg.com/web3modal@1.9.12/dist/index.js"></script>
+    <script src="https://unpkg.com/@walletconnect/web3-provider@1.8.0/dist/umd/index.min.js"></script>
+
+    <!-- Favicons -->
+    <link rel="icon" href="https://placehold.co/32x32/4F46E5/FFFFFF?text=B" type="image/png">
+    
+    <!-- Custom Styles -->
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #111827; }
+        .glass-card { background: rgba(31, 41, 55, 0.6); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 1rem; transition: all 0.3s ease; }
+        .glass-card:hover { border-color: rgba(79, 70, 229, 0.5); }
+        .btn-primary { background-color: #4F46E5; transition: background-color 0.3s ease; }
+        .btn-primary:hover:not(:disabled) { background-color: #4338CA; }
+        .btn-secondary { background-color: #374151; transition: background-color 0.3s ease; }
+        .btn-secondary:hover:not(:disabled) { background-color: #4B5563; }
+        .btn-ai { background-image: linear-gradient(to right, #4F46E5, #9333EA); transition: all 0.3s ease; }
+        .btn-ai:hover:not(:disabled) { transform: scale(1.05); box-shadow: 0 0 20px rgba(147, 51, 234, 0.5); }
+        .btn-ai:disabled { background-image: none; background-color: #4B5563; cursor: not-allowed; opacity: 0.7; }
+        #toast { position: fixed; bottom: -100px; left: 50%; transform: translateX(-50%); padding: 1rem 2rem; border-radius: 0.5rem; color: white; font-weight: 600; transition: bottom 0.5s ease-in-out; z-index: 100; }
+        #toast.show { bottom: 30px; }
+        @keyframes blob { 0% { transform: translate(0px, 0px) scale(1); } 33% { transform: translate(30px, -50px) scale(1.1); } 66% { transform: translate(-20px, 20px) scale(0.9); } 100% { transform: translate(0px, 0px) scale(1); } }
+        .animate-blob { animation: blob 7s infinite; }
+        .animation-delay-2000 { animation-delay: 2s; }
+        .animation-delay-4000 { animation-delay: 4s; }
+        .spinner { border: 2px solid #374151; border-top-color: #fff; border-radius: 50%; width: 1rem; height: 1rem; animation: spin 1s linear infinite; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="text-white">
+
+    <!-- Background -->
+    <div class="absolute top-0 left-0 w-full h-full overflow-hidden -z-10">
+        <div class="absolute top-0 -left-4 w-72 h-72 bg-purple-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob"></div>
+        <div class="absolute top-0 -right-4 w-72 h-72 bg-indigo-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-2000"></div>
+        <div class="absolute -bottom-8 left-20 w-72 h-72 bg-pink-500 rounded-full mix-blend-screen filter blur-3xl opacity-20 animate-blob animation-delay-4000"></div>
+    </div>
+
+    <!-- Header -->
+    <header class="p-4 md:p-6">
+        <div class="container mx-auto flex justify-between items-center">
+            <div class="flex items-center space-x-4"><img src="https://placehold.co/200x200/4F46E5/FFFFFF?text=B" alt="BitLuck Logo" class="h-10 w-10 md:h-12 md:w-12 rounded-full" onerror="this.onerror=null;this.src='https://placehold.co/48x48/111827/FFFFFF?text=Error';"><h1 class="text-xl md:text-2xl font-bold tracking-wider">BitLuck</h1></div>
+            <nav class="hidden md:flex items-center space-x-6"><a href="#roadmap" class="hover:text-indigo-400 transition-colors">Roadmap</a><a href="https://t.me/BitLuckBSC" target="_blank" class="hover:text-indigo-400 transition-colors">Telegram</a><a href="https://twitter.com/BitLuckBSC" target="_blank" class="hover:text-indigo-400 transition-colors">Twitter</a></nav>
+            <div class="flex items-center space-x-2"><button id="langBtn" class="p-2 rounded-lg hover:bg-gray-700 transition-colors text-lg">🌐</button><button id="connectWalletBtn" class="btn-primary text-white font-semibold py-2 px-4 rounded-lg shadow-md whitespace-nowrap">連接錢包</button></div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <main class="container mx-auto p-4 max-w-4xl">
+
+        <!-- Wallet Status -->
+        <section id="walletStatus" class="mb-8 text-center glass-card p-4"><p id="userAccount" class="text-gray-300 break-all text-lg font-mono">請連接您的錢包以開始。</p><span id="networkInfo" class="inline-block bg-gray-700 text-xs font-semibold px-3 py-1 rounded-full mt-2">未連接</span></section>
+        
+        <!-- Contract & Referral Info -->
+        <section id="mainInfo" class="glass-card p-6 mb-8 flex flex-col space-y-4">
+             <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4"><strong id="btlAddressLabel" class="whitespace-nowrap text-gray-300 mb-2 sm:mb-0">BTL 合約:</strong><div class="flex-grow flex flex-wrap items-center gap-2"><span id="contractAddr" class="font-mono bg-gray-900 px-2 py-1 rounded break-all text-sm">...loading</span><div class="flex items-center space-x-2"><a id="bscScanLink" href="#" target="_blank" rel="noopener noreferrer" class="hover:opacity-75" title="View on BscScan"><svg class="h-6 w-6" fill="#E5E7EB" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path d="M14.7,3.42c-0.26-0.37-0.78-0.44-1.14-0.18l-9.1,6.53c-0.29,0.21-0.45,0.55-0.45,0.92v9.1c0,0.55,0.45,1,1,1h13.3c0.55,0,1-0.45,1-1V9.75c0-0.37-0.16-0.71-0.45-0.92L14.7,3.42z M12,12.25L5.7,7.91l6.3,2.46V12.25z M13.1,10.37l6.3-2.46L12,12.25v-1.88L13.1,10.37z M12.55,13.37v5.21h-7.8v-7.8l7.8,5.57V13.37z M13.65,18.58v-5.21l7.8-5.57v7.8H13.65z"/></svg></a><button id="copyAddressBtn" class="btn-secondary text-xs px-3 py-1.5 rounded-md">複製</button><button id="buyBtlLink" class="btn-primary text-xs px-3 py-1.5 rounded-md font-semibold">購買 $BTL</button></div></div></div>
+             <div class="flex flex-col sm:flex-row sm:items-center sm:gap-4 border-t border-gray-700 pt-4"><strong id="yourReferralLabel" class="whitespace-nowrap text-gray-300 mb-2 sm:mb-0">您的推薦連結:</strong><div class="flex-grow flex flex-wrap items-center gap-2"><span id="referralLink" class="font-mono bg-gray-900 px-2 py-1 rounded break-all text-sm">連接錢包以查看您的推薦連結</span><button id="copyReferralBtn" class="btn-secondary text-xs px-3 py-1.5 rounded-md">複製</button></div></div>
+        </section>
+
+        <!-- Token Dashboard -->
+        <section id="tokenDashboard" class="glass-card p-6 mb-8">
+            <div class="flex justify-between items-center mb-4"><h2 id="dashboardTitle" class="text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-green-400 to-blue-400">代幣資訊儀表板</h2><button id="refreshDashboardBtn" class="btn-secondary p-2 rounded-lg" title="刷新數據" disabled><svg id="refreshIcon" xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="transition-transform"><path d="M23 4v6h-6"/><path d="M1 20v-6h6"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg></button></div>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-gray-300">
+                <div class="bg-gray-900/50 p-4 rounded-lg col-span-1 md:col-span-2"><h3 id="balanceValueLabel" class="text-sm font-medium text-gray-400 mb-1">您的餘額價值</h3><p id="userBalanceValue" class="text-3xl font-bold text-green-400">-.--</p></div>
+                <div class="bg-gray-900/50 p-4 rounded-lg"><h3 id="yourBalanceLabel" class="text-sm font-medium text-gray-400 mb-1">您的 BTL 餘額</h3><p id="userBtlBalance" class="text-2xl font-semibold text-white">-.--</p></div>
+                <div class="bg-gray-900/50 p-4 rounded-lg"><h3 id="priceLabel" class="text-sm font-medium text-gray-400 mb-1">BTL 價格</h3><p id="btlPrice" class="text-2xl font-semibold text-white">-.--</p></div>
+                <div class="bg-gray-900/50 p-4 rounded-lg"><h3 id="totalSupplyLabel" class="text-sm font-medium text-gray-400 mb-1">BTL 總供應量</h3><p id="totalBtlSupply" class="text-2xl font-semibold text-white">-.--</p></div>
+                <div class="bg-gray-900/50 p-4 rounded-lg"><h3 id="marketCapLabel" class="text-sm font-medium text-gray-400 mb-1">BTL 市值</h3><p id="btlMarketCap" class="text-2xl font-semibold text-white">-.--</p></div>
+            </div>
+        </section>
+
+        <!-- Roadmap -->
+        <section id="roadmap" class="glass-card p-6 mb-8">
+            <h2 id="roadmapTitle" class="text-2xl font-bold text-center mb-8 text-transparent bg-clip-text bg-gradient-to-r from-yellow-400 to-orange-500">專案藍圖</h2>
+            <div id="roadmapContainer" class="relative space-y-8 before:absolute before:inset-0 before:ml-5 before:h-full before:w-0.5 before:bg-gradient-to-b before:from-gray-700 before:via-gray-600 before:to-gray-700">
+                <!-- Roadmap items will be injected here by JavaScript -->
+            </div>
+        </section>
+
+        <!-- AI Generator -->
+        <section id="aiFeature" class="glass-card p-6">
+            <h2 id="aiGeneratorTitle" class="text-2xl font-bold mb-4 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 to-indigo-400">智慧推薦訊息產生器</h2>
+            <p id="aiGeneratorDesc" class="text-gray-400 mb-4">點擊下方按鈕，讓 AI 為您產生一條有說服力的推薦訊息，方便您在社群媒體上分享！</p>
+            <textarea id="aiGeneratedMessage" class="w-full p-3 rounded-lg bg-gray-900 border border-gray-700 focus:border-indigo-500 focus:ring-2 focus:ring-indigo-500 transition-all" rows="4" placeholder="AI 產生的訊息將會顯示在這裡..."></textarea>
+            <div class="flex flex-col sm:flex-row gap-3 mt-4">
+                 <button id="generateMessageBtn" class="w-full sm:w-auto btn-ai text-white font-bold py-3 px-6 rounded-lg shadow-lg flex items-center justify-center gap-2" disabled><svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9.5 2.5a.5.5 0 0 1 .5.5v2.333a2.5 2.5 0 0 1-5 0V3a.5.5 0 0 1 .5-.5h4Z"/><path d="M8 12H5c-1.105 0-2 .895-2 2v4c0 1.105.895 2 2 2h3c1.105 0 2-.895 2-2v-4c0-1.105-.895-2-2-2Z"/><path d="M19 12h-3c-1.105 0-2 .895-2 2v4c0 1.105.895 2 2 2h3c1.105 0 2-.895 2-2v-4c0-1.105-.895-2-2-2Z"/><path d="M14.5 2.5a.5.5 0 0 1 .5.5v2.333a2.5 2.5 0 0 1-5 0V3a.5.5 0 0 1 .5-.5h4Z"/><path d="m12 11.5 1.5 1.5 1.5-1.5"/><path d="M12 6.5V13"/></svg><span id="generateBtnText">產生推薦訊息</span></button>
+                 <button id="copyAImessageBtn" class="w-full sm:w-auto btn-secondary font-semibold py-3 px-6 rounded-lg">複製訊息</button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="text-center p-6 mt-12 text-gray-500 text-sm">
+        <div class="flex justify-center space-x-6 mb-4"><a href="#roadmap" class="hover:text-white transition-colors">Roadmap</a><a href="https://t.me/BitLuckBSC" target="_blank" class="hover:text-white transition-colors">Telegram</a><a href="https://twitter.com/BitLuckBSC" target="_blank" class="hover:text-white transition-colors">Twitter</a></div>
+        <p id="footerRights">© 2025 BitLuck | 版權所有</p><p id="footerNetwork" class="mt-2 text-xs">此 DApp 運行於 BSC 主網。</p>
+    </footer>
+
+    <!-- Toast Notification -->
+    <div id="toast"></div>
+
+    <!-- Main App Logic -->
+    <script>
+    // ===================================================================================
+    //  STATE MANAGEMENT & CONFIGURATION
+    // ===================================================================================
+    const State = {
+        web3: null, provider: null, web3Modal: null, userAccount: null, btlContract: null,
+        currentLanguage: localStorage.getItem("language") || "zh",
+        isGenerating: false, isDashboardRefreshing: false,
+        CONTRACT_ADDRESS: "0xb1b8ea6e684603f328ed401426c465f55d064444",
+        // !!! IMPORTANT: Replace with YOUR token's trading pair address on PancakeSwap !!!
+        PAIR_ADDRESS: "0x58f876857a02d6762e0101bb5c46a8c1ed44dc16", // Example: WBNB/BUSD pair
+        BSC_CHAIN_ID: 56, RPC_URL: "https://bsc-dataseed.binance.org/",
+        BTL_ABI: [{"constant":true,"inputs":[{"name":"_owner","type":"address"}],"name":"balanceOf","outputs":[{"name":"balance","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"decimals","outputs":[{"name":"","type":"uint8"}],"payable":false,"stateMutability":"view","type":"function"},{"constant":true,"inputs":[],"name":"totalSupply","outputs":[{"name":"","type":"uint256"}],"payable":false,"stateMutability":"view","type":"function"}],
+    };
+    
+    // ===================================================================================
+    //  CONTENT DATA (for Roadmap, FAQ, etc.)
+    // ===================================================================================
+    const ContentData = {
+        roadmap: [
+            { 
+                phase: 'Phase 1', 
+                en: { title: 'Foundation & Launch', desc: 'Concept creation, smart contract development, security audits, and the official launch of the website and token.' },
+                zh: { title: '奠定基礎與啟動', desc: '包含概念發想、智能合約開發、安全性審計，以及網站和代幣的正式上線。' },
+                status: 'completed' 
+            },
+            { 
+                phase: 'Phase 2', 
+                en: { title: 'Core Features & Growth', desc: 'Implementation of the token dashboard, AI-powered tools, and launching the first community marketing campaign.' },
+                zh: { title: '核心功能與成長', desc: '實現代幣資訊儀表板、整合 AI 驅動的工具，並啟動第一波社群行銷活動。' },
+                status: 'in-progress' 
+            },
+            { 
+                phase: 'Phase 3', 
+                en: { title: 'Ecosystem Expansion', desc: 'Establishing strategic partnerships, introducing staking/farming pools, and forming a governance DAO.' },
+                zh: { title: '生態系擴展', desc: '建立戰略合作夥伴關係、引入質押/流動性挖礦池，並成立去中心化自治組織 (DAO)。' },
+                status: 'planned' 
+            },
+            { 
+                phase: 'Phase 4', 
+                en: { title: 'Future Vision', desc: 'Developing a cross-chain bridge for multi-chain support and launching a dedicated mobile application.' },
+                zh: { title: '未來願景', desc: '開發跨鏈橋以支援多鏈生態，並推出專屬的行動應用程式。' },
+                status: 'planned' 
+            }
+        ]
+    };
+
+    // ===================================================================================
+    //  LOCALIZATION (Language Texts)
+    // ===================================================================================
+    const LocalizedTexts = {
+        en: {
+            connectWallet: "Connect Wallet", disconnect: "Disconnect", connected: "Connected", notConnected: "Not Connected",
+            copy: "Copy", copySuccess: "Copied!", copyFail: "Failed to copy.", loading: "Loading...",
+            switchToBSC: "Please switch to BSC Mainnet", walletConnected: "Wallet connected!", walletDisconnected: "Wallet disconnected.",
+            connectionCancelled: "Connection cancelled.", connectionFailed: "Connection failed.",
+            userAccountDefault: "Please connect your wallet.", referralLinkDefault: "Connect wallet to see your referral link",
+            buyBtl: "BUY $BTL", btlContract: "BTL Contract:", yourReferral: "Your Referral:",
+            dashboardTitle: "Token Dashboard", yourBalanceLabel: "Your BTL Balance", totalSupplyLabel: "BTL Total Supply", dataRefreshed: "Dashboard data refreshed!", dataRefreshFailed: "Failed to refresh data.", priceLabel: "BTL Price", marketCapLabel: "BTL Market Cap", balanceValueLabel: "Your Balance Value",
+            roadmapTitle: "Roadmap",
+            aiGeneratorTitle: "Smart Referral Message Generator", aiGeneratorDesc: "Click the button below and let AI generate a persuasive referral message for you to share on social media!",
+            aiPlaceholder: "AI generated message will appear here...", generateMessage: "Generate Referral Message", generatingMessage: "Generating...", copyAImessage: "Copy Message",
+            genError: "AI failed to generate message. Please try again.", genConnectWallet: "Please connect wallet first.",
+            footerRights: "© 2025 BitLuck | All rights reserved", footerNetwork: "This DApp operates on the BSC Mainnet."
+        },
+        zh: {
+            connectWallet: "連接錢包", disconnect: "斷開錢包", connected: "已連接", notConnected: "未連接",
+            copy: "複製", copySuccess: "已複製！", copyFail: "複製失敗。", loading: "載入中...",
+            switchToBSC: "請切換到 BSC 主網", walletConnected: "錢包連接成功！", walletDisconnected: "錢包已斷開。",
+            connectionCancelled: "您已取消連接。", connectionFailed: "連接失敗。",
+            userAccountDefault: "請連接您的錢包以開始。", referralLinkDefault: "連接錢包以查看您的推薦連結",
+            buyBtl: "購買 $BTL", btlContract: "BTL 合約:", yourReferral: "您的推薦連結:",
+            dashboardTitle: "代幣資訊儀表板", yourBalanceLabel: "您的 BTL 餘額", totalSupplyLabel: "BTL 總供應量", dataRefreshed: "儀表板數據已刷新！", dataRefreshFailed: "數據刷新失敗。", priceLabel: "BTL 價格", marketCapLabel: "BTL 市值", balanceValueLabel: "您的餘額價值",
+            roadmapTitle: "專案藍圖",
+            aiGeneratorTitle: "智慧推薦訊息產生器", aiGeneratorDesc: "點擊下方按鈕，讓 AI 為您產生一條有說服力的推薦訊息，方便您在社群媒體上分享！",
+            aiPlaceholder: "AI 產生的訊息將會顯示在這裡...", generateMessage: "產生推薦訊息", generatingMessage: "訊息產生中...", copyAImessage: "複製訊息",
+            genError: "AI 訊息產生失敗，請重試。", genConnectWallet: "請先連接錢包。",
+            footerRights: "© 2025 BitLuck | 版權所有", footerNetwork: "此 DApp 運行於 BSC 主網。"
+        }
+    };
+
+    // ===================================================================================
+    //  API MODULE (External Services)
+    // ===================================================================================
+    const API = {
+        async fetchPriceData() {
+            const url = `https://api.dexscreener.com/latest/dex/pairs/bsc/${State.PAIR_ADDRESS}`;
+            try {
+                const response = await fetch(url);
+                if (!response.ok) throw new Error(`DexScreener API error: ${response.status}`);
+                const data = await response.json();
+                if (!data.pair || !data.pair.priceUsd) throw new Error("Price data not available in response.");
+                return parseFloat(data.pair.priceUsd);
+            } catch (error) {
+                console.error("Fetch price error:", error);
+                throw error;
+            }
+        },
+        async generateWithGemini(prompt) {
+            const apiKey = ""; // Canvas provides the key
+            const url = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key=${apiKey}`;
+            const payload = { contents: [{ role: "user", parts: [{ text: prompt }] }] };
+            try {
+                const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(payload) });
+                if (!response.ok) throw new Error(`API responded with status: ${response.status}`);
+                const result = await response.json();
+                if (result.candidates && result.candidates.length > 0) return result.candidates[0].content.parts[0].text.trim();
+                else throw new Error("No content generated.");
+            } catch (error) {
+                console.error("Gemini API Error:", error);
+                throw error;
+            }
+        }
+    };
+
+    // ===================================================================================
+    //  UI MODULE (DOM Manipulation)
+    // ===================================================================================
+    const UI = {
+        updateLanguage() {
+            const lang = State.currentLanguage;
+            const texts = LocalizedTexts[lang];
+            const setText = (selector, text) => { const el = document.querySelector(selector); if (el) el.innerText = text; };
+            Object.keys(texts).forEach(key => setText(`#${key}, [data-lang-key="${key}"]`, texts[key]));
+            this.updateConnectionStatus(State.userAccount);
+            this.renderRoadmap();
+        },
+        updateConnectionStatus(account) {
+            const texts = LocalizedTexts[State.currentLanguage];
+            const userAccountEl = document.getElementById("userAccount");
+            const networkInfoEl = document.getElementById("networkInfo");
+            const connectBtnEl = document.getElementById("connectWalletBtn");
+            const refreshBtn = document.getElementById("refreshDashboardBtn");
+            const generateBtn = document.getElementById("generateMessageBtn");
+            if (account) {
+                State.userAccount = account;
+                userAccountEl.innerText = account;
+                networkInfoEl.innerText = texts.connected;
+                networkInfoEl.className = "inline-block bg-green-600 text-xs font-semibold px-3 py-1 rounded-full mt-2";
+                connectBtnEl.innerText = texts.disconnect;
+                refreshBtn.disabled = false;
+                generateBtn.disabled = false;
+            } else {
+                State.userAccount = null;
+                userAccountEl.innerText = texts.userAccountDefault;
+                networkInfoEl.innerText = texts.notConnected;
+                networkInfoEl.className = "inline-block bg-gray-700 text-xs font-semibold px-3 py-1 rounded-full mt-2";
+                connectBtnEl.innerText = texts.connectWallet;
+                refreshBtn.disabled = true;
+                generateBtn.disabled = true;
+                this.resetDashboard();
+            }
+            this.updateReferralLink();
+        },
+        updateReferralLink() {
+            const referralLinkEl = document.getElementById("referralLink");
+            if (State.userAccount) {
+                const url = new URL(window.location.href);
+                url.searchParams.set("ref", State.userAccount);
+                referralLinkEl.innerText = url.toString();
+            } else {
+                referralLinkEl.innerText = LocalizedTexts[State.currentLanguage].referralLinkDefault;
+            }
+        },
+        updateDashboard(data) {
+            const formatCurrency = (val) => `$${parseFloat(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            const formatNumber = (val) => parseFloat(val).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 });
+            document.getElementById("userBtlBalance").innerText = formatNumber(data.balance);
+            document.getElementById("totalBtlSupply").innerText = formatNumber(data.totalSupply);
+            document.getElementById("btlPrice").innerText = `$${data.price.toPrecision(6)}`;
+            document.getElementById("btlMarketCap").innerText = formatCurrency(data.marketCap);
+            document.getElementById("userBalanceValue").innerText = formatCurrency(data.balanceValue);
+        },
+        resetDashboard() {
+            const fields = ["userBtlBalance", "totalBtlSupply", "btlPrice", "btlMarketCap", "userBalanceValue"];
+            fields.forEach(id => { document.getElementById(id).innerText = "-.--"; });
+        },
+        setDashboardRefreshing(isRefreshing) {
+            State.isDashboardRefreshing = isRefreshing;
+            const icon = document.getElementById("refreshIcon");
+            const btn = document.getElementById("refreshDashboardBtn");
+            btn.disabled = isRefreshing;
+            isRefreshing ? icon.classList.add("animate-spin") : icon.classList.remove("animate-spin");
+        },
+        setAIGeneratorLoading(isLoading) {
+            State.isGenerating = isLoading;
+            const btn = document.getElementById("generateMessageBtn");
+            const btnText = document.getElementById("generateBtnText");
+            const texts = LocalizedTexts[State.currentLanguage];
+            btn.disabled = isLoading;
+            btnText.innerText = isLoading ? texts.generatingMessage : texts.generateMessage;
+        },
+        renderRoadmap() {
+            const container = document.getElementById('roadmapContainer');
+            const lang = State.currentLanguage;
+            container.innerHTML = '';
+            const statusInfo = {
+                completed: { text: lang === 'zh' ? '已完成' : 'Completed', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path><polyline points="22 4 12 14.01 9 11.01"></polyline></svg>', bg: 'bg-green-500', border: 'border-green-500' },
+                'in-progress': { text: lang === 'zh' ? '進行中' : 'In Progress', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5 animate-spin" style="animation-duration: 3s;"><path d="M21 12a9 9 0 1 1-6.219-8.56"></path></svg>', bg: 'bg-blue-500', border: 'border-blue-500' },
+                planned: { text: lang === 'zh' ? '規劃中' : 'Planned', icon: '<svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-5 h-5"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12h10z"></path></svg>', bg: 'bg-gray-500', border: 'border-gray-500' }
+            };
+            ContentData.roadmap.forEach(item => {
+                const s = statusInfo[item.status];
+                const content = item[lang];
+                container.insertAdjacentHTML('beforeend', `<div class="relative flex items-center"><div class="z-10 flex items-center justify-center w-10 h-10 rounded-full ${s.bg} ring-4 ring-gray-800 shrink-0">${s.icon}</div><div class="flex-1 ml-4"><div class="p-4 rounded-lg glass-card border-l-4 ${s.border}"><h3 class="text-lg font-bold text-white">${content.title}</h3><p class="text-sm text-gray-400 mt-1">${content.desc}</p><span class="absolute -top-3 right-4 text-xs font-semibold px-2 py-1 ${s.bg} rounded-full">${s.text}</span></div></div></div>`);
+            });
+        },
+        toast(message, isError = false) {
+            const toastEl = document.getElementById("toast");
+            toastEl.textContent = message;
+            toastEl.className = `toast show ${isError ? 'bg-red-600' : 'bg-indigo-600'}`;
+            if (toastEl.timer) clearTimeout(toastEl.timer);
+            toastEl.timer = setTimeout(() => { toastEl.classList.remove("show"); }, 3000);
+        }
+    };
+
+    // ===================================================================================
+    //  WEB3 MODULE (Blockchain Interaction)
+    // ===================================================================================
+    const Web3Module = {
+        initialize() {
+            const providerOptions = { walletconnect: { package: window.WalletConnectProvider.default, options: { rpc: { [State.BSC_CHAIN_ID]: State.RPC_URL } } } };
+            State.web3Modal = new window.Web3Modal.default({ cacheProvider: true, providerOptions, theme: "dark" });
+        },
+        async connect() {
+            try {
+                State.provider = await State.web3Modal.connect();
+                State.web3 = new Web3(State.provider);
+                const chainId = await State.web3.eth.getChainId();
+                if (chainId !== State.BSC_CHAIN_ID) { if (!(await this.switchToBSC())) { UI.toast(LocalizedTexts[State.currentLanguage].switchToBSC, true); await this.disconnect(); return; } }
+                const accounts = await State.web3.eth.getAccounts();
+                State.btlContract = new State.web3.eth.Contract(State.BTL_ABI, State.CONTRACT_ADDRESS);
+                UI.updateConnectionStatus(accounts[0]);
+                UI.toast(LocalizedTexts[State.currentLanguage].walletConnected);
+                this.subscribeToEvents();
+                App.handleDashboardRefresh();
+            } catch (error) {
+                console.error("Connect Error:", error);
+                if (error.message?.includes("User closed modal")) UI.toast(LocalizedTexts[State.currentLanguage].connectionCancelled); else UI.toast(LocalizedTexts[State.currentLanguage].connectionFailed, true);
+                UI.updateConnectionStatus(null);
+            }
+        },
+        async disconnect() {
+            if (State.provider?.disconnect) await State.provider.disconnect();
+            await State.web3Modal.clearCachedProvider();
+            State.provider = null; State.web3 = null; State.btlContract = null;
+            UI.updateConnectionStatus(null);
+            UI.toast(LocalizedTexts[State.currentLanguage].walletDisconnected);
+        },
+        async switchToBSC() {
+             try {
+                await State.provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: `0x${State.BSC_CHAIN_ID.toString(16)}` }] });
+                return true;
+            } catch (switchError) {
+                if (switchError.code === 4902) {
+                    try {
+                        await State.provider.request({ method: "wallet_addEthereumChain", params: [{ chainId: `0x${State.BSC_CHAIN_ID.toString(16)}`, chainName: "Binance Smart Chain", rpcUrls: [State.RPC_URL], nativeCurrency: { name: "BNB", symbol: "BNB", decimals: 18 }, blockExplorerUrls: ["https://bscscan.com"] }] });
+                        return true;
+                    } catch (addError) { console.error("Failed to add BSC network:", addError); return false; }
+                }
+                console.error("Failed to switch network:", switchError); return false;
+            }
+        },
+        subscribeToEvents() {
+            if (!State.provider) return;
+            State.provider.on("accountsChanged", (acc) => { acc.length > 0 ? UI.updateConnectionStatus(acc[0]) : this.disconnect(); App.handleDashboardRefresh(); });
+            State.provider.on("chainChanged", (id) => { parseInt(id, 16) !== State.BSC_CHAIN_ID ? this.disconnect() : window.location.reload(); });
+            State.provider.on("disconnect", () => this.disconnect());
+        },
+        async fetchChainData() {
+            if (!State.userAccount || !State.btlContract) throw new Error("Wallet not connected.");
+            const format = (val) => State.web3.utils.fromWei(val.toString(), 'ether');
+            try {
+                const [balance, totalSupply, price] = await Promise.all([ State.btlContract.methods.balanceOf(State.userAccount).call(), State.btlContract.methods.totalSupply().call(), API.fetchPriceData() ]);
+                const balanceNum = parseFloat(format(balance));
+                const supplyNum = parseFloat(format(totalSupply));
+                return { balance: balanceNum, totalSupply: supplyNum, price: price, marketCap: supplyNum * price, balanceValue: balanceNum * price };
+            } catch (error) { console.error("Failed to fetch chain data:", error); throw error; }
+        }
+    };
+
+    // ===================================================================================
+    //  APPLICATION LOGIC (CONTROLLER)
+    // ===================================================================================
+    const App = {
+        init() {
+            Web3Module.initialize();
+            this.setupEventListeners();
+            if (State.web3Modal.cachedProvider) Web3Module.connect();
+            document.getElementById("contractAddr").innerText = State.CONTRACT_ADDRESS;
+            document.getElementById("bscScanLink").href = `https://bscscan.com/token/${State.CONTRACT_ADDRESS}`;
+            UI.updateLanguage();
+        },
+        setupEventListeners() {
+            document.getElementById("connectWalletBtn").addEventListener("click", () => Web3Module.connect());
+            document.getElementById("langBtn").addEventListener("click", () => this.toggleLanguage());
+            document.getElementById('refreshDashboardBtn').addEventListener('click', () => this.handleDashboardRefresh());
+            document.getElementById("generateMessageBtn").addEventListener("click", () => this.handleGenerateMessage());
+            const copyHandler = (textProvider) => async () => {
+                const textToCopy = textProvider();
+                if(!textToCopy || textToCopy.includes("Connect wallet") || textToCopy.includes("連接錢包") || textToCopy.includes("-.--")) { UI.toast(LocalizedTexts[State.currentLanguage].copyFail, true); return; }
+                try { await navigator.clipboard.writeText(textToCopy); UI.toast(LocalizedTexts[State.currentLanguage].copySuccess); } catch (err) { console.error('Failed to copy text: ', err); UI.toast(LocalizedTexts[State.currentLanguage].copyFail, true); }
+            };
+            document.getElementById("copyAddressBtn").addEventListener("click", copyHandler(() => State.CONTRACT_ADDRESS));
+            document.getElementById("copyReferralBtn").addEventListener("click", copyHandler(() => document.getElementById("referralLink").innerText));
+            document.getElementById("copyAImessageBtn").addEventListener("click", copyHandler(() => document.getElementById("aiGeneratedMessage").value));
+            document.getElementById("buyBtlLink").addEventListener("click", () => window.open(`https://pancakeswap.finance/swap?outputCurrency=${State.CONTRACT_ADDRESS}&chain=bsc`, "_blank"));
+        },
+        toggleLanguage() { State.currentLanguage = State.currentLanguage === "en" ? "zh" : "en"; localStorage.setItem("language", State.currentLanguage); UI.updateLanguage(); },
+        async handleDashboardRefresh() {
+            if (State.isDashboardRefreshing || !State.userAccount) return;
+            UI.setDashboardRefreshing(true);
+            try {
+                const data = await Web3Module.fetchChainData();
+                UI.updateDashboard(data);
+            } catch (error) { UI.toast(LocalizedTexts[State.currentLanguage].dataRefreshFailed, true);
+            } finally { UI.setDashboardRefreshing(false); }
+        },
+        async handleGenerateMessage() {
+            if (State.isGenerating) return;
+            if (!State.userAccount) { UI.toast(LocalizedTexts[State.currentLanguage].genConnectWallet, true); return; }
+            UI.setAIGeneratorLoading(true);
+            const referralLink = document.getElementById("referralLink").innerText;
+            const langPrompt = State.currentLanguage === 'zh' ? '請用繁體中文，並且語氣活潑、有吸引力。' : 'Please use a fun and engaging tone.';
+            const prompt = `Write a short, persuasive tweet to encourage people to join the BitLuck DApp using my referral link. Mention that it's an innovative DeFi project. My referral link is ${referralLink}. ${langPrompt}`;
+            try {
+                const message = await API.generateWithGemini(prompt);
+                document.getElementById("aiGeneratedMessage").value = message;
+            } catch (error) { UI.toast(LocalizedTexts[State.currentLanguage].genError, true);
+            } finally { UI.setAIGeneratorLoading(false); }
+        }
+    };
+
+    // ===================================================================================
+    //  ENTRY POINT
+    // ===================================================================================
+    document.addEventListener("DOMContentLoaded", () => App.init());
+    </script>
+</body>
+</html>
