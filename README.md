@@ -2,7 +2,7 @@
 
 歡迎來到 BitLuck DApp！這是一個整合了 AI 功能的現代化去中心化應用程式 (DApp) 前端範本，旨在為用戶提供即時的鏈上數據儀表板、智慧互動工具以及清晰的專案資訊。
 
-**[觀看線上 Demo](https://[您的 GitHub 用戶名].github.io/[您的儲存庫名稱]/)**
+**[觀看線上 Demo](https://github.com/zhouyongyou/BTL/)**
 
 ---
 
